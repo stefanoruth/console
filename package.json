@@ -1,0 +1,55 @@
+{
+	"name": "kodo-console",
+	"version": "0.1.0",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"dependencies": {
+		"@types/lodash": "^4.14.120",
+		"@types/node": "^10.12.18",
+		"lodash": "^4.17.11",
+		"typescript": "^3.2.4"
+	},
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc --watch",
+		"test": "jest",
+		"lint": "tslint -c ./tslint.json ./src/*"
+	},
+	"devDependencies": {
+		"@types/jest": "^23.3.13",
+		"jest": "^23.6.0",
+		"nodemon": "^1.18.9",
+		"ts-jest": "^23.10.5",
+		"tslint": "^5.12.1",
+		"tslint-config-prettier": "^1.17.0"
+	},
+	"bin": {
+		"kodo": "./dist/cli.js"
+	},
+	"jest": {
+		"setupFiles": [
+			"<rootDir>/tests/setup.ts"
+		],
+		"preset": "ts-jest",
+		"testEnvironment": "node",
+		"collectCoverage": false,
+		"collectCoverageFrom": [
+			"<rootDir>/src/**/*.ts"
+		],
+		"testMatch": [
+			"<rootDir>/tests/**/*.test.ts"
+		]
+	},
+	"prettier": {
+		"semi": false,
+		"useTabs": true,
+		"singleQuote": true,
+		"trailingComma": "es5",
+		"proseWrap": "always",
+		"jsxBracketSameLine": true,
+		"bracketSpacing": true,
+		"arrowParens": "avoid",
+		"printWidth": 120
+	}
+}
