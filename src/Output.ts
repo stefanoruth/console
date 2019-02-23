@@ -13,7 +13,7 @@ export class Output {
 	 * Write a line to the console.
 	 */
 	line(message: string, newLine: boolean = false, color: Colors = 'reset'): void {
-		console.log(color + '%s' + colorList.reset, message)
+		process.stdout.write(color + '%s' + colorList.reset, message)
 
 		if (newLine) {
 			this.newLine()
@@ -31,7 +31,7 @@ export class Output {
 	 * Display a set of new lines.
 	 */
 	newLine(count: number = 1) {
-		console.log('\n'.repeat(count))
+		process.stdout.write('\n'.repeat(count))
 	}
 
 	/**

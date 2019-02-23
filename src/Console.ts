@@ -1,6 +1,7 @@
 import { Command } from './Command'
 import { Input } from './Input'
 import { Output } from './Output'
+import { Schedule } from './Schedule'
 
 type ExitCode = 0 | 1
 
@@ -10,11 +11,16 @@ export class Console {
 	protected singleCommand: boolean = false
 	protected input: Input
 	protected output: Output
+	protected projectName?: string
+	protected version?: string
+	protected help?: string
 
 	/**
 	 * Build Console Application.
 	 */
-	constructor() {
+	constructor(projectName?: string, version?: string) {
+		this.projectName = projectName
+		this.version = version
 		this.input = new Input()
 		this.output = new Output()
 	}
@@ -43,6 +49,10 @@ export class Console {
 				console.log(err)
 				process.exit(1)
 			})
+	}
+
+	schedule(callback: (schedule: Schedule) => void) {
+		callback(new Schedule())
 	}
 
 	async doRun() {
