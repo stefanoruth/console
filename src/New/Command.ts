@@ -1,6 +1,5 @@
 import { Output } from '../Output'
-import { Console as Application } from '../Console'
-// import { Arguments } from 'yargs'
+import { Application } from '../Application'
 
 export interface CommandInterface {
 	name: string
@@ -21,18 +20,15 @@ export abstract class Command<Arguments = {}, Options = {}> implements CommandIn
 		this.output = output
 	}
 
-	/**
-	 * Get the path to the migration directory.
-	 */
-	protected getMigrationPath(): string {
-		return './migrations'
-	}
-
 	call(commandName: string, options: {} = {}) {
 		//
 	}
 
-	getApplication() {
+	getApplication(): Application {
+		if (!this.application) {
+			throw new Error('Application has not been set')
+		}
+
 		return this.application
 	}
 

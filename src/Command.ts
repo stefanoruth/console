@@ -1,4 +1,4 @@
-import { Console as Application } from './Console'
+import { Application } from './Application'
 import { Output } from './Output'
 import { Input } from './Input'
 

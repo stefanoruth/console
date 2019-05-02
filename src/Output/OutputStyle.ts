@@ -1,19 +1,12 @@
 import rl from 'readline'
+import { Colors, colorList } from './Colors'
 
-const colorList = {
-	reset: '\x1b[0m',
-	cyan: '\x1b[36m',
-	yellow: '\x1b[33m',
-}
-
-type Colors = keyof typeof colorList
-
-export class Output {
+export class OutputStyle {
 	/**
 	 * Write a line to the console.
 	 */
-	line(message: string, newLine: boolean = false, color: Colors = 'reset'): void {
-		process.stdout.write(color + '%s' + colorList.reset, message)
+	line(message: string, newLine: boolean = false, color: Colors = 'reset') {
+		process.stdout.write(color + message + colorList.reset)
 
 		if (newLine) {
 			this.newLine()
@@ -23,8 +16,8 @@ export class Output {
 	/**
 	 * Display a table on the console.
 	 */
-	table(...args: any[]): void {
-		console.table(args)
+	table(rows: object[], columns?: object) {
+		console.table(rows, columns)
 	}
 
 	/**

@@ -1,3 +1,3 @@
-import { Console } from './Console'
+import { Application } from './Application'
 
-new Console().run()
+new Application().run()
