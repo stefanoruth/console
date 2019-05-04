@@ -1,3 +1,6 @@
-import { Application } from './Application'
+#!/usr/bin/env node
 
-new Application().run()
+import { Application } from './Application'
+import { ListCommand } from './Commands/ListCommand'
+
+new Application().register([new ListCommand()]).run()

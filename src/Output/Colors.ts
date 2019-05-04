@@ -1,4 +1,4 @@
-export const colorList = {
+export const ColorCodes = {
 	reset: '\x1b[0m',
 	black: '\x1b[30m',
 	red: '\x1b[31m',
@@ -10,4 +10,4 @@ export const colorList = {
 	white: '\x1b[37m',
 }
 
-export type Colors = keyof typeof colorList
+export type Colors = keyof typeof ColorCodes

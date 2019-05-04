@@ -1,5 +1,5 @@
-import { Input } from '../Input'
-import { Output } from '../Output'
+import { Input } from '../Input/Input'
+import { Output } from '../Output/Output'
 import { ExitCode } from '../types'
 
 export class CommandFinished {

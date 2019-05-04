@@ -11,9 +11,11 @@
 		"typescript": "^3.2.4"
 	},
 	"scripts": {
+		"clean": "rm -rf dist/",
 		"build": "tsc",
 		"watch": "tsc --watch",
-		"test": "jest",
+		"test": "jest --verbose=false",
+		"test:watch": "yarn test --watch",
 		"lint": "tslint -c ./tslint.json ./src/*"
 	},
 	"devDependencies": {
@@ -28,9 +30,6 @@
 		"kodo": "./dist/cli.js"
 	},
 	"jest": {
-		"setupFiles": [
-			"<rootDir>/tests/setup.ts"
-		],
 		"preset": "ts-jest",
 		"testEnvironment": "node",
 		"collectCoverage": false,

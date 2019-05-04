@@ -12,9 +12,19 @@ export class Output {
 	 * Writes a message to the output.
 	 */
 	write(messages: string | string[], newline: boolean = false, options: number = Output.OUTPUT_NORMAL) {
-		// if (!is_iterable($messages)) {
-		//     $messages = [$messages];
-		// }
+		if (!(messages instanceof Array)) {
+			messages = [messages]
+		}
+
+		for (const message of messages) {
+			// switch (type) {
+			// 	case value:
+			// 		break
+			// 	default:
+			// 		break
+			// }
+			// this.doWrite(message, newline)
+		}
 		// $types = self:: OUTPUT_NORMAL | self:: OUTPUT_RAW | self:: OUTPUT_PLAIN;
 		// $type = $types & $options ?: self:: OUTPUT_NORMAL;
 		// $verbosities = self:: VERBOSITY_QUIET | self:: VERBOSITY_NORMAL | self:: VERBOSITY_VERBOSE | self:: VERBOSITY_VERY_VERBOSE | self:: VERBOSITY_DEBUG;

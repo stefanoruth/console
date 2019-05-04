@@ -1,12 +1,12 @@
 import rl from 'readline'
-import { Colors, colorList } from './Colors'
+import { Colors, ColorCodes } from './Colors'
 
 export class OutputStyle {
 	/**
 	 * Write a line to the console.
 	 */
 	line(message: string, newLine: boolean = false, color: Colors = 'reset') {
-		process.stdout.write(color + message + colorList.reset)
+		process.stdout.write(color + message + ColorCodes.reset)
 
 		if (newLine) {
 			this.newLine()

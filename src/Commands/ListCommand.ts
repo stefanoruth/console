@@ -1,18 +1,10 @@
-import { Command } from '../Command'
+import { Command } from '../Command/Command'
 
-interface Args {
-	commandName: string
-}
-
-interface Options {
-	version: string
-	force: boolean
-}
-
-export class ListCommand extends Command<Args, Options> {
+export class ListCommand extends Command {
 	name = 'list'
 
-	handle() {
-		console.log('listing')
+	async handle() {
+		throw new Error('der')
+		console.log('list')
 	}
 }
