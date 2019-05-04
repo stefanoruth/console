@@ -8,19 +8,21 @@ export abstract class Command {
 	protected name?: string
 	protected signature: Array<Argument<any> | Option<any>> = []
 	protected application?: Application
-	protected output?: Output
-	protected input?: Input<Argument, Option>
+	private _input?: Input
+	private _output?: Output
 
 	/**
 	 * Build Command
 	 */
 	constructor() {
-		this.output = new Output()
-		this.input = new Input()
+		//
 	}
 
-	async call(args: Argument[], options: Option[]) {
-		return this.handle(args, options)
+	async run(input: Input, output: Output) {
+		this._input = input
+		this._output = output
+
+		return this.handle()
 	}
 
 	/**
@@ -42,18 +44,6 @@ export abstract class Command {
 		return this
 	}
 
-	setInput(input: Input) {
-		this.input = input
-
-		return this
-	}
-
-	setOutput(output: Output) {
-		this.output = output
-
-		return this
-	}
-
 	/**
 	 * Returns the command name.
 	 */
@@ -65,5 +55,21 @@ export abstract class Command {
 		return this.name
 	}
 
-	abstract async handle(args: Argument[], options: Option[]): Promise<void>
+	get output() {
+		if (!this._output) {
+			throw new Error('Output has not yet been set')
+		}
+
+		return this._output
+	}
+
+	get input() {
+		if (!this._input) {
+			throw new Error('Input has not yet been set')
+		}
+
+		return this._input
+	}
+
+	abstract async handle(): Promise<void>
 }

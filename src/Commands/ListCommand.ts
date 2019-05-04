@@ -4,7 +4,13 @@ export class ListCommand extends Command {
 	name = 'list'
 
 	async handle() {
-		throw new Error('der')
-		console.log('list')
+		this.output.writeln('## Commands ##')
+		// throw new Error('der')
+
+		const commands = this.getApplication().getCommands()
+
+		commands.forEach(command => {
+			this.output.writeln(command.getName())
+		})
 	}
 }

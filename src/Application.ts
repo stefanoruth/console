@@ -70,7 +70,6 @@ export class Application {
 	}
 
 	async doRun(input: Input, output: Output): Promise<number> {
-		console.log('running')
 		let command: Command | null = null
 
 		// if (true === input.hasParameterOption(['--version', '-V'], true)) {
@@ -78,7 +77,7 @@ export class Application {
 		//     return 0;
 		// }
 
-		let name: string | null = null
+		let name: string | undefined = input.getCommandName()
 
 		if (!name) {
 			name = this.defaultCommand
@@ -117,7 +116,7 @@ export class Application {
 
 		const command = this.commands[name]
 
-		console.log(command)
+		// console.log(command)
 
 		if (!command) {
 			throw new CommandNotFoundException()
@@ -134,9 +133,9 @@ export class Application {
 	 */
 	protected async doRunCommand(command: Command, input: Input, output: Output) {
 		try {
-			await command.call([], [])
+			await command.run(input, output)
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 			return 1
 		}
 
@@ -178,7 +177,8 @@ export class Application {
 	 * If the command is not enabled it will not be added.
 	 */
 	add(command: Command) {
-		console.log(command.getName())
+		command.setApplication(this)
+
 		this.commands[command.getName()] = command
 
 		return command
@@ -189,6 +189,10 @@ export class Application {
 	 */
 	protected getDefaultCommands() {
 		return [new HelpCommand(), new ListCommand()]
+	}
+
+	getCommands(): Command[] {
+		return Object.values(this.commands)
 	}
 
 	/**

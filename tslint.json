@@ -20,7 +20,8 @@
 		"max-classes-per-file": 5,
 		"no-conditional-assignment": false,
 		"no-bitwise": false,
-		"no-var-requires": false
+		"no-var-requires": false,
+		"variable-name": false
 	},
 	"rulesDirectory": []
 }

@@ -1,16 +1,15 @@
 import rl from 'readline'
 import { Colors, ColorCodes } from './Colors'
+import { Output } from './Output'
 
 export class OutputStyle {
+	constructor(protected output: Output) {}
+
 	/**
 	 * Write a line to the console.
 	 */
 	line(message: string, newLine: boolean = false, color: Colors = 'reset') {
-		process.stdout.write(color + message + ColorCodes.reset)
-
-		if (newLine) {
-			this.newLine()
-		}
+		this.output.write(color + message + ColorCodes.reset, newLine)
 	}
 
 	/**
@@ -24,7 +23,7 @@ export class OutputStyle {
 	 * Display a set of new lines.
 	 */
 	newLine(count: number = 1) {
-		process.stdout.write('\n'.repeat(count))
+		this.output.write('\n'.repeat(count))
 	}
 
 	/**
