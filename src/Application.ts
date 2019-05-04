@@ -3,7 +3,7 @@ import { Input } from './Input/Input'
 import { Output } from './Output/Output'
 import { HelpCommand } from './Commands/HelpCommand'
 import { ListCommand } from './Commands/ListCommand'
-import { CommandNotFoundException } from './Exceptions/CommandNotFoundException'
+import { CommandNotFoundException } from './Exceptions'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
