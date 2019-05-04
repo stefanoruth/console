@@ -19,7 +19,8 @@
 		"interface-over-type-literal": false,
 		"max-classes-per-file": 5,
 		"no-conditional-assignment": false,
-		"no-bitwise": false
+		"no-bitwise": false,
+		"no-var-requires": false
 	},
 	"rulesDirectory": []
 }

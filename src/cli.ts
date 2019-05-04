@@ -2,5 +2,10 @@
 
 import { Application } from './Application'
 import { ListCommand } from './Commands/ListCommand'
+import * as path from 'path'
 
-new Application().register([new ListCommand()]).run()
+const version = process.env.npm_package_version || require(path.resolve(__dirname, '../package.json')).version
+
+console.log(process.env)
+
+new Application('Kodo', version).run()
