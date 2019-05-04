@@ -18,7 +18,7 @@ export class Application {
 	/**
 	 * Build Console Application.
 	 */
-	constructor(protected name: string = 'UNKNOWN', protected version: string = 'UNKNOWN') {}
+	constructor(public name: string = 'UNKNOWN', public version: string = 'UNKNOWN') {}
 
 	/**
 	 * Register a new Command.
