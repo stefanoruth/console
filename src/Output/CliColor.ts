@@ -1,4 +1,4 @@
-export type Colors = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
+export type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
 
 interface ColorDefinition {
 	set: string
@@ -6,7 +6,7 @@ interface ColorDefinition {
 }
 
 // https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-function color(set: number, unset: number = 0): ColorDefinition {
+function colorFn(set: number, unset: number = 0): ColorDefinition {
 	return {
 		set: `\x1b[${set}m`,
 		unset: `\x1b[${unset}m`,
@@ -15,24 +15,52 @@ function color(set: number, unset: number = 0): ColorDefinition {
 
 export class CliColor {
 	protected foregroundColors: { [c: string]: ColorDefinition } = {
-		black: color(30),
-		red: color(31),
-		green: color(32),
-		yellow: color(33),
-		blue: color(34),
-		magenta: color(35),
-		cyan: color(36),
-		white: color(37),
+		black: colorFn(30),
+		red: colorFn(31),
+		green: colorFn(32),
+		yellow: colorFn(33),
+		blue: colorFn(34),
+		magenta: colorFn(35),
+		cyan: colorFn(36),
+		white: colorFn(37),
 	}
 
 	protected backgroundColors: { [c: string]: ColorDefinition } = {
-		black: color(40),
-		red: color(41),
-		green: color(42),
-		yellow: color(43),
-		blue: color(44),
-		magenta: color(45),
-		cyan: color(46),
-		white: color(47),
+		black: colorFn(40),
+		red: colorFn(41),
+		green: colorFn(42),
+		yellow: colorFn(43),
+		blue: colorFn(44),
+		magenta: colorFn(45),
+		cyan: colorFn(46),
+		white: colorFn(47),
+	}
+
+	/**
+	 * Apply a set of color codes to the text string
+	 */
+	apply(text: string, color?: { text?: Color; bg?: Color }) {
+		if (!color) {
+			return text
+		}
+
+		const setCodes: string[] = []
+		const unsetCodes: string[] = []
+
+		if (color.text) {
+			const foreground = this.foregroundColors[color.text]
+
+			setCodes.push(foreground.set)
+			unsetCodes.push(foreground.unset)
+		}
+
+		if (color.bg) {
+			const background = this.backgroundColors[color.bg]
+
+			setCodes.push(background.set)
+			unsetCodes.push(background.unset)
+		}
+
+		return setCodes.join('') + text + unsetCodes.join('')
 	}
 }

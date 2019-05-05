@@ -116,10 +116,8 @@ export class Application {
 
 		const command = this.commands[name]
 
-		// console.log(command)
-
 		if (!command) {
-			throw new CommandNotFoundException()
+			throw new CommandNotFoundException(``)
 		}
 
 		return command
@@ -191,6 +189,9 @@ export class Application {
 		return [new HelpCommand(), new ListCommand()]
 	}
 
+	/**
+	 * Fetches a list of commands that are registered
+	 */
 	getCommands(): Command[] {
 		return Object.values(this.commands)
 	}

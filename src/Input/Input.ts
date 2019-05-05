@@ -6,6 +6,7 @@ export class Input<A = {}, O = {}> {
 
 	constructor() {
 		this.args = process.argv.splice(2)
+		console.log(this.args)
 
 		if (this.args.length > 0) {
 			this.commandName = this.args[0]
