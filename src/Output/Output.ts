@@ -31,7 +31,11 @@ export class Output {
 			// 		break
 			// }
 			// this.doWrite(message, newline)
-			process.stdout.write(message + '\n')
+			process.stdout.write(message)
+		}
+
+		if (newline) {
+			process.stdout.write('\n')
 		}
 		// types = self:: OUTPUT_NORMAL | self:: OUTPUT_RAW | self:: OUTPUT_PLAIN;
 		// type = types & options ?: self:: OUTPUT_NORMAL;

@@ -60,7 +60,7 @@ export class Application {
 			exitCode = error.getCode()
 		}
 
-		console.log('exitCode', exitCode)
+		// console.log('exitCode', exitCode)
 
 		if (this.autoExit) {
 			process.exit(exitCode)
