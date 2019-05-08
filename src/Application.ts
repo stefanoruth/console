@@ -25,7 +25,7 @@ export class Application {
 	 */
 	register(commands: Command[]): this {
 		commands.forEach((command: Command) => {
-			this.add(command)
+			this.addCommand(command)
 		})
 
 		return this
@@ -144,13 +144,13 @@ export class Application {
 	 * Renders a caught exception.
 	 */
 	renderException(e: Error, output: Output) {
-		output.writeln('', Output.VERBOSITY_QUIET)
+		// output.writeln('', Output.VERBOSITY_QUIET)
 
 		// this.doRenderException(e, output)
 
 		if (this.runningCommand) {
 			// output.writeln(`<info>${this.runningCommand.getSynopsis() + this.getName()}</info>`, Output.VERBOSITY_QUIET)
-			output.writeln('', Output.VERBOSITY_QUIET)
+			// output.writeln('', Output.VERBOSITY_QUIET)
 		}
 	}
 
@@ -174,12 +174,47 @@ export class Application {
 	 * If a command with the same name already exists, it will be overridden.
 	 * If the command is not enabled it will not be added.
 	 */
-	add(command: Command) {
+	addCommand(command: Command) {
 		command.setApplication(this)
 
 		this.commands[command.getName()] = command
 
 		return command
+	}
+
+	/**
+	 * Returns an array of all unique namespaces used by currently registered commands.
+	 *
+	 * It does not return the global namespace which always exists.
+	 */
+	getNamespaces(): string[] {
+		const namespaces: string[] = []
+
+		this.getCommands().forEach(command => {
+			namespaces.push(this.extractNamespace(command.getName()))
+		})
+
+		return namespaces
+			.filter(item => !!item) // Not empty
+			.filter((value, index, self) => {
+				// Unique
+				return self.indexOf(value) === index
+			})
+	}
+
+	/**
+	 * Returns the namespace part of the command name.
+	 */
+	protected extractNamespace(name: string): string {
+		const parts = name.split(':')
+
+		if (parts.length) {
+			return ''
+		}
+
+		parts.pop()
+
+		return parts.join(':')
 	}
 
 	/**
@@ -206,8 +241,6 @@ export class Application {
 
 		this.initialized = true
 
-		for (const command of this.getDefaultCommands()) {
-			this.add(command)
-		}
+		this.register(this.getDefaultCommands())
 	}
 }

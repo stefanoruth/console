@@ -3,10 +3,11 @@ import { Output } from '../Output/Output'
 import { Input } from '../Input/Input'
 import { Argument } from './Argument'
 import { Option } from './Option'
+import { Signature } from './Signature'
 
 export abstract class Command {
-	protected name?: string
-	protected signature: Array<Argument<any> | Option<any>> = []
+	protected abstract name: string
+	protected signature: Signature = new Signature()
 	protected application?: Application
 	private _input?: Input
 	private _output?: Output
@@ -48,10 +49,6 @@ export abstract class Command {
 	 * Returns the command name.
 	 */
 	getName() {
-		if (!this.name) {
-			return this.constructor.name.replace(/command$/gi, '')
-		}
-
 		return this.name
 	}
 

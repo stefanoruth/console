@@ -1,6 +1,7 @@
 import rl from 'readline'
 import { Color, CliColor } from './CliColor'
 import { ProgressBar } from './ProgressBar'
+import { Table } from './Table'
 
 export class Output {
 	static VERBOSITY_QUIET = 16
@@ -8,9 +9,11 @@ export class Output {
 	static VERBOSITY_VERBOSE = 64
 	static VERBOSITY_VERY_VERBOSE = 128
 	static VERBOSITY_DEBUG = 256
+
 	static OUTPUT_NORMAL = 1
 	static OUTPUT_RAW = 2
 	static OUTPUT_PLAIN = 4
+
 	protected progressBar?: ProgressBar
 
 	constructor(protected color: CliColor = new CliColor()) {}
@@ -18,58 +21,31 @@ export class Output {
 	/**
 	 * Writes a message to the output.
 	 */
-	write(messages: string | string[], newline: boolean = false, options: number = Output.OUTPUT_NORMAL) {
+	write(messages: string | string[], newline: boolean = false) {
 		if (!(messages instanceof Array)) {
 			messages = [messages]
 		}
 
 		for (const message of messages) {
-			// switch (type) {
-			// 	case value:
-			// 		break
-			// 	default:
-			// 		break
-			// }
-			// this.doWrite(message, newline)
 			process.stdout.write(message)
-		}
 
-		if (newline) {
-			process.stdout.write('\n')
+			if (newline) {
+				process.stdout.write('\n')
+			}
 		}
-		// types = self:: OUTPUT_NORMAL | self:: OUTPUT_RAW | self:: OUTPUT_PLAIN;
-		// type = types & options ?: self:: OUTPUT_NORMAL;
-		// verbosities = self:: VERBOSITY_QUIET | self:: VERBOSITY_NORMAL | self:: VERBOSITY_VERBOSE | self:: VERBOSITY_VERY_VERBOSE | self:: VERBOSITY_DEBUG;
-		// verbosity = verbosities & options ?: self:: VERBOSITY_NORMAL;
-		// if (verbosity > this.getVerbosity()) {
-		//     return;
-		// }
-		// foreach(messages as message) {
-		//     switch (type) {
-		//         case OutputInterface:: OUTPUT_NORMAL:
-		//             message = this.formatter -> format(message);
-		//             break;
-		//         case OutputInterface:: OUTPUT_RAW:
-		//             break;
-		//         case OutputInterface:: OUTPUT_PLAIN:
-		//             message = strip_tags(this.formatter -> format(message));
-		//             break;
-		//     }
-		//     this.doWrite(message, newline);
-		// }
 	}
 
 	/**
 	 * Writes a message to the output and adds a newline at the end.
 	 */
-	writeln(messages: string | string[], options: number = Output.OUTPUT_NORMAL) {
-		this.write(messages, true, options)
+	writeln(messages: string | string[]) {
+		this.write(messages, true)
 	}
 
 	/**
 	 * Write a line to the console.
 	 */
-	line(message: string, newLine: boolean = false, color?: Color) {
+	line(message: string, newLine: boolean = true, color?: Color) {
 		this.write(this.color.apply(message, { text: color }), newLine)
 	}
 
@@ -171,7 +147,12 @@ export class Output {
 	 * Display a table on the console.
 	 */
 	table(rows: object[], columns?: object) {
-		console.table(rows, columns)
+		const table = new Table(this)
+		table.setHeaders(columns)
+		table.setRows(rows)
+
+		table.render()
+		this.newLine()
 	}
 
 	/**

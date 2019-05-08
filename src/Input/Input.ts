@@ -17,4 +17,6 @@ export class Input<A = {}, O = {}> {
 	getCommandName() {
 		return this.commandName
 	}
+
+	hasOption(option: string): boolean {}
 }
