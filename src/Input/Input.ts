@@ -1,8 +1,11 @@
-export class Input<A = {}, O = {}> {
+import { InputArgument } from './InputArgument'
+import { InputOption } from './InputOption'
+
+export class Input {
 	protected args: string[]
 	protected commandName?: string
-	// protected arguments: A
-	// protected options: O
+	protected arguments: { [k: string]: InputArgument } = {}
+	protected options: { [k: string]: InputOption } = {}
 
 	constructor() {
 		this.args = process.argv.splice(2)
@@ -18,5 +21,17 @@ export class Input<A = {}, O = {}> {
 		return this.commandName
 	}
 
-	hasOption(option: string): boolean {}
+	/**
+	 * Check if an option is parsed in by the user.
+	 */
+	hasOption(option: string): boolean {
+		return !!this.options[option]
+	}
+
+	/**
+	 * Check if an argument is parsed in by the user.
+	 */
+	hasArgument(arg: string): boolean {
+		return !!this.arguments[arg]
+	}
 }
