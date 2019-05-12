@@ -54,7 +54,6 @@ export class Descriptor {
 	 * Describes an InputArgument instance.
 	 */
 	protected describeInputArgument(argument: Argument, options: DescriptorOptions = {}): string {
-		//
 		return 'argument'
 	}
 
@@ -86,7 +85,8 @@ export class Descriptor {
 	 * Describes an Application instance.
 	 */
 	protected describeApplication(application: Application, options: DescriptorOptions = {}): string {
-		//
+		const commands = application.getCommands()
+
 		return 'application'
 	}
 
@@ -105,5 +105,31 @@ export class Descriptor {
 		})
 
 		return Math.max.apply(null, widths)
+	}
+
+	/**
+	 * Calculate total width for options.
+	 */
+	protected calculateTotalWidthForOptions(options: Option[] = []): number {
+		let totalWidth = 0
+
+		for (const key in options) {
+			if (options.hasOwnProperty(key)) {
+				const option = (options as any)[key]
+				// "-" + shortcut + ", --" + name
+
+				let nameLength = 1 + Math.max.apply(null, option.getShortcut()) + 4 + option.getName()
+
+				if (option.acceptValue()) {
+					let valueLength = 1 + option.getName // = + value
+					valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
+					nameLength += valueLength
+				}
+
+				totalWidth = Math.max.apply(null, nameLength)
+			}
+		}
+
+		return totalWidth
 	}
 }

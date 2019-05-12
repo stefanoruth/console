@@ -7,7 +7,7 @@ export class ListCommand extends Command {
 		const app = this.getApplication()
 		const commands = app.getCommands()
 
-		this.output.writeln(`${app.name} ${app.version}`)
+		this.output.line(`${app.name} ${app.version}`)
 		this.output.newLine()
 
 		this.output.note('Usage:')
@@ -15,7 +15,7 @@ export class ListCommand extends Command {
 		this.output.newLine()
 
 		this.output.note('Options:')
-		this.output.writeln(['  help', '  v'])
+		// this.output.line(['  help', '  v'])
 		this.output.newLine()
 
 		this.output.note('Available commands:')

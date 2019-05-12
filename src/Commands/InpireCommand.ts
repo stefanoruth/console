@@ -24,49 +24,49 @@ export class InspireCommand extends Command {
 		this.output.note('Note')
 		this.output.caution('Caution')
 
-		this.output.progressStart(10)
+		const progress = this.output.progressBar(10)
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
 		sleep(2000)
 
-		this.output.progressAdvance()
+		progress.advance()
 
-		this.output.progressFinish()
+		progress.finish()
 
 		// console.log(await this.output.confirm('Are you okay?'))
 
