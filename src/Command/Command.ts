@@ -2,16 +2,18 @@ import { Application } from '../Application'
 import { Signature } from './Signature'
 import { Output } from '../Output/Output'
 import { Input } from '../Input/Input'
+import { NamespaceExtactor } from './NamespaceExtactor'
 
 export abstract class Command {
 	protected abstract name: string
+	protected description: string = ''
 	protected signature: Signature = new Signature()
 	protected application?: Application
 	private _input?: Input
 	private _output?: Output
 
 	/**
-	 * Build Command
+	 * Build Command.
 	 */
 	constructor() {
 		//
@@ -38,7 +40,7 @@ export abstract class Command {
 	}
 
 	/**
-	 * Set the application
+	 * Set the application.
 	 */
 	setApplication(application?: Application) {
 		this.application = application
@@ -51,6 +53,13 @@ export abstract class Command {
 	 */
 	getName() {
 		return this.name
+	}
+
+	/**
+	 * Returns the command description.
+	 */
+	getDescription() {
+		return this.description
 	}
 
 	/**
@@ -73,6 +82,13 @@ export abstract class Command {
 		}
 
 		return this._input
+	}
+
+	/**
+	 * Extract namespace from command name.
+	 */
+	getNamespace() {
+		return new NamespaceExtactor().extract(this.getName())
 	}
 
 	/**

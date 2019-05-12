@@ -1,5 +1,4 @@
 import { Command } from '../Command/Command'
-import { setInterval, setTimeout } from 'timers'
 import { Signature } from '../Command/Signature'
 import { Argument } from '../Command/Argument'
 import { Option } from '../Command/Option'
@@ -13,6 +12,7 @@ function sleep(time: any) {
 
 export class InspireCommand extends Command {
 	name = 'demo:inspire'
+	description = 'Display an inspiring quote'
 	signature = new Signature([new Argument('demo'), new Option('epic')])
 
 	async handle() {

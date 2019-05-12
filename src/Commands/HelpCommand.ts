@@ -3,6 +3,7 @@ import { Terminal } from '../Terminal'
 
 export class HelpCommand extends Command {
 	name = 'help'
+	description = 'Displays help for a command'
 
 	async handle() {
 		const t = new Terminal()

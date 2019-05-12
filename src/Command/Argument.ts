@@ -2,6 +2,13 @@ export class Argument<T = string | undefined> {
 	constructor(protected name: string, protected description?: string, protected defaultValue?: T) {}
 
 	/**
+	 * Get name.
+	 */
+	getName() {
+		return this.name
+	}
+
+	/**
 	 * Set description.
 	 */
 	setDescription(value: string) {

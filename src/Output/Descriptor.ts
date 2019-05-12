@@ -4,6 +4,8 @@ import { Application } from '../Application'
 import { Command } from '../Command/Command'
 import { Option } from '../Command/Option'
 import { Signature } from '../Command/Signature'
+import { groupBy, Dictionary } from 'lodash'
+import { CliColor } from './CliColor'
 
 // tslint:disable-next-line:no-empty-interface
 export interface DescriptorOptions {
@@ -12,11 +14,12 @@ export interface DescriptorOptions {
 
 export class Descriptor {
 	protected output?: Output
+	protected color: CliColor = new CliColor()
 
 	/**
 	 * Describes an object if supported.
 	 */
-	describe(output: Output, object: any, options: DescriptorOptions) {
+	describe(output: Output, object: any, options: DescriptorOptions = {}) {
 		this.output = output
 
 		switch (true) {
@@ -68,8 +71,21 @@ export class Descriptor {
 	/**
 	 * Describes an Signature instance.
 	 */
-	protected describeSignature(signature: Signature, options: DescriptorOptions = {}): string {
-		//
+	protected describeSignature(signature: Signature, options: DescriptorOptions = {}): void {
+		let totalWidth = this.calculateTotalWidthForOptions(signature.getOptions())
+
+		signature.getArguments().forEach(argument => {
+			totalWidth = Math.max.apply(null, totalWidth, argument.getName().length)
+		})
+
+		// if (signature.getArguments().length) {
+		//     $this -> writeText('<comment>Arguments:</comment>', $options);
+		//     $this -> writeText("\n");
+		//     foreach($definition -> getArguments() as $argument) {
+		//         $this -> describeInputArgument($argument, array_merge($options, ['total_width' => $totalWidth]));
+		//         $this -> writeText("\n");
+		//     }
+		// }
 		return 'signature'
 	}
 
@@ -86,6 +102,50 @@ export class Descriptor {
 	 */
 	protected describeApplication(application: Application, options: DescriptorOptions = {}): string {
 		const commands = application.getCommands()
+		const columnWidth = this.getColumnWidth(commands)
+		const namespaces: Array<{ namespace: string; commands: Command[] }> = []
+
+		commands.forEach(command => {
+			const namespace: string = command.getNamespace()
+
+			const space = namespaces.find(value => value.namespace === namespace)
+
+			if (space === undefined) {
+				namespaces.push({
+					namespace,
+					commands: [command],
+				})
+			} else {
+				space.commands.push(command)
+			}
+		})
+
+		namespaces.sort((a, b) => (a.namespace > b.namespace ? 1 : -1))
+
+		this.write(`${application.getName()} ${this.color.apply(application.getVersion() || '0.1.0', { text: 'green' })}\n`)
+
+		this.write(this.color.apply('\nUsage:\n', { text: 'yellow' }))
+		this.write(`  command [options] [arguments]\n`)
+
+		this.write(this.color.apply('\nOptions:\n', { text: 'yellow' }))
+
+		this.write(this.color.apply('\nAvailable commands:\n', { text: 'yellow' }))
+
+		for (const item of namespaces) {
+			if (item.namespace.length > 0) {
+				this.write(` ${this.color.apply(item.namespace, { text: 'yellow' })}\n`)
+			}
+
+			for (const command of item.commands) {
+				const spacing = columnWidth - command.getName().length
+
+				this.write(
+					`  ${this.color.apply(command.getName(), { text: 'green' })}${' '.repeat(
+						spacing
+					)}  ${command.getDescription()}\n`
+				)
+			}
+		}
 
 		return 'application'
 	}
@@ -121,7 +181,7 @@ export class Descriptor {
 				let nameLength = 1 + Math.max.apply(null, option.getShortcut()) + 4 + option.getName()
 
 				if (option.acceptValue()) {
-					let valueLength = 1 + option.getName // = + value
+					let valueLength = 1 + option.getName().length // = + value
 					valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
 					nameLength += valueLength
 				}

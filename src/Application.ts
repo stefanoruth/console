@@ -4,6 +4,9 @@ import { Output } from './Output/Output'
 import { HelpCommand } from './Commands/HelpCommand'
 import { ListCommand } from './Commands/ListCommand'
 import { CommandNotFoundException } from './Exceptions'
+import { Signature } from './Command/Signature'
+import { Option } from './Command/Option'
+import { Argument } from './Command/Argument'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
@@ -18,7 +21,7 @@ export class Application {
 	/**
 	 * Build Console Application.
 	 */
-	constructor(public name: string = 'UNKNOWN', public version: string = 'UNKNOWN') {}
+	constructor(protected name?: string, protected version?: string) {}
 
 	/**
 	 * Register a new Command.
@@ -30,6 +33,7 @@ export class Application {
 
 		return this
 	}
+
 	/**
 	 * Run the Commands.
 	 */
@@ -77,15 +81,8 @@ export class Application {
 
 		let name: string | undefined = input.getCommandName()
 
-		if (!name) {
+		if (typeof name === 'undefined') {
 			name = this.defaultCommand
-			// const definition = this.getDefinition();
-			// $definition -> setArguments(array_merge(
-			//     $definition -> getArguments(),
-			//     [
-			//         'command' => new InputArgument('command', InputArgument:: OPTIONAL, $definition -> getArgument('command') -> getDescription(), $name),
-			//     ]
-			// ));
 		}
 
 		try {
@@ -160,10 +157,10 @@ export class Application {
 	}
 
 	/**
-	 * Gets the name of the command based on input.
+	 * Gets the version of the application.
 	 */
-	protected getCommandName(input: any): string {
-		return this.singleCommand ? this.defaultCommand : input.getFirstArgument()
+	getVersion() {
+		return this.version
 	}
 
 	/**
@@ -178,41 +175,6 @@ export class Application {
 		this.commands[command.getName()] = command
 
 		return command
-	}
-
-	/**
-	 * Returns an array of all unique namespaces used by currently registered commands.
-	 *
-	 * It does not return the global namespace which always exists.
-	 */
-	getNamespaces(): string[] {
-		const namespaces: string[] = []
-
-		this.getCommands().forEach(command => {
-			namespaces.push(this.extractNamespace(command.getName()))
-		})
-
-		return namespaces
-			.filter(item => !!item) // Not empty
-			.filter((value, index, self) => {
-				// Unique
-				return self.indexOf(value) === index
-			})
-	}
-
-	/**
-	 * Returns the namespace part of the command name.
-	 */
-	protected extractNamespace(name: string): string {
-		const parts = name.split(':')
-
-		if (parts.length) {
-			return ''
-		}
-
-		parts.pop()
-
-		return parts.join(':')
 	}
 
 	/**
@@ -240,5 +202,21 @@ export class Application {
 		this.initialized = true
 
 		this.register(this.getDefaultCommands())
+	}
+
+	/**
+	 * Gets the Signature related to this Application.
+	 */
+	getSignature() {
+		return new Signature([
+			new Argument('command', 'The command to execute'),
+			new Option('--help', '-h', 'Display this help message'),
+			// new InputOption('--quiet', '-q', InputOption:: VALUE_NONE, 'Do not output any message'),
+			// new InputOption('--verbose', '-v|vv|vvv', InputOption:: VALUE_NONE, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'),
+			// new InputOption('--version', '-V', InputOption:: VALUE_NONE, 'Display this application version'),
+			// new InputOption('--ansi', '', InputOption:: VALUE_NONE, 'Force ANSI output'),
+			// new InputOption('--no-ansi', '', InputOption:: VALUE_NONE, 'Disable ANSI output'),
+			// new InputOption('--no-interaction', '-n', InputOption:: VALUE_NONE, 'Do not ask any interactive question'),
+		])
 	}
 }
