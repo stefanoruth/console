@@ -1,5 +1,5 @@
-import { Output } from './Output'
-import { Input } from '../Input/Input'
+import { Output } from '../Output'
+import { Input } from '../../Input/Input'
 
 export class ConfirmToProceed {
 	constructor(protected input: Input, protected output: Output) {}
