@@ -1,9 +1,7 @@
 import { Application } from '../Application'
+import { Signature } from './Signature'
 import { Output } from '../Output/Output'
 import { Input } from '../Input/Input'
-import { Argument } from './Argument'
-import { Option } from './Option'
-import { Signature } from './Signature'
 
 export abstract class Command {
 	protected abstract name: string
@@ -19,7 +17,10 @@ export abstract class Command {
 		//
 	}
 
-	async run(input: Input, output: Output) {
+	/**
+	 * Start running the command from inside the Console.
+	 */
+	async execute(input: Input, output: Output) {
 		this._input = input
 		this._output = output
 
@@ -52,6 +53,9 @@ export abstract class Command {
 		return this.name
 	}
 
+	/**
+	 * Fetch the output from the Application.
+	 */
 	get output() {
 		if (!this._output) {
 			throw new Error('Output has not yet been set')
@@ -60,6 +64,9 @@ export abstract class Command {
 		return this._output
 	}
 
+	/**
+	 * Fetch the input from the Application.
+	 */
 	get input() {
 		if (!this._input) {
 			throw new Error('Input has not yet been set')
@@ -68,5 +75,8 @@ export abstract class Command {
 		return this._input
 	}
 
+	/**
+	 * Handle what ever the command is suppose to do.
+	 */
 	abstract async handle(): Promise<void>
 }

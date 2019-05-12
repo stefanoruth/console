@@ -47,7 +47,7 @@ export class Descriptor {
 		if (!this.output) {
 			throw new Error('Output has not yet been set.')
 		}
-		this.output.write(content, false)
+		this.output.writer.write(content, false)
 	}
 
 	/**

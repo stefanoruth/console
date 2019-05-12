@@ -60,8 +60,6 @@ export class Application {
 			exitCode = error.getCode()
 		}
 
-		// console.log('exitCode', exitCode)
-
 		if (this.autoExit) {
 			process.exit(exitCode)
 		}
@@ -131,7 +129,7 @@ export class Application {
 	 */
 	protected async doRunCommand(command: Command, input: Input, output: Output) {
 		try {
-			await command.run(input, output)
+			await command.execute(input, output)
 		} catch (error) {
 			console.error(error)
 			return 1
