@@ -75,7 +75,7 @@ export class Descriptor {
 		let totalWidth = this.calculateTotalWidthForOptions(signature.getOptions())
 
 		signature.getArguments().forEach(argument => {
-			totalWidth = Math.max.apply(null, totalWidth, argument.getName().length)
+			totalWidth = Math.max.apply(null, [totalWidth, argument.getName().length])
 		})
 
 		// if (signature.getArguments().length) {
@@ -86,7 +86,6 @@ export class Descriptor {
 		//         $this -> writeText("\n");
 		//     }
 		// }
-		return 'signature'
 	}
 
 	/**
