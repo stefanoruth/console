@@ -94,7 +94,9 @@ export class Descriptor {
 			this.write(this.color.apply('Options:\n', { text: 'yellow' }))
 
 			signature.getOptions().forEach(option => {
-				if (option.getShortcut().length > 1) {
+				const shortcut = option.getShortcut()
+
+				if (shortcut && shortcut.length > 1) {
 					laterOptions.push(option)
 					return
 				}
