@@ -7,9 +7,8 @@ import { Signature } from '../Command/Signature'
 import { groupBy, Dictionary } from 'lodash'
 import { CliColor } from './CliColor'
 
-// tslint:disable-next-line:no-empty-interface
 export interface DescriptorOptions {
-	//
+	totalWidth?: number
 }
 
 export class Descriptor {
@@ -56,16 +55,15 @@ export class Descriptor {
 	/**
 	 * Describes an InputArgument instance.
 	 */
-	protected describeInputArgument(argument: Argument, options: DescriptorOptions = {}): string {
-		return 'argument'
+	protected describeInputArgument(argument: Argument, options: DescriptorOptions = {}): void {
+		//
 	}
 
 	/**
 	 * Describes an InputOption instance.
 	 */
-	protected describeInputOption(option: Option, options: DescriptorOptions = {}): string {
+	protected describeInputOption(option: Option, options: DescriptorOptions = {}): void {
 		//
-		return 'option'
 	}
 
 	/**
@@ -78,28 +76,50 @@ export class Descriptor {
 			totalWidth = Math.max.apply(null, [totalWidth, argument.getName().length])
 		})
 
-		// if (signature.getArguments().length) {
-		//     $this -> writeText('<comment>Arguments:</comment>', $options);
-		//     $this -> writeText("\n");
-		//     foreach($definition -> getArguments() as $argument) {
-		//         $this -> describeInputArgument($argument, array_merge($options, ['total_width' => $totalWidth]));
-		//         $this -> writeText("\n");
-		//     }
-		// }
+		if (signature.getArguments().length) {
+			this.write(this.color.apply('Arguments:\n', { text: 'yellow' }))
+
+			signature.getArguments().forEach(argument => {
+				this.describeInputArgument(argument, { totalWidth })
+				this.write('\n')
+			})
+		}
+
+		if (signature.getArguments().length && signature.getOptions().length) {
+			this.write('\n')
+		}
+
+		if (signature.getOptions().length) {
+			const laterOptions: Option[] = []
+			this.write(this.color.apply('Options:\n', { text: 'yellow' }))
+
+			signature.getOptions().forEach(option => {
+				if (option.getShortcut().length > 1) {
+					laterOptions.push(option)
+					return
+				}
+				this.write('\n')
+				this.describeInputOption(option, { totalWidth })
+			})
+
+			laterOptions.forEach(option => {
+				this.write('\n')
+				this.describeInputOption(option, { totalWidth })
+			})
+		}
 	}
 
 	/**
 	 * Describes a Command instance.
 	 */
-	protected describeCommand(command: Command, options: DescriptorOptions = {}): string {
+	protected describeCommand(command: Command, options: DescriptorOptions = {}): void {
 		//
-		return 'command'
 	}
 
 	/**
 	 * Describes an Application instance.
 	 */
-	protected describeApplication(application: Application, options: DescriptorOptions = {}): string {
+	protected describeApplication(application: Application, options: DescriptorOptions = {}): void {
 		const commands = application.getCommands()
 		const columnWidth = this.getColumnWidth(commands)
 		const namespaces: Array<{ namespace: string; commands: Command[] }> = []
@@ -126,7 +146,7 @@ export class Descriptor {
 		this.write(this.color.apply('\nUsage:\n', { text: 'yellow' }))
 		this.write(`  command [options] [arguments]\n`)
 
-		this.write(this.color.apply('\nOptions:\n', { text: 'yellow' }))
+		this.describeSignature(new Signature(application.getSignature().getOptions()))
 
 		this.write(this.color.apply('\nAvailable commands:\n', { text: 'yellow' }))
 
@@ -145,8 +165,6 @@ export class Descriptor {
 				)
 			}
 		}
-
-		return 'application'
 	}
 
 	/**

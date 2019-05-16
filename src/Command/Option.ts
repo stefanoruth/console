@@ -23,4 +23,8 @@ export class Option<T = boolean> {
 
 		return this
 	}
+
+	getShortcut(): string {
+		//
+	}
 }
