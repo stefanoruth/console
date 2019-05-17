@@ -179,6 +179,34 @@ export class Input {
 	}
 
 	/**
+	 * Returns true if the raw parameters (not parsed) contain a value.
+	 *
+	 * This method is to be used to introspect the input parameters
+	 * before they have been validated. It must be used carefully.
+	 * Does not necessarily return the correct result for short options
+	 * when multiple flags are combined in the same option.
+	 */
+	hasParameterOption(values: string | string[], onlyParams: boolean = false): boolean {
+		// $values = (array) $values;
+		// foreach($this -> tokens as $token) {
+		//     if ($onlyParams && '--' === $token) {
+		//         return false;
+		//     }
+		//     foreach($values as $value) {
+		//         // Options with values:
+		//         //   For long options, test for '--option=' at beginning
+		//         //   For short options, test for '-o' at beginning
+		//         $leading = 0 === strpos($value, '--') ? $value.'=' : $value;
+		//         if ($token === $value || '' !== $leading && 0 === strpos($token, $leading)) {
+		//             return true;
+		//         }
+		//     }
+		// }
+		// return false;
+		return false
+	}
+
+	/**
 	 * Check if an option is parsed in by the user.
 	 */
 	hasOption(option: string): boolean {

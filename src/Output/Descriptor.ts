@@ -57,10 +57,11 @@ export class Descriptor {
 	 * Describes an Argument instance.
 	 */
 	protected describeArgument(argument: Argument, options: DescriptorOptions = {}): void {
-		const defaultValue = ''
-		//         if (null !== argument.getDefault() && (!\is_array(argument.getDefault()) || \count(argument.getDefault()))) {
-		//             defaultValue = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(argument.getDefault()));
-		// }
+		let defaultValue = ''
+		const argumentDefault = argument.getDefault()
+		if (argumentDefault && (!(argumentDefault instanceof Array) || argumentDefault.length)) {
+			defaultValue = `<comment> [default: ${this.formatDefaultValue(argumentDefault)}]</comment>`
+		}
 
 		const totalWidth = options.totalWidth || argument.getName().length
 		const spacingWidth = totalWidth - argument.getName().length
@@ -78,18 +79,23 @@ export class Descriptor {
 	 * Describes an Option instance.
 	 */
 	protected describeOption(option: Option, options: DescriptorOptions = {}): void {
-		const defaultValue = ''
-		//     if (option.acceptValue() && null !== option.getDefault() && (!\is_array(option.getDefault()) || \count(option.getDefault()))) {
-		//         default = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(option.getDefault()));
-		// }
+		let defaultValue = ''
 
-		const value = ''
-		// if (option.acceptValue()) {
-		//     value = '='.strtoupper(option.getName());
-		//     if (option.isValueOptional()) {
-		//         value = '['.value.']';
-		//     }
-		// }
+		const optionValue = option.getDefault()
+		if (
+			(option.acceptValue() && optionValue && !(optionValue instanceof Array)) ||
+			(optionValue && optionValue.length)
+		) {
+			defaultValue = `<comment> [default: ${this.formatDefaultValue(optionValue)}]</comment>`
+		}
+
+		let value = ''
+		if (option.acceptValue()) {
+			value = '=' + option.getName().toUpperCase()
+			if (option.isValueOptional()) {
+				value = '[' + value + ']'
+			}
+		}
 
 		const totalWidth = options.totalWidth || this.calculateTotalWidthForOptions([option])
 
@@ -170,28 +176,29 @@ export class Descriptor {
 			this.write('  ' + description + '\n\n')
 		}
 
+		// [...command.getSynopsis(true), command.getAliases(), command.getUsages()]
 		this.write('<comment>Usage:</comment>')
-		// [command.getUsages()].forEach(usage => {
-		//     this.write('\n  ' + OutputFormatter.escape(usage))
-		// });
-		// foreach(array_merge([command.getSynopsis(true)], command.getAliases(), command.getUsages()) as usage) {
+		const usages: string[] = []
+		usages.forEach(usage => {
+			this.write('\n  ' + OutputFormatter.escape(usage))
+		})
 
-		// }
 		this.write('\n')
-		// const definition = command.getNativeDefinition();
-		// if (definition.getOptions() || definition.getArguments()) {
-		//     this.writeText("\n");
-		//     this.describeInputDefinition(definition, options);
-		//     this.writeText("\n");
-		// }
-		// help = command.getProcessedHelp();
-		// if (help && help !== description) {
-		//     this.writeText("\n");
-		//     this.writeText('<comment>Help:</comment>', options);
-		//     this.writeText("\n");
-		//     this.writeText('  '.str_replace("\n", "\n  ", help), options);
-		//     this.writeText("\n");
-		// }
+		const signature: Signature = command.getSignature()
+		if (signature.getOptions() || signature.getArguments()) {
+			this.write('\n')
+			this.describeSignature(signature, options)
+			this.write('\n')
+		}
+
+		const help = command.getProcessedHelp()
+		if (help && help !== description) {
+			this.write('\n')
+			this.write('<comment>Help:</comment>')
+			this.write('\n')
+			this.write('  ' + help.replace(/\n/g, '\n  '))
+			this.write('\n')
+		}
 	}
 
 	/**
@@ -249,6 +256,30 @@ export class Descriptor {
 				)
 			}
 		}
+	}
+
+	/**
+	 * Formats input option/argument default value.
+	 */
+	protected formatDefaultValue(defaultValue: any): string {
+		if (defaultValue === Infinity) {
+			return 'Infinity'
+		}
+
+		if (typeof defaultValue === 'string') {
+			defaultValue = OutputFormatter.escape(defaultValue)
+		} else if (defaultValue instanceof Array) {
+			defaultValue.forEach((value, key) => {
+				if (typeof value === 'string') {
+					defaultValue[key] = OutputFormatter.escape(value)
+				}
+			})
+		}
+
+		defaultValue = JSON.stringify(defaultValue)
+
+		// return str_replace('\\\\', '\\', json_encode($default, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+		return defaultValue
 	}
 
 	/**

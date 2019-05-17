@@ -1,4 +1,4 @@
-import { InvalidArgumentException } from '../Exceptions'
+import { InvalidArgumentException, LogicException } from '../Exceptions'
 
 enum OptionMode {
 	none = 1,
@@ -49,24 +49,6 @@ export class Option<T = any> {
 	}
 
 	/**
-	 * Set description.
-	 */
-	setDescription(value: string) {
-		this.description = value
-
-		return this
-	}
-
-	/**
-	 * Set default value
-	 */
-	setDefault(value: T) {
-		this.defaultValue = value
-
-		return this
-	}
-
-	/**
 	 * Returns the option shortcut.
 	 */
 	getShortcut(): string {
@@ -78,6 +60,60 @@ export class Option<T = any> {
 	 */
 	getName() {
 		return this.name
+	}
+
+	/**
+	 * Returns true if the option accepts a value.
+	 */
+	acceptValue(): boolean {
+		return this.isValueRequired() || this.isValueOptional()
+	}
+
+	/**
+	 * Returns true if the option requires a value.
+	 */
+	isValueRequired(): boolean {
+		return OptionMode.required === (OptionMode.required & this.mode)
+	}
+
+	/**
+	 * Returns true if the option takes an optional value.
+	 */
+	isValueOptional(): boolean {
+		return OptionMode.optional === (OptionMode.optional & this.mode)
+	}
+
+	/**
+	 * Returns true if the option can take multiple values.
+	 */
+	isArray(): boolean {
+		return OptionMode.isArray === (OptionMode.isArray & this.mode)
+	}
+
+	/**
+	 * Sets the default value.
+	 */
+	setDefault(defaultValue: T) {
+		if (OptionMode.none === (OptionMode.none & this.mode) && defaultValue) {
+			throw new LogicException('Cannot set a default value when using OptionMode.none mode.')
+		}
+
+		if (this.isArray()) {
+			if (defaultValue) {
+				// defaultValue = []
+			} else if (!(defaultValue instanceof Array)) {
+				throw new LogicException('A default value for an array option must be an array.')
+			}
+		}
+
+		this.defaultValue = this.acceptValue() ? defaultValue : undefined
+	}
+
+	/**
+	 * Returns the default value.
+	 */
+	getDefault(): T | undefined {
+		return this.defaultValue
 	}
 
 	/**

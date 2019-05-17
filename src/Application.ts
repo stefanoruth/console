@@ -11,6 +11,7 @@ import { InspireCommand } from './Commands/InspireCommand'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
+	protected wantHelps: boolean = false
 	protected runningCommand: Command | null = null
 	protected catchExceptions: boolean = true
 	protected autoExit: boolean = true
@@ -72,15 +73,23 @@ export class Application {
 		return exitCode
 	}
 
+	/**
+	 * Runs the current application.
+	 * int 0 if everything went fine, or an error code
+	 */
 	async doRun(input: Input, output: Output): Promise<number> {
 		let command: Command | null = null
 
-		// if (true === input.hasParameterOption(['--version', '-V'], true)) {
-		//     $output -> writeln($this -> getLongVersion());
-		//     return 0;
-		// }
+		if (true === input.hasParameterOption(['--version', '-V'], true)) {
+			output.success(this.getHelp())
+			return 0
+		}
 
-		let name: string | undefined = input.getFirstArgument()
+		let name: string | undefined = this.getCommandName(input)
+
+		if (true === input.hasParameterOption(['--help', '-h'], true)) {
+			this.wantHelps = true
+		}
 
 		if (typeof name === 'undefined') {
 			name = this.defaultCommand
@@ -104,14 +113,57 @@ export class Application {
 	/**
 	 * Gets the help message.
 	 */
-	getHelp() {
-		if (this.getName()) {
-			if (this.getVersion()) {
-				return `${this.getName()} ${this.getVersion()}`
+	getHelp(): string {
+		const name = this.getName()
+		if (name) {
+			const version = this.getVersion()
+
+			if (version) {
+				return `${name} ${version}`
 			}
-			return this.getName()
+			return name
 		}
 		return 'Console Tool'
+	}
+
+	/**
+	 * Returns a registered command by name or alias.
+	 */
+	get(name: string): Command {
+		this.init()
+
+		if (!this.has(name)) {
+			throw new CommandNotFoundException(`The command "${name}" does not exist.`)
+		}
+
+		const command = this.commands[name]
+
+		if (this.wantHelps) {
+			this.wantHelps = false
+			const helpCommand = this.get('help')
+			// helpCommand.setCommand(command)
+			return helpCommand
+		}
+
+		return command
+	}
+
+	/**
+	 * Returns true if the command exists, false otherwise.
+	 */
+	has(name: string) {
+		this.init()
+
+		if (typeof this.commands[name] !== 'undefined') {
+			return true
+		}
+
+		// ($this -> commandLoader && $this -> commandLoader -> has($name) && $this -> add($this -> commandLoader -> get($name))
+		// if () {
+		//     return true
+		// }
+
+		return false
 	}
 
 	/**
@@ -127,9 +179,11 @@ export class Application {
 			throw new CommandNotFoundException(name)
 		}
 
-		const command = this.commands[name]
+		if (this.has(name)) {
+			return this.get(name)
+		}
 
-		return command
+		throw new Error('Not yet implmeneted this part.')
 	}
 
 	/**
@@ -216,6 +270,13 @@ export class Application {
 		this.initialized = true
 
 		this.register(this.getDefaultCommands())
+	}
+
+	/**
+	 * Gets the name of the command based on input.
+	 */
+	protected getCommandName(input: Input): string | undefined {
+		return this.singleCommand ? this.defaultCommand : input.getFirstArgument()
 	}
 
 	/**

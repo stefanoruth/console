@@ -7,8 +7,10 @@ import { NamespaceExtactor } from './NamespaceExtactor'
 export abstract class Command {
 	protected abstract name: string
 	protected description: string = ''
+	protected help: string = ''
 	protected signature: Signature = new Signature()
 	protected application?: Application
+	protected synopsis: { short?: string; long?: string } = {}
 	private _input?: Input
 	private _output?: Output
 
@@ -63,6 +65,32 @@ export abstract class Command {
 	}
 
 	/**
+	 * Returns the help for the command.
+	 */
+	getHelp(): string {
+		return this.help
+	}
+
+	/**
+	 * Returns the processed help for the command replacing the %command.name% and
+	 * %command.full_name% patterns with the real values dynamically.
+	 */
+	getProcessedHelp(): string {
+		// $name = $this -> name;
+		// $isSingleCommand = $this -> application && $this -> application -> isSingleCommand();
+		// $placeholders = [
+		//     '%command.name%',
+		//     '%command.full_name%',
+		// ];
+		// $replacements = [
+		//     $name,
+		//     $isSingleCommand ? $_SERVER['PHP_SELF'] : $_SERVER['PHP_SELF'].' '.$name,
+		// ];
+		// return str_replace($placeholders, $replacements, $this -> getHelp() ?: $this -> getDescription());
+		return ''
+	}
+
+	/**
 	 * Fetch the output from the Application.
 	 */
 	get output() {
@@ -95,4 +123,24 @@ export abstract class Command {
 	 * Handle what ever the command is suppose to do.
 	 */
 	abstract async handle(): Promise<void>
+
+	/**
+	 * Gets the InputDefinition attached to this Command.
+	 */
+	getSignature(): Signature {
+		return this.signature
+	}
+
+	/**
+	 * Returns the synopsis for the command.
+	 */
+	getSynopsis(short: boolean = false): string {
+		const key = short ? 'short' : 'long'
+
+		if (typeof this.synopsis[key] === 'undefined') {
+			this.synopsis[key] = 'My Synopsis' // `${this.name} ${this.signature.getSynopsis(short)}`.trim()
+		}
+
+		return this.synopsis[key]!
+	}
 }
