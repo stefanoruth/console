@@ -25,4 +25,8 @@ export class Argument<T = string | undefined> {
 
 		return this
 	}
+
+	getDescription() {
+		return this.description || ''
+	}
 }

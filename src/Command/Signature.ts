@@ -68,6 +68,7 @@ export class Signature {
 		//     $this -> hasOptional = true;
 		// }
 		// $this -> arguments[$argument -> getName()] = $argument;
+		this.arguments.push(arg)
 	}
 
 	/**
@@ -107,6 +108,7 @@ export class Signature {
 		//         $this -> shortcuts[$shortcut] = $option -> getName();
 		//     }
 		// }
+		this.options.push(option)
 	}
 
 	/**

@@ -9,6 +9,7 @@ import { CliColor } from './CliColor'
 
 export interface DescriptorOptions {
 	totalWidth?: number
+	isArray?: boolean
 }
 
 export class Descriptor {
@@ -56,14 +57,58 @@ export class Descriptor {
 	 * Describes an InputArgument instance.
 	 */
 	protected describeInputArgument(argument: Argument, options: DescriptorOptions = {}): void {
-		//
+		const defaultValue = ''
+		//         if (null !== argument.getDefault() && (!\is_array(argument.getDefault()) || \count(argument.getDefault()))) {
+		//             defaultValue = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(argument.getDefault()));
+		// }
+
+		const totalWidth = options.totalWidth || argument.getName().length
+		const spacingWidth = totalWidth - argument.getName().length
+
+		const line: string[] = []
+		line.push('  ' + this.color.apply(argument.getName(), { text: 'green' }))
+		line.push(' '.repeat(spacingWidth))
+		// + 4 = 2 spaces before <info>, 2 spaces after </info>
+		line.push(argument.getDescription().replace(/\s*[\r\n]\s*/g, '\n' + ' '.repeat(totalWidth + 4)))
+		line.push(defaultValue)
+		this.write(line.join(''))
 	}
 
 	/**
 	 * Describes an InputOption instance.
 	 */
 	protected describeInputOption(option: Option, options: DescriptorOptions = {}): void {
-		//
+		const defaultValue = ''
+		//     if (option.acceptValue() && null !== option.getDefault() && (!\is_array(option.getDefault()) || \count(option.getDefault()))) {
+		//         default = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(option.getDefault()));
+		// }
+
+		const value = ''
+		// if (option.acceptValue()) {
+		//     value = '='.strtoupper(option.getName());
+		//     if (option.isValueOptional()) {
+		//         value = '['.value.']';
+		//     }
+		// }
+
+		const totalWidth = options.totalWidth || this.calculateTotalWidthForOptions([option])
+
+		const shortcut = option.getShortcut() ? `-${option.getShortcut()}, ` : '    '
+		const name = `--${option.getName()}${value}`
+
+		const synopsis = shortcut + name
+
+		const spacingWidth = totalWidth - synopsis.length
+
+		const line: string[] = []
+		line.push('  ' + this.color.apply(synopsis, { text: 'green' }))
+		line.push(' '.repeat(spacingWidth + 2))
+		// + 4 = 2 spaces before <info>, 2 spaces after </info>
+		line.push(option.getDescription().replace(/\s*[\r\n]\s*/g, '\n' + ' '.repeat(totalWidth + 4)))
+		line.push(defaultValue)
+		line.push(options.isArray ? '<comment> (multiple values allowed)</comment>' : '')
+
+		this.write(line.join(''))
 	}
 
 	/**
@@ -91,7 +136,7 @@ export class Descriptor {
 
 		if (signature.getOptions().length) {
 			const laterOptions: Option[] = []
-			this.write(this.color.apply('Options:\n', { text: 'yellow' }))
+			this.write(this.color.apply('Options:', { text: 'yellow' }))
 
 			signature.getOptions().forEach(option => {
 				const shortcut = option.getShortcut()
@@ -146,11 +191,13 @@ export class Descriptor {
 		this.write(`${application.getName()} ${this.color.apply(application.getVersion() || '0.1.0', { text: 'green' })}\n`)
 
 		this.write(this.color.apply('\nUsage:\n', { text: 'yellow' }))
-		this.write(`  command [options] [arguments]\n`)
+		this.write(`  command [options] [arguments]\n\n`)
 
 		this.describeSignature(new Signature(application.getSignature().getOptions()))
 
-		this.write(this.color.apply('\nAvailable commands:\n', { text: 'yellow' }))
+		this.write('\n\n')
+
+		this.write(this.color.apply('Available commands:\n', { text: 'yellow' }))
 
 		for (const item of namespaces) {
 			if (item.namespace.length > 0) {
@@ -158,12 +205,14 @@ export class Descriptor {
 			}
 
 			for (const command of item.commands) {
-				const spacing = columnWidth - command.getName().length
+				const spacingWidth = columnWidth - command.getName().length
 
 				this.write(
-					`  ${this.color.apply(command.getName(), { text: 'green' })}${' '.repeat(
-						spacing
-					)}  ${command.getDescription()}\n`
+					'  ' +
+						this.color.apply(command.getName(), { text: 'green' }) +
+						' '.repeat(spacingWidth) +
+						command.getDescription() +
+						'\n'
 				)
 			}
 		}
@@ -183,7 +232,7 @@ export class Descriptor {
 			}
 		})
 
-		return Math.max.apply(null, widths)
+		return Math.max.apply(null, widths) + 2
 	}
 
 	/**
@@ -192,22 +241,19 @@ export class Descriptor {
 	protected calculateTotalWidthForOptions(options: Option[] = []): number {
 		let totalWidth = 0
 
-		for (const key in options) {
-			if (options.hasOwnProperty(key)) {
-				const option = (options as any)[key]
-				// "-" + shortcut + ", --" + name
+		options.forEach(option => {
+			// "-" + shortcut + ", --" + name
 
-				let nameLength = 1 + Math.max.apply(null, option.getShortcut()) + 4 + option.getName()
+			const nameLength = 1 + Math.max.apply(null, [option.getShortcut().length]) + 4 + option.getName().length
 
-				if (option.acceptValue()) {
-					let valueLength = 1 + option.getName().length // = + value
-					valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
-					nameLength += valueLength
-				}
+			// if (option.acceptValue()) {
+			//     let valueLength = 1 + option.getName().length // = + value
+			//     valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
+			//     nameLength += valueLength
+			// }
 
-				totalWidth = Math.max.apply(null, nameLength)
-			}
-		}
+			totalWidth = Math.max.apply(null, [totalWidth, nameLength])
+		})
 
 		return totalWidth
 	}
