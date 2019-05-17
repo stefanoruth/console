@@ -24,10 +24,10 @@ export class Descriptor {
 
 		switch (true) {
 			case object instanceof Argument:
-				this.describeInputArgument(object, options)
+				this.describeArgument(object, options)
 				break
 			case object instanceof Option:
-				this.describeInputOption(object, options)
+				this.describeOption(object, options)
 				break
 			case object instanceof Signature:
 				this.describeSignature(object, options)
@@ -54,9 +54,9 @@ export class Descriptor {
 	}
 
 	/**
-	 * Describes an InputArgument instance.
+	 * Describes an Argument instance.
 	 */
-	protected describeInputArgument(argument: Argument, options: DescriptorOptions = {}): void {
+	protected describeArgument(argument: Argument, options: DescriptorOptions = {}): void {
 		const defaultValue = ''
 		//         if (null !== argument.getDefault() && (!\is_array(argument.getDefault()) || \count(argument.getDefault()))) {
 		//             defaultValue = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(argument.getDefault()));
@@ -75,9 +75,9 @@ export class Descriptor {
 	}
 
 	/**
-	 * Describes an InputOption instance.
+	 * Describes an Option instance.
 	 */
-	protected describeInputOption(option: Option, options: DescriptorOptions = {}): void {
+	protected describeOption(option: Option, options: DescriptorOptions = {}): void {
 		const defaultValue = ''
 		//     if (option.acceptValue() && null !== option.getDefault() && (!\is_array(option.getDefault()) || \count(option.getDefault()))) {
 		//         default = sprintf('<comment> [default: %s]</comment>', this.formatDefaultValue(option.getDefault()));
@@ -125,7 +125,7 @@ export class Descriptor {
 			this.write(this.color.apply('Arguments:\n', { text: 'yellow' }))
 
 			signature.getArguments().forEach(argument => {
-				this.describeInputArgument(argument, { totalWidth })
+				this.describeArgument(argument, { totalWidth })
 				this.write('\n')
 			})
 		}
@@ -146,12 +146,12 @@ export class Descriptor {
 					return
 				}
 				this.write('\n')
-				this.describeInputOption(option, { totalWidth })
+				this.describeOption(option, { totalWidth })
 			})
 
 			laterOptions.forEach(option => {
 				this.write('\n')
-				this.describeInputOption(option, { totalWidth })
+				this.describeOption(option, { totalWidth })
 			})
 		}
 	}

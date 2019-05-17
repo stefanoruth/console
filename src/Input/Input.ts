@@ -1,5 +1,3 @@
-import { InputArgument } from './InputArgument'
-import { InputOption } from './InputOption'
 import { Signature } from '../Command/Signature'
 
 export class Input {

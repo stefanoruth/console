@@ -36,7 +36,7 @@ export class Signature {
 	}
 
 	/**
-	 * Sets the InputArgument objects.
+	 * Sets the Argument objects.
 	 */
 	setArguments(args: Argument[] = []) {
 		this.arguments = {}
@@ -48,7 +48,7 @@ export class Signature {
 	}
 
 	/**
-	 * Adds an array of InputArgument objects.
+	 * Adds an array of Argument objects.
 	 */
 	addArguments(args: Argument[] = []) {
 		args.forEach(arg => this.addArgument(arg))
@@ -92,7 +92,7 @@ export class Signature {
 	}
 
 	/**
-	 * Returns an InputArgument by name or by position.
+	 * Returns an Argument by name or by position.
 	 */
 	getArgument(name: string | number): Argument {
 		if (!this.hasArgument(name)) {
@@ -107,7 +107,7 @@ export class Signature {
 	}
 
 	/**
-	 * Returns true if an InputArgument object exists by name or position.
+	 * Returns true if an Argument object exists by name or position.
 	 */
 	hasArgument(name: any): name is Argument {
 		if (typeof name === 'number') {
@@ -122,14 +122,14 @@ export class Signature {
 	}
 
 	/**
-	 * Gets the array of InputArgument objects.
+	 * Gets the array of Argument objects.
 	 */
 	getArguments(): Argument[] {
 		return Object.values(this.arguments)
 	}
 
 	/**
-	 * Sets the InputOption objects.
+	 * Sets the Option objects.
 	 */
 	setOptions(options: Option[] = []) {
 		this.options = {}
@@ -162,7 +162,7 @@ export class Signature {
 	}
 
 	/**
-	 * Returns true if an InputOption object exists by name.
+	 * Returns true if an Option object exists by name.
 	 */
 	hasOption(name: any): name is Option {
 		if (typeof name !== 'string') {
@@ -173,7 +173,7 @@ export class Signature {
 	}
 
 	/**
-	 * Gets the array of InputOption objects.
+	 * Gets the array of Option objects.
 	 */
 	getOptions(): Option[] {
 		return Object.values(this.options)
