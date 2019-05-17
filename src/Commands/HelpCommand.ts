@@ -1,18 +1,27 @@
 import { Command } from '../Command/Command'
 import { Terminal } from '../Terminal'
+import { Descriptor } from '../Output/Descriptor'
 
 export class HelpCommand extends Command {
 	name = 'help'
 	description = 'Displays help for a command'
+	protected command: Command | null = null
 
 	async handle() {
-		console.log(this.input)
-		// const t = new Terminal()
+		if (this.command === null) {
+			// this.command = this.getApplication().find(this.input.getArgument('command_name'))
+			return
+		}
 
-		// console.log('stdin', process.stdin)
-		// console.log('stout', process.stdout)
+		const helper = new Descriptor()
+		helper.describe(this.output, this.command)
+		this.command = null
+	}
 
-		// console.log(t)
-		// console.log('Terminal size: ' + t.getWidth() + 'x' + t.getHeight())
+	/**
+	 * Set command to show help for.
+	 */
+	setCommand(command: Command) {
+		this.command = command
 	}
 }

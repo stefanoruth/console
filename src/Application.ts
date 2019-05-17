@@ -140,8 +140,8 @@ export class Application {
 
 		if (this.wantHelps) {
 			this.wantHelps = false
-			const helpCommand = this.get('help')
-			// helpCommand.setCommand(command)
+			const helpCommand: HelpCommand = this.get('help') as any
+			helpCommand.setCommand(command)
 			return helpCommand
 		}
 

@@ -153,7 +153,24 @@ export class Input {
 	 * Returns the first argument from the raw parameters (not parsed).
 	 */
 	getFirstArgument(): string | undefined {
-		// $isOption = false;
+		const isOption = false
+
+		for (const i in this.tokens) {
+			if (!this.tokens.hasOwnProperty(i)) {
+				continue
+			}
+			const token = this.tokens[i]
+
+			if (token && token[0] === '-') {
+			}
+
+			if (isOption) {
+				isOption = false
+				continue
+			}
+
+			return token
+		}
 		// foreach($this -> tokens as $i => $token) {
 		//     if ($token && '-' === $token[0]) {
 		//         if (false !== strpos($token, '=') || !isset($this -> tokens[$i + 1])) {
@@ -187,22 +204,24 @@ export class Input {
 	 * when multiple flags are combined in the same option.
 	 */
 	hasParameterOption(values: string | string[], onlyParams: boolean = false): boolean {
-		// $values = (array) $values;
-		// foreach($this -> tokens as $token) {
-		//     if ($onlyParams && '--' === $token) {
-		//         return false;
-		//     }
-		//     foreach($values as $value) {
-		//         // Options with values:
-		//         //   For long options, test for '--option=' at beginning
-		//         //   For short options, test for '-o' at beginning
-		//         $leading = 0 === strpos($value, '--') ? $value.'=' : $value;
-		//         if ($token === $value || '' !== $leading && 0 === strpos($token, $leading)) {
-		//             return true;
-		//         }
-		//     }
-		// }
-		// return false;
+		values = values instanceof Array ? values : [values]
+
+		for (const token of this.tokens) {
+			if (onlyParams && '--' === token) {
+				return false
+			}
+
+			for (const value of values) {
+				// Options with values:
+				//   For long options, test for '--option=' at beginning
+				//   For short options, test for '-o' at beginning
+				const leading = value.indexOf('--') === 0 ? value + '=' : value
+				if (token === value || ('' !== leading && token.indexOf(leading) === 0)) {
+					return true
+				}
+			}
+		}
+
 		return false
 	}
 
