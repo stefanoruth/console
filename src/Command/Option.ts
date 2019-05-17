@@ -1,6 +1,6 @@
 import { InvalidArgumentException } from '../Exceptions'
 
-export class Option<T = boolean> {
+export class Option<T = any> {
 	protected name: string
 	protected shortcut: string
 

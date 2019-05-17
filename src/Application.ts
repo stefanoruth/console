@@ -79,7 +79,7 @@ export class Application {
 		//     return 0;
 		// }
 
-		let name: string | undefined = input.getCommandName()
+		let name: string | undefined = input.getFirstArgument()
 
 		if (typeof name === 'undefined') {
 			name = this.defaultCommand
@@ -101,6 +101,19 @@ export class Application {
 	}
 
 	/**
+	 * Gets the help message.
+	 */
+	getHelp() {
+		if (this.getName()) {
+			if (this.getVersion()) {
+				return `${this.getName()} ${this.getVersion()}`
+			}
+			return this.getName()
+		}
+		return 'Console Tool'
+	}
+
+	/**
 	 * Finds a command by name or alias.
 	 *
 	 * Contrary to get, this command tries to find the best
@@ -109,11 +122,13 @@ export class Application {
 	find(name: string): Command {
 		this.init()
 
-		const command = this.commands[name]
+		console.log(name)
 
-		if (!command) {
-			throw new CommandNotFoundException(``)
+		if (typeof this.commands[name] === 'undefined') {
+			throw new CommandNotFoundException(name)
 		}
+
+		const command = this.commands[name]
 
 		return command
 	}

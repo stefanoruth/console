@@ -1,5 +1,18 @@
-export class Argument<T = string | undefined> {
-	constructor(protected name: string, protected description?: string, protected defaultValue?: T) {}
+import { LogicException } from '../Exceptions'
+
+export enum ArgumentMode {
+	required = 1,
+	optional = 2,
+	isArray = 4,
+}
+
+export class Argument<T = any> {
+	constructor(
+		protected name: string,
+		protected description?: string,
+		protected mode: ArgumentMode = ArgumentMode.optional,
+		protected defaultValue?: T
+	) {}
 
 	/**
 	 * Get name.
@@ -9,24 +22,49 @@ export class Argument<T = string | undefined> {
 	}
 
 	/**
-	 * Set description.
+	 * Returns true if the argument is required.
 	 */
-	setDescription(value: string) {
-		this.description = value
-
-		return this
+	isRequired(): boolean {
+		return ArgumentMode.required === (ArgumentMode.required & this.mode)
 	}
 
 	/**
-	 * Set default value.
+	 * Returns true if the argument can take multiple values.
 	 */
-	setDefault(value: T) {
-		this.defaultValue = value
-
-		return this
+	isArray(): boolean {
+		return ArgumentMode.isArray === (ArgumentMode.isArray & this.mode)
 	}
 
-	getDescription() {
+	/**
+	 * Sets the default value.
+	 */
+	setDefault(defaultValue: T) {
+		if (ArgumentMode.required === this.mode && defaultValue) {
+			throw new LogicException('Cannot set a default value except for ArgumentMode.optional mode.')
+		}
+
+		if (this.isArray()) {
+			if (defaultValue) {
+				// defaultValue = []
+			} else if (!(defaultValue instanceof Array)) {
+				throw new LogicException('A default value for an array argument must be an array.')
+			}
+		}
+
+		this.defaultValue = defaultValue
+	}
+
+	/**
+	 * Returns the default value.
+	 */
+	getDefault(): T | undefined {
+		return this.defaultValue
+	}
+
+	/**
+	 * Returns the description text.
+	 */
+	getDescription(): string {
 		return this.description || ''
 	}
 }

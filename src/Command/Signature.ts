@@ -1,14 +1,15 @@
 import { Argument } from './Argument'
 import { Option } from './Option'
+import { InvalidArgumentException, LogicException } from '../Exceptions'
 
-type CommandSignature = Array<Argument<any> | Option<any>>
+type CommandSignature = Array<Argument | Option>
 
 export class Signature {
-	protected arguments: Argument[] = []
+	protected arguments: { [k: string]: Argument } = {}
 	protected requiredCount: number = 0
 	protected hasAnArrayArgument: boolean = false
 	protected hasOptional: boolean = false
-	protected options: Option[] = []
+	protected options: { [k: string]: Option } = {}
 	protected shortcuts: string[] = []
 
 	constructor(definition: CommandSignature = []) {
@@ -38,11 +39,18 @@ export class Signature {
 	 * Sets the InputArgument objects.
 	 */
 	setArguments(args: Argument[] = []) {
-		this.arguments = []
+		this.arguments = {}
 		this.requiredCount = 0
 		this.hasOptional = false
 		this.hasAnArrayArgument = false
 
+		this.addArguments(args)
+	}
+
+	/**
+	 * Adds an array of InputArgument objects.
+	 */
+	addArguments(args: Argument[] = []) {
 		args.forEach(arg => this.addArgument(arg))
 	}
 
@@ -50,6 +58,18 @@ export class Signature {
 	 * Add argument.
 	 */
 	addArgument(arg: Argument) {
+		if (this.arguments[arg.getName()]) {
+			throw new LogicException(`An argument with name "${arg.getName()}" already exists.`)
+		}
+
+		if (this.hasAnArrayArgument) {
+			throw new LogicException('Cannot add an argument after an array argument.')
+		}
+
+		if (arg.isRequired() && this.hasOptional) {
+			throw new LogicException('Cannot add a required argument after an optional one.')
+		}
+
 		// if (isset($this -> arguments[$argument -> getName()])) {
 		//     throw new LogicException(sprintf('An argument with name "%s" already exists.', $argument -> getName()));
 		// }
@@ -68,21 +88,51 @@ export class Signature {
 		//     $this -> hasOptional = true;
 		// }
 		// $this -> arguments[$argument -> getName()] = $argument;
-		this.arguments.push(arg)
+		this.arguments[arg.getName()] = arg
+	}
+
+	/**
+	 * Returns an InputArgument by name or by position.
+	 */
+	getArgument(name: string | number): Argument {
+		if (!this.hasArgument(name)) {
+			throw new InvalidArgumentException(`The "${name}" argument does not exist.`)
+		}
+
+		if (typeof name === 'number') {
+			return this.arguments[name]
+		}
+
+		return this.arguments[name]
+	}
+
+	/**
+	 * Returns true if an InputArgument object exists by name or position.
+	 */
+	hasArgument(name: any): name is Argument {
+		if (typeof name === 'number') {
+			return !!this.getArguments()[name]
+		}
+
+		if (typeof name !== 'string') {
+			throw new InvalidArgumentException(`The argument must be a string.`)
+		}
+
+		return !!this.arguments[name]
 	}
 
 	/**
 	 * Gets the array of InputArgument objects.
 	 */
 	getArguments(): Argument[] {
-		return this.arguments
+		return Object.values(this.arguments)
 	}
 
 	/**
 	 * Sets the InputOption objects.
 	 */
 	setOptions(options: Option[] = []) {
-		this.options = []
+		this.options = {}
 		this.shortcuts = []
 
 		options.forEach(option => this.addOption(option))
@@ -108,13 +158,24 @@ export class Signature {
 		//         $this -> shortcuts[$shortcut] = $option -> getName();
 		//     }
 		// }
-		this.options.push(option)
+		this.options[option.getName()] = option
+	}
+
+	/**
+	 * Returns true if an InputOption object exists by name.
+	 */
+	hasOption(name: any): name is Option {
+		if (typeof name !== 'string') {
+			throw new InvalidArgumentException(`The argument must be a string.`)
+		}
+
+		return !!this.options[name]
 	}
 
 	/**
 	 * Gets the array of InputOption objects.
 	 */
 	getOptions(): Option[] {
-		return this.options
+		return Object.values(this.options)
 	}
 }

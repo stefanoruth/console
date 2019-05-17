@@ -6,12 +6,13 @@ export class HelpCommand extends Command {
 	description = 'Displays help for a command'
 
 	async handle() {
-		const t = new Terminal()
+		console.log(this.input)
+		// const t = new Terminal()
 
-		console.log('stdin', process.stdin)
-		console.log('stout', process.stdout)
+		// console.log('stdin', process.stdin)
+		// console.log('stout', process.stdout)
 
-		console.log(t)
-		console.log('Terminal size: ' + t.getWidth() + 'x' + t.getHeight())
+		// console.log(t)
+		// console.log('Terminal size: ' + t.getWidth() + 'x' + t.getHeight())
 	}
 }

@@ -4,8 +4,8 @@ import { Application } from '../Application'
 import { Command } from '../Command/Command'
 import { Option } from '../Command/Option'
 import { Signature } from '../Command/Signature'
-import { groupBy, Dictionary } from 'lodash'
 import { CliColor } from './CliColor'
+import { OutputFormatter } from './OutputFormatter'
 
 export interface DescriptorOptions {
 	totalWidth?: number
@@ -160,7 +160,38 @@ export class Descriptor {
 	 * Describes a Command instance.
 	 */
 	protected describeCommand(command: Command, options: DescriptorOptions = {}): void {
-		//
+		// command.getSynopsis(true);
+		// command.getSynopsis(false);
+		// command.mergeApplicationDefinition(false);
+
+		const description = command.getDescription()
+		if (description) {
+			this.write('<comment>Description:</comment>\n')
+			this.write('  ' + description + '\n\n')
+		}
+
+		this.write('<comment>Usage:</comment>')
+		// [command.getUsages()].forEach(usage => {
+		//     this.write('\n  ' + OutputFormatter.escape(usage))
+		// });
+		// foreach(array_merge([command.getSynopsis(true)], command.getAliases(), command.getUsages()) as usage) {
+
+		// }
+		this.write('\n')
+		// const definition = command.getNativeDefinition();
+		// if (definition.getOptions() || definition.getArguments()) {
+		//     this.writeText("\n");
+		//     this.describeInputDefinition(definition, options);
+		//     this.writeText("\n");
+		// }
+		// help = command.getProcessedHelp();
+		// if (help && help !== description) {
+		//     this.writeText("\n");
+		//     this.writeText('<comment>Help:</comment>', options);
+		//     this.writeText("\n");
+		//     this.writeText('  '.str_replace("\n", "\n  ", help), options);
+		//     this.writeText("\n");
+		// }
 	}
 
 	/**
