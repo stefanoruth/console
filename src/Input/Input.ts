@@ -175,7 +175,7 @@ export class Input {
 		//     }
 		//     return $token;
 		// }
-		return
+		return this.commandName
 	}
 
 	/**

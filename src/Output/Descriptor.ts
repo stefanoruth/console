@@ -235,6 +235,8 @@ export class Descriptor {
 				this.write(` ${this.color.apply(item.namespace, { text: 'yellow' })}\n`)
 			}
 
+			item.commands.sort((a, b) => (a.getName() > b.getName() ? 1 : -1))
+
 			for (const command of item.commands) {
 				const spacingWidth = columnWidth - command.getName().length
 

@@ -7,6 +7,7 @@ import { CommandNotFoundException } from './Exceptions'
 import { Signature } from './Input/Signature'
 import { Option } from './Input/Option'
 import { Argument } from './Input/Argument'
+import { InspireCommand } from './Commands/InspireCommand'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
@@ -122,8 +123,6 @@ export class Application {
 	find(name: string): Command {
 		this.init()
 
-		console.log(name)
-
 		if (typeof this.commands[name] === 'undefined') {
 			throw new CommandNotFoundException(name)
 		}
@@ -196,7 +195,7 @@ export class Application {
 	 * Gets the default commands that should always be available.
 	 */
 	protected getDefaultCommands() {
-		return [new HelpCommand(), new ListCommand()]
+		return [new HelpCommand(), new ListCommand(), new InspireCommand()]
 	}
 
 	/**

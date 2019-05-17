@@ -10,8 +10,8 @@ function sleep(time: any) {
 	}
 }
 
-export class InspireCommand extends Command {
-	name = 'demo:inspire'
+export class DemoCommand extends Command {
+	name = 'demo:test'
 	description = 'Display an inspiring quote'
 	signature = new Signature([new Argument('demo'), new Option('epic')])
 
