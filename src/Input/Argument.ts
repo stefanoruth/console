@@ -7,12 +7,11 @@ export enum ArgumentMode {
 }
 
 export class Argument<T = any> {
-	constructor(
-		protected name: string,
-		protected description?: string,
-		protected mode: ArgumentMode = ArgumentMode.optional,
-		protected defaultValue?: T
-	) {}
+	protected mode: ArgumentMode
+
+	constructor(protected name: string, protected description?: string, protected defaultValue?: T, mode?: ArgumentMode) {
+		this.mode = mode || ArgumentMode.optional
+	}
 
 	/**
 	 * Get name.

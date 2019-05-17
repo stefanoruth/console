@@ -1,5 +1,5 @@
 import { Application } from '../Application'
-import { Signature } from './Signature'
+import { Signature } from '../Input/Signature'
 import { Output } from '../Output/Output'
 import { Input } from '../Input/Input'
 import { NamespaceExtactor } from './NamespaceExtactor'

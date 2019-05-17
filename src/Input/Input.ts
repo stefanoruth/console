@@ -1,4 +1,4 @@
-import { Signature } from '../Command/Signature'
+import { Signature } from './Signature'
 
 export class Input {
 	protected tokens: string[] = []

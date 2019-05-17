@@ -4,9 +4,9 @@ import { Output } from './Output/Output'
 import { HelpCommand } from './Commands/HelpCommand'
 import { ListCommand } from './Commands/ListCommand'
 import { CommandNotFoundException } from './Exceptions'
-import { Signature } from './Command/Signature'
-import { Option } from './Command/Option'
-import { Argument } from './Command/Argument'
+import { Signature } from './Input/Signature'
+import { Option } from './Input/Option'
+import { Argument } from './Input/Argument'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}

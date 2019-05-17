@@ -1,13 +1,22 @@
 import { InvalidArgumentException } from '../Exceptions'
 
+enum OptionMode {
+	none = 1,
+	required = 2,
+	optional = 4,
+	isArray = 8,
+}
+
 export class Option<T = any> {
 	protected name: string
 	protected shortcut: string
+	protected mode: OptionMode
 
 	constructor(
 		name: string,
 		shortcut: string | string[] = '',
 		protected description?: string,
+		mode?: OptionMode,
 		protected defaultValue?: T
 	) {
 		if (name.indexOf('--') === 0) {
@@ -36,6 +45,7 @@ export class Option<T = any> {
 
 		this.name = name
 		this.shortcut = shortcut
+		this.mode = mode || OptionMode.none
 	}
 
 	/**

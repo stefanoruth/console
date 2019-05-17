@@ -1,7 +1,7 @@
 import { Command } from '../Command/Command'
-import { Signature } from '../Command/Signature'
-import { Argument } from '../Command/Argument'
-import { Option } from '../Command/Option'
+import { Signature } from '../Input/Signature'
+import { Argument } from '../Input/Argument'
+import { Option } from '../Input/Option'
 
 function sleep(time: any) {
 	const stop = new Date().getTime()

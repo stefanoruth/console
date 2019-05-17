@@ -1,9 +1,9 @@
 import { Output } from './Output'
-import { Argument } from '../Command/Argument'
+import { Argument } from '../Input/Argument'
 import { Application } from '../Application'
 import { Command } from '../Command/Command'
-import { Option } from '../Command/Option'
-import { Signature } from '../Command/Signature'
+import { Option } from '../Input/Option'
+import { Signature } from '../Input/Signature'
 import { CliColor } from './CliColor'
 import { OutputFormatter } from './OutputFormatter'
 
