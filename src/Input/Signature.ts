@@ -70,24 +70,16 @@ export class Signature {
 			throw new LogicException('Cannot add a required argument after an optional one.')
 		}
 
-		// if (isset($this -> arguments[$argument -> getName()])) {
-		//     throw new LogicException(sprintf('An argument with name "%s" already exists.', $argument -> getName()));
-		// }
-		// if ($this -> hasAnArrayArgument) {
-		//     throw new LogicException('Cannot add an argument after an array argument.');
-		// }
-		// if ($argument -> isRequired() && $this -> hasOptional) {
-		//     throw new LogicException('Cannot add a required argument after an optional one.');
-		// }
-		// if ($argument -> isArray()) {
-		//     $this -> hasAnArrayArgument = true;
-		// }
-		// if ($argument -> isRequired()) {
-		//     ++$this -> requiredCount;
-		// } else {
-		//     $this -> hasOptional = true;
-		// }
-		// $this -> arguments[$argument -> getName()] = $argument;
+		if (arg.isArray()) {
+			this.hasAnArrayArgument = true
+		}
+
+		if (arg.isRequired()) {
+			this.requiredCount++
+		} else {
+			this.hasOptional = true
+		}
+
 		this.arguments[arg.getName()] = arg
 	}
 
@@ -155,22 +147,30 @@ export class Signature {
 	 * Add option.
 	 */
 	addOption(option: Option) {
-		// if (isset($this -> options[$option -> getName()]) && !$option -> equals($this -> options[$option -> getName()])) {
-		//     throw new LogicException(sprintf('An option named "%s" already exists.', $option -> getName()));
-		// }
-		// if ($option -> getShortcut()) {
-		//     foreach(explode('|', $option -> getShortcut()) as $shortcut) {
-		//         if (isset($this -> shortcuts[$shortcut]) && !$option -> equals($this -> options[$this -> shortcuts[$shortcut]])) {
-		//             throw new LogicException(sprintf('An option with shortcut "%s" already exists.', $shortcut));
-		//         }
-		//     }
-		// }
-		// $this -> options[$option -> getName()] = $option;
-		// if ($option -> getShortcut()) {
-		//     foreach(explode('|', $option -> getShortcut()) as $shortcut) {
-		//         $this -> shortcuts[$shortcut] = $option -> getName();
-		//     }
-		// }
+		if (this.options[option.getName()] && !option.equals(this.options[option.getName()])) {
+			throw new LogicException(`An option named "${option.getName()}" already exists.`)
+		}
+
+		if (option.getShortcut()) {
+			option
+				.getShortcut()
+				.split('|')
+				.forEach(shortcut => {
+					if (this.shortcuts[shortcut] && !option.equals(this.options[this.shortcuts[shortcut]])) {
+						throw new LogicException(`An option with shortcut "${shortcut}" already exists.`)
+					}
+				})
+		}
+		this.options[option.getName()] = option
+
+		if (option.getShortcut()) {
+			option
+				.getShortcut()
+				.split('|')
+				.forEach(shortcut => {
+					this.shortcuts[shortcut] = option.getName()
+				})
+		}
 		this.options[option.getName()] = option
 	}
 

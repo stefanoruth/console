@@ -3,8 +3,8 @@ import { Signature } from './Signature'
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
-	protected options: string[] = []
-	protected arguments: string[] = []
+	protected options: { [k: string]: string[] } = {}
+	protected arguments: { [k: string]: string[] } = {}
 
 	constructor(argv?: string[], protected signature: Signature = new Signature()) {
 		if (!argv) {
@@ -49,13 +49,14 @@ export class Input {
 	 */
 	validate() {
 		const signature = this.signature
-		const givenArguments = this.arguments
+		const givenArguments = { ...this.arguments }
 
 		const missingArguments = signature
 			.getArguments()
 			.map(arg => arg.getName())
 			.filter(argName => {
-				return givenArguments.find(given => given === argName) && signature.getArgument(argName).isRequired()
+				return true
+				// return givenArguments.find(given => given === argName) && signature.getArgument(argName).isRequired()
 			})
 
 		if (missingArguments.length > 0) {
@@ -152,23 +153,25 @@ export class Input {
 	 * Adds a short option value.
 	 */
 	protected addShortOption(shortcut: string, value: any) {
-		// if (!$this -> definition -> hasShortcut($shortcut)) {
-		//     throw new RuntimeException(sprintf('The "-%s" option does not exist.', $shortcut));
-		// }
-		// $this -> addLongOption($this -> definition -> getOptionForShortcut($shortcut) -> getName(), $value);
+		if (!this.signature.hasShortcut(shortcut)) {
+			throw new Error(`The "-${shortcut}" option does not exist.`)
+		}
+		this.addLongOption(this.signature.getOptionForShortcut(shortcut).getName(), value)
 	}
 
 	/**
 	 * Adds a long option value.
 	 */
 	protected addLongOption(name: string, value: any) {
-		// if (!$this -> definition -> hasOption($name)) {
-		//     throw new RuntimeException(sprintf('The "--%s" option does not exist.', $name));
-		// }
-		// $option = $this -> definition -> getOption($name);
-		// if (null !== $value && !$option -> acceptValue()) {
-		//     throw new RuntimeException(sprintf('The "--%s" option does not accept a value.', $name));
-		// }
+		if (!this.signature.hasOption(name)) {
+			throw new Error(`The "--${name}" option does not exist.`)
+		}
+		const option = this.signature.getOption(name)
+
+		if (value !== null && !option.acceptValue()) {
+			throw new Error(`The "--${name}" option does not accept a value.`)
+		}
+
 		// if (\in_array($value, ['', null], true) && $option -> acceptValue() && \count($this -> parsed)) {
 		//     // if option accepts an optional or mandatory argument
 		//     // let's see if there is one provided
@@ -179,19 +182,19 @@ export class Input {
 		//         array_unshift($this -> parsed, $next);
 		//     }
 		// }
-		// if (null === $value) {
-		//     if ($option -> isValueRequired()) {
-		//         throw new RuntimeException(sprintf('The "--%s" option requires a value.', $name));
-		//     }
-		//     if (!$option -> isArray() && !$option -> isValueOptional()) {
-		//         $value = true;
-		//     }
-		// }
-		// if ($option -> isArray()) {
-		//     $this -> options[$name][] = $value;
-		// } else {
-		//     $this -> options[$name] = $value;
-		// }
+		if (value === null) {
+			if (option.isValueRequired()) {
+				throw new Error(`The "--${name}" option requires a value.`)
+			}
+			if (!option.isArray() && !option.isValueOptional()) {
+				value = true
+			}
+		}
+		if (option.isArray()) {
+			// this.options[name].push(value)
+		} else {
+			this.options[name] = value
+		}
 	}
 
 	/**
@@ -200,11 +203,11 @@ export class Input {
 	getFirstArgument(): string | undefined {
 		let isOption = false
 
-		for (const i in this.tokens) {
+		for (const i of this.tokens) {
 			if (!this.tokens.hasOwnProperty(i)) {
 				continue
 			}
-			const token = this.tokens[i]
+			const token = this.tokens[i as number]
 
 			if (token && token[0] === '-') {
 				if (token.indexOf('=') !== -1 || !this.tokens[parseInt(i, 10) + 1]) {
@@ -216,11 +219,14 @@ export class Input {
 				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
 				const shortcutName = this.signature.shortcutToName(name)
 
-				// if (!this.options[name] && !this.signature.hasShortcut(name)) {
-				// 	// noop
-				// } else if (this.options[name] || (this.options[shortcutName] && this.tokens[i + 1] === this.options[name])) {
-				// 	isOption = true
-				// }
+				if (!this.options[name] && !this.signature.hasShortcut(name)) {
+					// noop
+				} else if (
+					this.options[name] ||
+					(this.options[shortcutName] && this.tokens[parseInt(i, 10) + 1] === this.options[name])
+				) {
+					isOption = true
+				}
 
 				continue
 			}

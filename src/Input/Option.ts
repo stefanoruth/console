@@ -122,4 +122,18 @@ export class Option<T = any> {
 	getDescription() {
 		return this.description || ''
 	}
+
+	/**
+	 * Checks whether the given option equals this one.
+	 */
+	equals(option: this): boolean {
+		return false
+		// return $option -> getName() === $this -> getName()
+		//     && $option -> getShortcut() === $this -> getShortcut()
+		//     && $option -> getDefault() === $this -> getDefault()
+		//     && $option -> isArray() === $this -> isArray()
+		//     && $option -> isValueRequired() === $this -> isValueRequired()
+		//     && $option -> isValueOptional() === $this -> isValueOptional()
+		//     ;
+	}
 }
