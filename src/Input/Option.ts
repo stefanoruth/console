@@ -1,6 +1,6 @@
 import { InvalidArgumentException, LogicException } from '../Exceptions'
 
-enum OptionMode {
+export enum OptionMode {
 	none = 1,
 	required = 2,
 	optional = 4,
@@ -43,9 +43,21 @@ export class Option<T = any> {
 			}
 		}
 
+		if (!mode) {
+			mode = OptionMode.optional
+		} else if (mode > 15 || mode < 1) {
+			throw new InvalidArgumentException(`Option mode "${mode}" is not valid.`)
+		}
+
 		this.name = name
 		this.shortcut = shortcut
-		this.mode = mode || OptionMode.none
+		this.mode = mode
+
+		if (this.isArray() && !this.acceptValue()) {
+			throw new InvalidArgumentException(
+				'Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.'
+			)
+		}
 	}
 
 	/**

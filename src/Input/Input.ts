@@ -3,18 +3,29 @@ import { Signature } from './Signature'
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
-	protected options: { [k: string]: string[] } = {}
-	protected arguments: { [k: string]: string[] } = {}
+	protected options: { [k: string]: string[] | string } = {}
+	protected arguments: { [k: string]: string[] | string } = {}
 
 	constructor(argv?: string[], protected signature: Signature = new Signature()) {
 		if (!argv) {
 			argv = process.argv.slice(2)
 		}
+		console.log(argv)
 
 		this.tokens = argv
 
-		this.parse()
+		this.bind(signature)
 		this.validate()
+	}
+
+	/**
+	 * Bind a new Signature the input.
+	 */
+	bind(signature: Signature) {
+		this.arguments = {}
+		this.options = {}
+		this.signature = signature
+		this.parse()
 	}
 
 	/**
@@ -62,6 +73,13 @@ export class Input {
 		if (missingArguments.length > 0) {
 			throw new Error(`Not enough arguments (missing: "${missingArguments.join(', ')}").`)
 		}
+	}
+
+	/**
+	 * Returns all the given arguments merged with the default values.
+	 */
+	getArguments() {
+		return [...Object.values(this.signature.getArgumentDefaults()), ...Object.values(this.arguments)]
 	}
 
 	/**
@@ -128,15 +146,19 @@ export class Input {
 	 */
 	protected parseArgument(token: string) {
 		console.log('parseArgument', token)
-		const c = this.arguments.length
+		const c = Object.keys(this.arguments).length
 
 		if (this.signature.hasArgument(c)) {
 			const arg = this.signature.getArgument(c)
-			// this.arguments[arg.getName()] = arg.isArray() ? [token] : token
+			this.arguments[arg.getName()] = arg.isArray() ? [token] : token
 			// if last argument isArray(), append token to last argument
 		} else if (this.signature.hasArgument(c - 1) && this.signature.getArgument(c - 1).isArray()) {
 			const arg = this.signature.getArgument(c - 1)
-			// this.arguments[arg.getName()][] = token;
+			const argValues = this.arguments[arg.getName()]
+
+			if (argValues instanceof Array) {
+				argValues.push(token)
+			}
 			// unexpected argument
 		} else {
 			const all = this.signature.getArguments()
@@ -182,6 +204,7 @@ export class Input {
 		//         array_unshift($this -> parsed, $next);
 		//     }
 		// }
+
 		if (value === null) {
 			if (option.isValueRequired()) {
 				throw new Error(`The "--${name}" option requires a value.`)
@@ -190,8 +213,13 @@ export class Input {
 				value = true
 			}
 		}
+
 		if (option.isArray()) {
-			// this.options[name].push(value)
+			const optionValues = this.options[name]
+
+			if (optionValues instanceof Array) {
+				optionValues.push(value)
+			}
 		} else {
 			this.options[name] = value
 		}
@@ -207,36 +235,36 @@ export class Input {
 			if (!this.tokens.hasOwnProperty(i)) {
 				continue
 			}
-			const token = this.tokens[i as number]
+			// const token = this.tokens[i]
 
-			if (token && token[0] === '-') {
-				if (token.indexOf('=') !== -1 || !this.tokens[parseInt(i, 10) + 1]) {
-					continue
-				}
-				// If it's a long option, consider that everything after "--" is the option name.
-				// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
+			// if (token && token[0] === '-') {
+			// 	if (token.indexOf('=') !== -1 || !this.tokens[parseInt(i, 10) + 1]) {
+			// 		continue
+			// 	}
+			// 	// If it's a long option, consider that everything after "--" is the option name.
+			// 	// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
 
-				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
-				const shortcutName = this.signature.shortcutToName(name)
+			// 	const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
+			// 	const shortcutName = this.signature.shortcutToName(name)
 
-				if (!this.options[name] && !this.signature.hasShortcut(name)) {
-					// noop
-				} else if (
-					this.options[name] ||
-					(this.options[shortcutName] && this.tokens[parseInt(i, 10) + 1] === this.options[name])
-				) {
-					isOption = true
-				}
+			// 	if (!this.options[name] && !this.signature.hasShortcut(name)) {
+			// 		// noop
+			// 	} else if (
+			// 		this.options[name] ||
+			// 		(this.options[shortcutName] && this.tokens[parseInt(i, 10) + 1] === this.options[name])
+			// 	) {
+			// 		isOption = true
+			// 	}
 
-				continue
-			}
+			// 	continue
+			// }
 
 			if (isOption) {
 				isOption = false
 				continue
 			}
 
-			return token
+			// return token
 		}
 
 		return this.tokens[0]

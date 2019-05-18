@@ -1,4 +1,4 @@
-import { LogicException } from '../Exceptions'
+import { LogicException, InvalidArgumentException } from '../Exceptions'
 
 export enum ArgumentMode {
 	required = 1,
@@ -10,7 +10,13 @@ export class Argument<T = any> {
 	protected mode: ArgumentMode
 
 	constructor(protected name: string, protected description?: string, protected defaultValue?: T, mode?: ArgumentMode) {
-		this.mode = mode || ArgumentMode.optional
+		if (typeof mode === 'undefined') {
+			mode = ArgumentMode.optional
+		} else if (mode > 7 || mode < 1) {
+			throw new InvalidArgumentException(`Argument mode "${mode}" is not valid.`)
+		}
+
+		this.mode = mode
 	}
 
 	/**
@@ -43,8 +49,8 @@ export class Argument<T = any> {
 		}
 
 		if (this.isArray()) {
-			if (defaultValue) {
-				// defaultValue = []
+			if (!defaultValue) {
+				;(defaultValue as any) = []
 			} else if (!(defaultValue instanceof Array)) {
 				throw new LogicException('A default value for an array argument must be an array.')
 			}
