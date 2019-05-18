@@ -3,17 +3,12 @@ import { Signature } from './Signature'
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
-	protected commandName?: string
-	protected options = []
-	protected arguments = []
+	protected options: string[] = []
+	protected arguments: string[] = []
 
 	constructor(argv?: string[], protected signature: Signature = new Signature()) {
 		if (!argv) {
 			argv = process.argv.slice(2)
-		}
-
-		if (argv.length > 0) {
-			this.commandName = argv[0]
 		}
 
 		this.tokens = argv
@@ -53,33 +48,37 @@ export class Input {
 	 * Validates the input.
 	 */
 	validate() {
-		//         $definition = $this -> definition;
-		//         $givenArguments = $this -> arguments;
-		//         $missingArguments = array_filter(array_keys($definition -> getArguments()), function ($argument) use($definition, $givenArguments) {
-		//             return !\array_key_exists($argument, $givenArguments) && $definition -> getArgument($argument) -> isRequired();
-		//     });
-		//     if(\count($missingArguments) > 0) {
-		//     throw new RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArguments)));
-		// }
+		const signature = this.signature
+		const givenArguments = this.arguments
+
+		const missingArguments = signature
+			.getArguments()
+			.map(arg => arg.getName())
+			.filter(argName => {
+				return givenArguments.find(given => given === argName) && signature.getArgument(argName).isRequired()
+			})
+
+		if (missingArguments.length > 0) {
+			throw new Error(`Not enough arguments (missing: "${missingArguments.join(', ')}").`)
+		}
 	}
 
 	/**
 	 * Parses a short option.
 	 */
 	protected parseShortOption(token: string) {
-		console.log('parseShortOption', token)
 		const name = token.substr(1)
 
-		// if (name.length > 1) {
-		// 	if (this.signature.hasShortcut(name[0]) && this.signature.getOptionForShortcut(name[0]).acceptValue()) {
-		// 		// an option with a value (with no space)
-		// 		this.addShortOption(name[0], name.substr(1))
-		// 	} else {
-		// 		this.parseShortOptionSet(name)
-		// 	}
-		// } else {
-		// 	this.addShortOption(name, null)
-		// }
+		if (name.length > 1) {
+			if (this.signature.hasShortcut(name[0]) && this.signature.getOptionForShortcut(name[0]).acceptValue()) {
+				// an option with a value (with no space)
+				this.addShortOption(name[0], name.substr(1))
+			} else {
+				this.parseShortOptionSet(name)
+			}
+		} else {
+			this.addShortOption(name, null)
+		}
 	}
 
 	/**
@@ -90,17 +89,17 @@ export class Input {
 		const len = name.length
 
 		for (let i = 0; i < len; i++) {
-			// if (!this.signature.hasShortcut(name[i])) {
-			//     // $encoding = mb_detect_encoding($name, null, true);
-			//     throw new Error('The "-%s" option does not exist.'); // false === $encoding ? $name[$i] : mb_substr($name, $i, 1, $encoding))
-			// }
-			// const option = this.signature.getOptionForShortcut(name[i])
-			// if (option.acceptValue()) {
-			// 	this.addLongOption(option.getName(), i === len - 1 ? null : name.substr(i + 1))
-			// 	break
-			// } else {
-			// 	this.addLongOption(option.getName(), null)
-			// }
+			if (!this.signature.hasShortcut(name[i])) {
+				// $encoding = mb_detect_encoding($name, null, true);
+				throw new Error('The "-%s" option does not exist.') // false === $encoding ? $name[$i] : mb_substr($name, $i, 1, $encoding))
+			}
+			const option = this.signature.getOptionForShortcut(name[i])
+			if (option.acceptValue()) {
+				this.addLongOption(option.getName(), i === len - 1 ? null : name.substr(i + 1))
+				break
+			} else {
+				this.addLongOption(option.getName(), null)
+			}
 		}
 	}
 
@@ -112,15 +111,15 @@ export class Input {
 		const name = token.substr(2)
 		const pos = name.indexOf('=')
 
-		// if (pos !== -1) {
-		//     const value = name.substr(pos+1)
-		//     if (value.length === 0) {
-		//         this.parsed.unshift(value)
-		//     }
-		//     this.addLongOption(name.substr(0, pos), value)
-		// } else {
-		//     this.addLongOption(name, null)
-		// }
+		if (pos !== -1) {
+			const value = name.substr(pos + 1)
+			if (value.length === 0) {
+				this.parsed.unshift(value)
+			}
+			this.addLongOption(name.substr(0, pos), value)
+		} else {
+			this.addLongOption(name, null)
+		}
 	}
 
 	/**
@@ -130,22 +129,68 @@ export class Input {
 		console.log('parseArgument', token)
 		const c = this.arguments.length
 
-		// if (this.signature.hasArgument(c)) {
-		// 	// const arg = this.signature.getArgument(c)
-		// 	// this.arguments[arg.getName()] = arg.isArray() ? [token] : token
-		// 	// if last argument isArray(), append token to last argument
-		// } else if (this.signature.hasArgument(c - 1) && this.signature.getArgument(c - 1).isArray()) {
-		//     // const arg = this.signature.getArgument(c - 1);
-		//     // this.arguments[arg.getName()][] = token;
-		// 	// unexpected argument
+		if (this.signature.hasArgument(c)) {
+			const arg = this.signature.getArgument(c)
+			// this.arguments[arg.getName()] = arg.isArray() ? [token] : token
+			// if last argument isArray(), append token to last argument
+		} else if (this.signature.hasArgument(c - 1) && this.signature.getArgument(c - 1).isArray()) {
+			const arg = this.signature.getArgument(c - 1)
+			// this.arguments[arg.getName()][] = token;
+			// unexpected argument
+		} else {
+			const all = this.signature.getArguments()
+
+			if (all.length) {
+				throw new Error(`Too many arguments, expected arguments "${all.join('" "')}".`)
+			}
+
+			throw new Error(`No arguments expected, got "${token}".`)
+		}
+	}
+
+	/**
+	 * Adds a short option value.
+	 */
+	protected addShortOption(shortcut: string, value: any) {
+		// if (!$this -> definition -> hasShortcut($shortcut)) {
+		//     throw new RuntimeException(sprintf('The "-%s" option does not exist.', $shortcut));
+		// }
+		// $this -> addLongOption($this -> definition -> getOptionForShortcut($shortcut) -> getName(), $value);
+	}
+
+	/**
+	 * Adds a long option value.
+	 */
+	protected addLongOption(name: string, value: any) {
+		// if (!$this -> definition -> hasOption($name)) {
+		//     throw new RuntimeException(sprintf('The "--%s" option does not exist.', $name));
+		// }
+		// $option = $this -> definition -> getOption($name);
+		// if (null !== $value && !$option -> acceptValue()) {
+		//     throw new RuntimeException(sprintf('The "--%s" option does not accept a value.', $name));
+		// }
+		// if (\in_array($value, ['', null], true) && $option -> acceptValue() && \count($this -> parsed)) {
+		//     // if option accepts an optional or mandatory argument
+		//     // let's see if there is one provided
+		//     $next = array_shift($this -> parsed);
+		//     if ((isset($next[0]) && '-' !== $next[0]) || \in_array($next, ['', null], true)) {
+		//         $value = $next;
+		//     } else {
+		//         array_unshift($this -> parsed, $next);
+		//     }
+		// }
+		// if (null === $value) {
+		//     if ($option -> isValueRequired()) {
+		//         throw new RuntimeException(sprintf('The "--%s" option requires a value.', $name));
+		//     }
+		//     if (!$option -> isArray() && !$option -> isValueOptional()) {
+		//         $value = true;
+		//     }
+		// }
+		// if ($option -> isArray()) {
+		//     $this -> options[$name][] = $value;
 		// } else {
-		// 	const all = this.signature.getArguments()
-
-		// 	if (all.length) {
-		// 		throw new Error(`Too many arguments, expected arguments "%s".`) // implode('" "', array_keys($all))
-		// 	}
-
-		// 	throw new Error(`No arguments expected, got "%s".`) // token
+		//     $this -> options[$name] = $value;
 		// }
 	}
 
@@ -153,7 +198,7 @@ export class Input {
 	 * Returns the first argument from the raw parameters (not parsed).
 	 */
 	getFirstArgument(): string | undefined {
-		const isOption = false
+		let isOption = false
 
 		for (const i in this.tokens) {
 			if (!this.tokens.hasOwnProperty(i)) {
@@ -162,6 +207,22 @@ export class Input {
 			const token = this.tokens[i]
 
 			if (token && token[0] === '-') {
+				if (token.indexOf('=') !== -1 || !this.tokens[parseInt(i, 10) + 1]) {
+					continue
+				}
+				// If it's a long option, consider that everything after "--" is the option name.
+				// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
+
+				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
+				const shortcutName = this.signature.shortcutToName(name)
+
+				// if (!this.options[name] && !this.signature.hasShortcut(name)) {
+				// 	// noop
+				// } else if (this.options[name] || (this.options[shortcutName] && this.tokens[i + 1] === this.options[name])) {
+				// 	isOption = true
+				// }
+
+				continue
 			}
 
 			if (isOption) {
@@ -171,28 +232,56 @@ export class Input {
 
 			return token
 		}
-		// foreach($this -> tokens as $i => $token) {
-		//     if ($token && '-' === $token[0]) {
-		//         if (false !== strpos($token, '=') || !isset($this -> tokens[$i + 1])) {
-		//             continue;
-		//         }
-		//         // If it's a long option, consider that everything after "--" is the option name.
-		//         // Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
-		//         $name = '-' === $token[1] ? substr($token, 2) : substr($token, -1);
-		//         if (!isset($this -> options[$name]) && !$this -> definition -> hasShortcut($name)) {
-		//             // noop
-		//         } elseif((isset($this -> options[$name]) || isset($this -> options[$name = $this -> definition -> shortcutToName($name)])) && $this -> tokens[$i + 1] === $this -> options[$name]) {
-		//             $isOption = true;
-		//         }
-		//         continue;
+
+		return this.tokens[0]
+	}
+
+	/**
+	 * Returns the value of a raw option (not parsed).
+	 *
+	 * This method is to be used to introspect the input parameters
+	 * before they have been validated. It must be used carefully.
+	 * Does not necessarily return the correct result for short options
+	 * when multiple flags are combined in the same option.
+	 */
+	getParameterOption(values: string | string[], defaultValue: any = false, onlyParams: boolean = false) {
+		// $values = (array) $values;
+		// $tokens = $this -> tokens;
+		// while (0 < \count($tokens)) {
+		//     $token = array_shift($tokens);
+		//     if ($onlyParams && '--' === $token) {
+		//         return $default;
 		//     }
-		//     if ($isOption) {
-		//         $isOption = false;
-		//         continue;
+		//     foreach($values as $value) {
+		//         if ($token === $value) {
+		//             return array_shift($tokens);
+		//         }
+		//         // Options with values:
+		//         //   For long options, test for '--option=' at beginning
+		//         //   For short options, test for '-o' at beginning
+		//         $leading = 0 === strpos($value, '--') ? $value.'=' : $value;
+		//         if ('' !== $leading && 0 === strpos($token, $leading)) {
+		//             return substr($token, \strlen($leading));
+		//         }
+		//     }
+		// }
+		// return $default;
+	}
+
+	/**
+	 * Returns a stringified representation of the args passed to the command.
+	 */
+	toString() {
+		// $tokens = array_map(function ($token) {
+		//     if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
+		//         return $match[1].$this -> escapeToken($match[2]);
+		//     }
+		//     if ($token && '-' !== $token[0]) {
+		//         return $this -> escapeToken($token);
 		//     }
 		//     return $token;
-		// }
-		return this.commandName
+		// }, $this -> tokens);
+		// return implode(' ', $tokens);
 	}
 
 	/**

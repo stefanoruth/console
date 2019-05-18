@@ -10,7 +10,7 @@ export class Signature {
 	protected hasAnArrayArgument: boolean = false
 	protected hasOptional: boolean = false
 	protected options: { [k: string]: Option } = {}
-	protected shortcuts: string[] = []
+	protected shortcuts: { [k: string]: string } = {}
 
 	constructor(definition: CommandSignature = []) {
 		this.setDefinition(definition)
@@ -129,11 +129,24 @@ export class Signature {
 	}
 
 	/**
+	 * Gets the default values.
+	 */
+	getArgumentDefaults() {
+		const values: { [k: string]: any } = {}
+
+		Object.values(this.arguments).forEach(arg => {
+			values[arg.getName()] = arg.getDefault()
+		})
+
+		return values
+	}
+
+	/**
 	 * Sets the Option objects.
 	 */
 	setOptions(options: Option[] = []) {
 		this.options = {}
-		this.shortcuts = []
+		this.shortcuts = {}
 
 		options.forEach(option => this.addOption(option))
 	}
@@ -162,6 +175,16 @@ export class Signature {
 	}
 
 	/**
+	 * Returns an InputOption by name.
+	 */
+	getOption(name: string) {
+		if (!this.hasOption(name)) {
+			throw new InvalidArgumentException(`The "--${name}" option does not exist.`)
+		}
+		return this.options[name]
+	}
+
+	/**
 	 * Returns true if an Option object exists by name.
 	 */
 	hasOption(name: any): name is Option {
@@ -177,5 +200,47 @@ export class Signature {
 	 */
 	getOptions(): Option[] {
 		return Object.values(this.options)
+	}
+
+	/**
+	 * Returns true if an InputOption object exists by shortcut.
+	 */
+	hasShortcut(name: any): name is Option {
+		if (typeof name !== 'string') {
+			throw new InvalidArgumentException(`The option must be a string.`)
+		}
+
+		return !!this.shortcuts[name]
+	}
+
+	/**
+	 * Gets an InputOption by shortcut.
+	 */
+	getOptionForShortcut(shortcut: string) {
+		return this.getOption(this.shortcutToName(shortcut))
+	}
+
+	/**
+	 * Gets an array of default values.
+	 */
+	getOptionDefaults() {
+		const values: { [k: string]: any } = {}
+
+		Object.values(this.options).forEach(option => {
+			values[option.getName()] = option.getDefault()
+		})
+
+		return values
+	}
+
+	/**
+	 * Returns the InputOption name given a shortcut.
+	 */
+	shortcutToName(shortcut: string): string {
+		if (!this.shortcuts[shortcut]) {
+			throw new InvalidArgumentException(`The "-${shortcut}" option does not exist.`)
+		}
+
+		return this.shortcuts[shortcut]
 	}
 }
