@@ -8,6 +8,7 @@ import { Signature } from './Input/Signature'
 import { Option } from './Input/Option'
 import { Argument } from './Input/Argument'
 import { InspireCommand } from './Commands/InspireCommand'
+import { ErrorHandler } from './Output/ErrorHandler'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
@@ -50,10 +51,6 @@ export class Application {
 			output = new Output()
 		}
 
-		const renderException = (e: Error) => {
-			// this.render
-		}
-
 		try {
 			exitCode = await this.doRun(input, output)
 		} catch (error) {
@@ -61,9 +58,7 @@ export class Application {
 				throw error
 			}
 
-			// renderException(error)
-			// output
-			console.error(error)
+			this.renderException(error, output)
 
 			exitCode = 1 // error.getCode()
 		}
@@ -87,10 +82,9 @@ export class Application {
 		}
 
 		try {
-			// Makes ArgvInput::getFirstArgument() able to distinguish an option from an argument.
+			// Makes input.getFirstArgument() able to distinguish an option from an argument.
 			input.bind(this.getSignature())
 		} catch (e) {
-			console.error(e)
 			// Errors must be ignored, full binding/validation happens later when the command is known.
 		}
 
@@ -109,8 +103,13 @@ export class Application {
 
 			command = this.find(name)
 		} catch (error) {
-			output.error(error.message)
+			if (!(error instanceof CommandNotFoundException)) {
+				throw error
+			}
+
 			console.error(error)
+
+			// Find alternatives
 
 			return 1
 		}
@@ -208,7 +207,7 @@ export class Application {
 		try {
 			await command.execute(input, output)
 		} catch (error) {
-			console.error(error)
+			new ErrorHandler(output).render(error)
 			return 1
 		}
 
@@ -219,13 +218,13 @@ export class Application {
 	 * Renders a caught exception.
 	 */
 	renderException(e: Error, output: Output) {
-		// output.writeln('', Output.VERBOSITY_QUIET)
+		output.newLine()
 
-		// this.doRenderException(e, output)
+		new ErrorHandler(output).render(e)
 
-		if (this.runningCommand) {
-			// output.writeln(`<info>${this.runningCommand.getSynopsis() + this.getName()}</info>`, Output.VERBOSITY_QUIET)
-			// output.writeln('', Output.VERBOSITY_QUIET)
+		if (this.runningCommand !== null) {
+			output.line(this.runningCommand.getSynopsis() + this.getName())
+			output.newLine()
 		}
 	}
 

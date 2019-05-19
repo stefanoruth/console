@@ -325,7 +325,7 @@ export class Input {
 	hasParameterOption(values: string | string[], onlyParams: boolean = false): boolean {
 		values = values instanceof Array ? values : [values]
 
-		console.log('hasParameterOption', this.tokens)
+		// console.log('hasParameterOption', this.tokens)
 
 		for (const token of this.tokens) {
 			if (onlyParams && '--' === token) {
