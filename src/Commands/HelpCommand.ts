@@ -1,5 +1,4 @@
 import { Command } from './Command'
-import { Terminal } from '../Terminal'
 import { Descriptor } from '../Output/Descriptor'
 
 export class HelpCommand extends Command {

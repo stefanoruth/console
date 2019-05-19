@@ -1,5 +1,5 @@
-import { Command } from './Command'
-import { Signature, Argument, Option } from '../Input'
+import { Command } from '../Command'
+import { Signature, Argument, Option } from '../../Input'
 
 function sleep(time: any) {
 	const stop = new Date().getTime()
