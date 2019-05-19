@@ -1,8 +1,8 @@
 import { Command } from './Command'
 
 export class InspireCommand extends Command {
-	name = 'inspire'
-	description = 'Display an inspiring quote'
+	protected name = 'inspire'
+	protected description = 'Display an inspiring quote'
 
 	async handle() {
 		const qoutes = [

@@ -144,6 +144,13 @@ export class Signature {
 	}
 
 	/**
+	 * Adds an array of Option objects.
+	 */
+	addOptions(options: Option[] = []) {
+		options.forEach(option => this.addOption(option))
+	}
+
+	/**
 	 * Add option.
 	 */
 	addOption(option: Option) {

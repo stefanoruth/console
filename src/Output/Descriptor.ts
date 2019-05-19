@@ -4,7 +4,7 @@ import { Application } from '../Application'
 import { Command } from '../Commands/Command'
 import { Option } from '../Input/Option'
 import { Signature } from '../Input/Signature'
-import { CliColor } from './CliColor'
+import { CliColor, Color } from './CliColor'
 import { OutputFormatter } from './OutputFormatter'
 
 export interface DescriptorOptions {
@@ -46,11 +46,11 @@ export class Descriptor {
 	/**
 	 * Writes content to output.
 	 */
-	protected write(content: string) {
+	protected write(content: string, color?: Color) {
 		if (!this.output) {
 			throw new Error('Output has not yet been set.')
 		}
-		this.output.writer.write(content, false)
+		this.output.line(content, false, color)
 	}
 
 	/**
@@ -128,7 +128,7 @@ export class Descriptor {
 		})
 
 		if (signature.getArguments().length) {
-			this.write(this.color.apply('Arguments:\n', { text: 'yellow' }))
+			this.write('Arguments:\n', 'yellow')
 
 			signature.getArguments().forEach(argument => {
 				this.describeArgument(argument, { totalWidth })
@@ -166,26 +166,26 @@ export class Descriptor {
 	 * Describes a Command instance.
 	 */
 	protected describeCommand(command: Command, options: DescriptorOptions = {}): void {
-		// command.getSynopsis(true);
-		// command.getSynopsis(false);
-		// command.mergeApplicationDefinition(false);
+		command.getSynopsis(true)
+		command.getSynopsis(false)
+		command.mergeApplicationSignature(false)
 
 		const description = command.getDescription()
 		if (description) {
-			this.write('<comment>Description:</comment>\n')
+			this.write('Description:\n', 'yellow')
 			this.write('  ' + description + '\n\n')
 		}
 
-		// [...command.getSynopsis(true), command.getAliases(), command.getUsages()]
-		this.write('<comment>Usage:</comment>')
-		const usages: string[] = []
+		// [command.getUsages()]
+		this.write('Usage:', 'yellow')
+		const usages: string[] = [command.getSynopsis(true)]
 		usages.forEach(usage => {
 			this.write('\n  ' + OutputFormatter.escape(usage))
 		})
 
 		this.write('\n')
 		const signature: Signature = command.getSignature()
-		if (signature.getOptions() || signature.getArguments()) {
+		if (signature.getOptions().length || signature.getArguments().length) {
 			this.write('\n')
 			this.describeSignature(signature, options)
 			this.write('\n')
@@ -193,9 +193,7 @@ export class Descriptor {
 
 		const help = command.getProcessedHelp()
 		if (help && help !== description) {
-			this.write('\n')
-			this.write('<comment>Help:</comment>')
-			this.write('\n')
+			this.write('\nHelp:\n', 'yellow')
 			this.write('  ' + help.replace(/\n/g, '\n  '))
 			this.write('\n')
 		}

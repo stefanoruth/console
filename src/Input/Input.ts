@@ -1,5 +1,5 @@
 import { Signature } from './Signature'
-import { InvalidOptionException } from '../Exceptions'
+import { InvalidOptionException, InvalidArgumentException } from '../Exceptions'
 
 export class Input {
 	protected tokens: string[] = []
@@ -227,43 +227,35 @@ export class Input {
 	getFirstArgument(): string | undefined {
 		let isOption = false
 
-		for (const i of this.tokens) {
-			if (!this.tokens.hasOwnProperty(i)) {
+		for (let i = 0; i < this.tokens.length; i++) {
+			const token = this.tokens[i]
+
+			if (token && token[0] === '-') {
+				if (token.indexOf('=') !== -1 || !this.tokens[i + 1]) {
+					continue
+				}
+				// If it's a long option, consider that everything after "--" is the option name.
+				// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
+
+				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
+				const shortcutName = this.signature.shortcutToName(name)
+
+				if (!this.options[name] && !this.signature.hasShortcut(name)) {
+					// noop
+				} else if (this.options[name] || (this.options[shortcutName] && this.tokens[i + 1] === this.options[name])) {
+					isOption = true
+				}
+
 				continue
 			}
-			// const token = this.tokens[i]
-
-			// if (token && token[0] === '-') {
-			// 	if (token.indexOf('=') !== -1 || !this.tokens[parseInt(i, 10) + 1]) {
-			// 		continue
-			// 	}
-			// 	// If it's a long option, consider that everything after "--" is the option name.
-			// 	// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
-
-			// 	const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
-			// 	const shortcutName = this.signature.shortcutToName(name)
-
-			// 	if (!this.options[name] && !this.signature.hasShortcut(name)) {
-			// 		// noop
-			// 	} else if (
-			// 		this.options[name] ||
-			// 		(this.options[shortcutName] && this.tokens[parseInt(i, 10) + 1] === this.options[name])
-			// 	) {
-			// 		isOption = true
-			// 	}
-
-			// 	continue
-			// }
 
 			if (isOption) {
 				isOption = false
 				continue
 			}
 
-			// return token
+			return token
 		}
-
-		return this.tokens[0]
 	}
 
 	/**
@@ -325,8 +317,6 @@ export class Input {
 	hasParameterOption(values: string | string[], onlyParams: boolean = false): boolean {
 		values = values instanceof Array ? values : [values]
 
-		// console.log('hasParameterOption', this.tokens)
-
 		for (const token of this.tokens) {
 			if (onlyParams && '--' === token) {
 				return false
@@ -354,6 +344,16 @@ export class Input {
 	}
 
 	/**
+	 * Returns the argument value for a given argument name.
+	 */
+	getArgument(name: string) {
+		if (!this.signature.hasArgument(name)) {
+			throw new InvalidArgumentException(`The "${name}" argument does not exist.`)
+		}
+		return this.arguments[name] || this.signature.getArgument(name).getDefault()
+	}
+
+	/**
 	 * Returns all the given options merged with the default values.
 	 */
 	getOptions() {
@@ -375,15 +375,13 @@ export class Input {
 	 * Check if an option is parsed in by the user.
 	 */
 	hasOption(option: string): boolean {
-		return false
-		// return !!this.options[option]
+		return this.signature.hasOption(option)
 	}
 
 	/**
 	 * Check if an argument is parsed in by the user.
 	 */
 	hasArgument(arg: string): boolean {
-		return false
-		// return !!this.arguments[arg]
+		return this.signature.hasArgument(arg)
 	}
 }

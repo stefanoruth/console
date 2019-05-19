@@ -11,6 +11,7 @@ export abstract class Command {
 	protected signature: Signature = new Signature()
 	protected application?: Application
 	protected synopsis: { short?: string; long?: string } = {}
+	protected applicationSignatureMerged: boolean = false
 	private _input?: Input
 	private _output?: Output
 
@@ -72,22 +73,14 @@ export abstract class Command {
 	}
 
 	/**
-	 * Returns the processed help for the command replacing the %command.name% and
-	 * %command.full_name% patterns with the real values dynamically.
+	 * Returns the processed help for the command
 	 */
 	getProcessedHelp(): string {
-		// $name = $this -> name;
-		// $isSingleCommand = $this -> application && $this -> application -> isSingleCommand();
-		// $placeholders = [
-		//     '%command.name%',
-		//     '%command.full_name%',
-		// ];
-		// $replacements = [
-		//     $name,
-		//     $isSingleCommand ? $_SERVER['PHP_SELF'] : $_SERVER['PHP_SELF'].' '.$name,
-		// ];
-		// return str_replace($placeholders, $replacements, $this -> getHelp() ?: $this -> getDescription());
-		return ''
+		if (this.getHelp().length) {
+			return this.getHelp()
+		}
+
+		return this.getDescription()
 	}
 
 	/**
@@ -138,9 +131,29 @@ export abstract class Command {
 		const key = short ? 'short' : 'long'
 
 		if (typeof this.synopsis[key] === 'undefined') {
-			this.synopsis[key] = 'My Synopsis' // `${this.name} ${this.signature.getSynopsis(short)}`.trim()
+			this.synopsis[key] = `${this.getName()} ${this.signature.getSynopsis(short)}`.trim()
 		}
 
 		return this.synopsis[key]!
+	}
+
+	/**
+	 * Merges the application signature with the command signature.
+	 */
+	mergeApplicationSignature(mergeArgs: boolean = true) {
+		if (!this.application || this.applicationSignatureMerged) {
+			return
+		}
+
+		this.signature.addOptions(this.application.getSignature().getOptions())
+
+		this.applicationSignatureMerged = true
+
+		// if ($mergeArgs) {
+		//     $currentArguments = $this -> definition -> getArguments();
+		//     $this -> definition -> setArguments($this -> application -> getDefinition() -> getArguments());
+		//     $this -> definition -> addArguments($currentArguments);
+		//     $this -> applicationDefinitionMergedWithArgs = true;
+		// }
 	}
 }

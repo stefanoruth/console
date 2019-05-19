@@ -290,7 +290,7 @@ export class Application {
 		return new Signature([
 			new Argument('command', 'The command to execute'),
 			new Option('--help', '-h', 'Display this help message'),
-			// new Option('--quiet', '-q', 'Do not output any message'),
+			new Option('--quiet', '-q', 'Do not output any message'),
 			// new Option(
 			// 	'--verbose',
 			// 	'-v|vv|vvv',
