@@ -61,9 +61,11 @@ export class Application {
 				throw error
 			}
 
-			renderException(error)
+			// renderException(error)
+			// output
+			console.error(error)
 
-			exitCode = error.getCode()
+			exitCode = 1 // error.getCode()
 		}
 
 		if (this.autoExit) {
@@ -78,11 +80,18 @@ export class Application {
 	 * int 0 if everything went fine, or an error code
 	 */
 	async doRun(input: Input, output: Output): Promise<number> {
-		let command: Command | null = null
-
+		let command: Command
 		if (true === input.hasParameterOption(['--version', '-V'], true)) {
 			output.success(this.getHelp())
 			return 0
+		}
+
+		try {
+			// Makes ArgvInput::getFirstArgument() able to distinguish an option from an argument.
+			input.bind(this.getSignature())
+		} catch (e) {
+			console.error(e)
+			// Errors must be ignored, full binding/validation happens later when the command is known.
 		}
 
 		let name: string | undefined = this.getCommandName(input)
@@ -100,11 +109,14 @@ export class Application {
 
 			command = this.find(name)
 		} catch (error) {
-			console.log(error)
+			output.error(error.message)
+			console.error(error)
+
+			return 1
 		}
 
 		this.runningCommand = command
-		const exitCode = await this.doRunCommand(command!, input, output)
+		const exitCode = await this.doRunCommand(command, input, output)
 		this.runningCommand = null
 
 		return exitCode
@@ -286,16 +298,16 @@ export class Application {
 		return new Signature([
 			new Argument('command', 'The command to execute'),
 			new Option('--help', '-h', 'Display this help message'),
-			new Option('--quiet', '-q', 'Do not output any message'),
-			new Option(
-				'--verbose',
-				'-v|vv|vvv',
-				'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
-			),
+			// new Option('--quiet', '-q', 'Do not output any message'),
+			// new Option(
+			// 	'--verbose',
+			// 	'-v|vv|vvv',
+			// 	'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
+			// ),
 			new Option('--version', '-V', 'Display this application version'),
-			new Option('--ansi', '', 'Force ANSI output'),
-			new Option('--no-ansi', '', 'Disable ANSI output'),
-			new Option('--no-interaction', '-n', 'Do not ask any interactive question'),
+			// new Option('--ansi', '', 'Force ANSI output'),
+			// new Option('--no-ansi', '', 'Disable ANSI output'),
+			// new Option('--no-interaction', '-n', 'Do not ask any interactive question'),
 		])
 	}
 }

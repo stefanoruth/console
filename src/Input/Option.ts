@@ -11,13 +11,14 @@ export class Option<T = any> {
 	protected name: string
 	protected shortcut?: string
 	protected mode: OptionMode
+	protected defaultValue?: T | boolean
 
 	constructor(
 		name: string,
 		shortcut?: string | string[],
 		protected description?: string,
 		mode?: OptionMode,
-		protected defaultValue?: T
+		defaultValue?: T
 	) {
 		if (name.indexOf('--') === 0) {
 			name = name.substr(2)
@@ -58,6 +59,8 @@ export class Option<T = any> {
 				'Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.'
 			)
 		}
+
+		this.setDefault(defaultValue)
 	}
 
 	/**
@@ -105,26 +108,26 @@ export class Option<T = any> {
 	/**
 	 * Sets the default value.
 	 */
-	setDefault(defaultValue: T) {
-		if (OptionMode.none === (OptionMode.none & this.mode) && defaultValue) {
+	setDefault(defaultValue?: T) {
+		if (OptionMode.none === (OptionMode.none & this.mode) && !!defaultValue) {
 			throw new LogicException('Cannot set a default value when using OptionMode.none mode.')
 		}
 
 		if (this.isArray()) {
-			if (defaultValue) {
-				// defaultValue = []
+			if (!defaultValue) {
+				;(defaultValue as any) = []
 			} else if (!(defaultValue instanceof Array)) {
 				throw new LogicException('A default value for an array option must be an array.')
 			}
 		}
 
-		this.defaultValue = this.acceptValue() ? defaultValue : undefined
+		this.defaultValue = this.acceptValue() ? defaultValue : false
 	}
 
 	/**
 	 * Returns the default value.
 	 */
-	getDefault(): T | undefined {
+	getDefault(): T | undefined | boolean {
 		return this.defaultValue
 	}
 

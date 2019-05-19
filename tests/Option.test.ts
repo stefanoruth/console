@@ -69,7 +69,7 @@ describe('Option', () => {
 	})
 
 	test('SingleDashOptionIsInvalid', () => {
-		expect(() => new Option('-')).toThrow()
+		expect(() => new Option('foo', '-')).toThrow()
 	})
 
 	test('IsArray', () => {

@@ -1,21 +1,27 @@
 import { Signature } from './Signature'
+import { InvalidOptionException } from '../Exceptions'
 
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
+	protected signature: Signature
 	protected options: { [k: string]: string[] | string } = {}
 	protected arguments: { [k: string]: string[] | string } = {}
 
-	constructor(argv?: string[], protected signature: Signature = new Signature()) {
+	constructor(argv?: string[], signature?: Signature) {
 		if (!argv) {
 			argv = process.argv.slice(2)
 		}
-		console.log(argv)
 
 		this.tokens = argv
 
-		this.bind(signature)
-		this.validate()
+		if (!signature) {
+			this.signature = new Signature()
+		} else {
+			this.signature = signature // Fix "has no initializer"
+			this.bind(signature)
+			this.validate()
+		}
 	}
 
 	/**
@@ -37,7 +43,7 @@ export class Input {
 		let token: string | undefined = this.parsed.shift()
 
 		while (token !== undefined) {
-			// console.log(token)
+			// console.log('parse', token)
 
 			if (parseOptions && token === '') {
 				this.parseArgument(token)
@@ -76,13 +82,6 @@ export class Input {
 	}
 
 	/**
-	 * Returns all the given arguments merged with the default values.
-	 */
-	getArguments() {
-		return [...Object.values(this.signature.getArgumentDefaults()), ...Object.values(this.arguments)]
-	}
-
-	/**
 	 * Parses a short option.
 	 */
 	protected parseShortOption(token: string) {
@@ -104,7 +103,6 @@ export class Input {
 	 * Parses a short option set.
 	 */
 	protected parseShortOptionSet(name: string) {
-		console.log('parseShortOptionSet', name)
 		const len = name.length
 
 		for (let i = 0; i < len; i++) {
@@ -126,7 +124,6 @@ export class Input {
 	 * Parses a long option.
 	 */
 	protected parseLongOption(token: string) {
-		console.log('parseLongOption', token)
 		const name = token.substr(2)
 		const pos = name.indexOf('=')
 
@@ -145,7 +142,6 @@ export class Input {
 	 * Parses an argument.
 	 */
 	protected parseArgument(token: string) {
-		console.log('parseArgument', token)
 		const c = Object.keys(this.arguments).length
 
 		if (this.signature.hasArgument(c)) {
@@ -329,6 +325,8 @@ export class Input {
 	hasParameterOption(values: string | string[], onlyParams: boolean = false): boolean {
 		values = values instanceof Array ? values : [values]
 
+		console.log('hasParameterOption', this.tokens)
+
 		for (const token of this.tokens) {
 			if (onlyParams && '--' === token) {
 				return false
@@ -346,6 +344,31 @@ export class Input {
 		}
 
 		return false
+	}
+
+	/**
+	 * Returns all the given arguments merged with the default values.
+	 */
+	getArguments() {
+		return [...Object.values(this.signature.getArgumentDefaults()), ...Object.values(this.arguments)]
+	}
+
+	/**
+	 * Returns all the given options merged with the default values.
+	 */
+	getOptions() {
+		return [...Object.values(this.signature.getOptionDefaults()), ...Object.values(this.options)]
+	}
+
+	/**
+	 * Returns the option value for a given option name.
+	 */
+	getOption(name: string) {
+		if (!this.signature.hasOption(name)) {
+			throw new InvalidOptionException(`The "${name}" option does not exist.`)
+		}
+
+		return this.options[name] || this.signature.getOption(name).getDefault()
 	}
 
 	/**

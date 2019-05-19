@@ -84,6 +84,13 @@ export class Signature {
 	}
 
 	/**
+	 * Gets the array of Argument objects.
+	 */
+	getArguments(): Argument[] {
+		return Object.values(this.arguments)
+	}
+
+	/**
 	 * Returns an Argument by name or by position.
 	 */
 	getArgument(name: string | number): Argument {
@@ -111,13 +118,6 @@ export class Signature {
 		}
 
 		return !!this.arguments[name]
-	}
-
-	/**
-	 * Gets the array of Argument objects.
-	 */
-	getArguments(): Argument[] {
-		return Object.values(this.arguments)
 	}
 
 	/**
@@ -151,26 +151,24 @@ export class Signature {
 			throw new LogicException(`An option named "${option.getName()}" already exists.`)
 		}
 
-		if (option.getShortcut()) {
-			option
-				.getShortcut()
-				.split('|')
-				.forEach(shortcut => {
-					if (this.shortcuts[shortcut] && !option.equals(this.options[this.shortcuts[shortcut]])) {
-						throw new LogicException(`An option with shortcut "${shortcut}" already exists.`)
-					}
-				})
+		const optionShortcut = option.getShortcut()
+
+		if (optionShortcut) {
+			optionShortcut.split('|').forEach(shortcut => {
+				if (this.shortcuts[shortcut] && !option.equals(this.options[this.shortcuts[shortcut]])) {
+					throw new LogicException(`An option with shortcut "${shortcut}" already exists.`)
+				}
+			})
 		}
+
 		this.options[option.getName()] = option
 
-		if (option.getShortcut()) {
-			option
-				.getShortcut()
-				.split('|')
-				.forEach(shortcut => {
-					this.shortcuts[shortcut] = option.getName()
-				})
+		if (optionShortcut) {
+			optionShortcut.split('|').forEach(shortcut => {
+				this.shortcuts[shortcut] = option.getName()
+			})
 		}
+
 		this.options[option.getName()] = option
 	}
 
@@ -242,5 +240,51 @@ export class Signature {
 		}
 
 		return this.shortcuts[shortcut]
+	}
+
+	/**
+	 * Gets the synopsis.
+	 */
+	getSynopsis(short: boolean = false): string {
+		const elements: string[] = []
+
+		if (short && this.getOptions().length) {
+			elements.push('[options]')
+		} else if (!short) {
+			this.getOptions().forEach(option => {
+				let value = ''
+
+				if (option.acceptValue()) {
+					const optional = option.isValueOptional()
+
+					value = ` ${optional ? '[' : ''}${option.getName().toUpperCase()}${optional ? ']' : ''}`
+				}
+
+				const shortcut = option.getShortcut() ? `-${option.getShortcut()}|` : ''
+				elements.push(`[${shortcut}--${option.getName()}${value}]`)
+			})
+		}
+
+		if (elements.length && this.getArguments().length) {
+			elements.push('[--]')
+		}
+
+		let tail = ''
+		this.getArguments().forEach(arg => {
+			let element = `<${arg.getName()}>`
+
+			if (arg.isArray()) {
+				element += '...'
+			}
+
+			if (!arg.isRequired()) {
+				element = `[${element}`
+				tail += ']'
+			}
+
+			elements.push(element)
+		})
+
+		return elements.join(' ') + tail
 	}
 }

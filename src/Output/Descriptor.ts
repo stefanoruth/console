@@ -308,13 +308,15 @@ export class Descriptor {
 		options.forEach(option => {
 			// "-" + shortcut + ", --" + name
 
-			const nameLength = 1 + Math.max.apply(null, [option.getShortcut().length]) + 4 + option.getName().length
+			const shortcut = option.getShortcut() || ''
 
-			// if (option.acceptValue()) {
-			//     let valueLength = 1 + option.getName().length // = + value
-			//     valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
-			//     nameLength += valueLength
-			// }
+			let nameLength = 1 + Math.max.apply(null, [shortcut.length]) + 4 + option.getName().length
+
+			if (option.acceptValue()) {
+				let valueLength = 1 + option.getName().length // = + value
+				valueLength += option.isValueOptional() ? 2 : 0 // [ + ]
+				nameLength += valueLength
+			}
 
 			totalWidth = Math.max.apply(null, [totalWidth, nameLength])
 		})
