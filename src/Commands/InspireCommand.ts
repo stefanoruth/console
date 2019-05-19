@@ -1,4 +1,4 @@
-import { Command } from '../Command/Command'
+import { Command } from './Command'
 
 export class InspireCommand extends Command {
 	name = 'inspire'

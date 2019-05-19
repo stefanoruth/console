@@ -1,4 +1,4 @@
-import { Command } from '../Command/Command'
+import { Command } from './Command'
 import { Terminal } from '../Terminal'
 import { Descriptor } from '../Output/Descriptor'
 

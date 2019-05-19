@@ -1,4 +1,4 @@
-import { Command } from '../Command/Command'
+import { Command } from './Command'
 
 export class ErrorCommand extends Command {
 	name = 'show:error'

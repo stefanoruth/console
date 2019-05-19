@@ -1,4 +1,4 @@
-import { Command } from '../Command/Command'
+import { Command } from './Command'
 import { Descriptor } from '../Output/Descriptor'
 
 export class ListCommand extends Command {

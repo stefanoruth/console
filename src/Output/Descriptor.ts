@@ -1,7 +1,7 @@
 import { Output } from './Output'
 import { Argument } from '../Input/Argument'
 import { Application } from '../Application'
-import { Command } from '../Command/Command'
+import { Command } from '../Commands/Command'
 import { Option } from '../Input/Option'
 import { Signature } from '../Input/Signature'
 import { CliColor } from './CliColor'

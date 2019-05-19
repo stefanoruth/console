@@ -1,14 +1,7 @@
-import { Command } from './Command/Command'
-import { Input } from './Input/Input'
-import { Output } from './Output/Output'
-import { HelpCommand } from './Commands/HelpCommand'
-import { ListCommand } from './Commands/ListCommand'
+import { Command, HelpCommand, ListCommand, InspireCommand } from './Commands'
+import { Input, Signature, Option, Argument } from './Input'
 import { CommandNotFoundException } from './Exceptions'
-import { Signature } from './Input/Signature'
-import { Option } from './Input/Option'
-import { Argument } from './Input/Argument'
-import { InspireCommand } from './Commands/InspireCommand'
-import { ErrorHandler } from './Output/ErrorHandler'
+import { Output, ErrorHandler } from './Output'
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
