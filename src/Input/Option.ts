@@ -9,12 +9,12 @@ export enum OptionMode {
 
 export class Option<T = any> {
 	protected name: string
-	protected shortcut: string
+	protected shortcut?: string
 	protected mode: OptionMode
 
 	constructor(
 		name: string,
-		shortcut: string | string[] = '',
+		shortcut?: string | string[],
 		protected description?: string,
 		mode?: OptionMode,
 		protected defaultValue?: T
@@ -33,7 +33,7 @@ export class Option<T = any> {
 			}
 
 			shortcut = shortcut
-				.replace(/^\-/, '')
+				.replace(/\-/g, '')
 				.split('{(|)-?}')
 				.filter(value => !!value)
 				.join('|')
@@ -44,7 +44,7 @@ export class Option<T = any> {
 		}
 
 		if (!mode) {
-			mode = OptionMode.optional
+			mode = OptionMode.none
 		} else if (mode > 15 || mode < 1) {
 			throw new InvalidArgumentException(`Option mode "${mode}" is not valid.`)
 		}
@@ -63,7 +63,7 @@ export class Option<T = any> {
 	/**
 	 * Returns the option shortcut.
 	 */
-	getShortcut(): string {
+	getShortcut(): string | undefined {
 		return this.shortcut
 	}
 
@@ -139,13 +139,13 @@ export class Option<T = any> {
 	 * Checks whether the given option equals this one.
 	 */
 	equals(option: this): boolean {
-		return false
-		// return $option -> getName() === $this -> getName()
-		//     && $option -> getShortcut() === $this -> getShortcut()
-		//     && $option -> getDefault() === $this -> getDefault()
-		//     && $option -> isArray() === $this -> isArray()
-		//     && $option -> isValueRequired() === $this -> isValueRequired()
-		//     && $option -> isValueOptional() === $this -> isValueOptional()
-		//     ;
+		return (
+			option.getName() === this.getName() &&
+			option.getShortcut() === this.getShortcut() &&
+			option.getDefault() === this.getDefault() &&
+			option.isArray() === this.isArray() &&
+			option.isValueRequired() === this.isValueRequired() &&
+			option.isValueOptional() === this.isValueOptional()
+		)
 	}
 }
