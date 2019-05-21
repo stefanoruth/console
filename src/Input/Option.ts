@@ -7,6 +7,8 @@ export enum OptionMode {
 	isArray = 8,
 }
 
+type Mode = keyof typeof OptionMode
+
 export class Option<T = any> {
 	protected name: string
 	protected shortcut?: string
@@ -16,8 +18,8 @@ export class Option<T = any> {
 	constructor(
 		name: string,
 		shortcut?: string | string[],
+		mode?: OptionMode | Mode,
 		protected description?: string,
-		mode?: OptionMode,
 		defaultValue?: T
 	) {
 		if (name.indexOf('--') === 0) {
@@ -52,7 +54,12 @@ export class Option<T = any> {
 
 		this.name = name
 		this.shortcut = shortcut
-		this.mode = mode
+
+		if (typeof mode === 'string') {
+			this.mode = OptionMode[mode]
+		} else {
+			this.mode = mode
+		}
 
 		if (this.isArray() && !this.acceptValue()) {
 			throw new InvalidArgumentException(

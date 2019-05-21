@@ -4,24 +4,16 @@ import { InvalidOptionException, InvalidArgumentException } from '../Exceptions'
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
-	protected signature: Signature
+	protected signature: Signature = new Signature()
 	protected options: { [k: string]: string[] | string } = {}
 	protected arguments: { [k: string]: string[] | string } = {}
 
-	constructor(argv?: string[], signature?: Signature) {
+	constructor(argv?: string[]) {
 		if (!argv) {
 			argv = process.argv.slice(2)
 		}
 
 		this.tokens = argv
-
-		if (!signature) {
-			this.signature = new Signature()
-		} else {
-			this.signature = signature // Fix "has no initializer"
-			this.bind(signature)
-			this.validate()
-		}
 	}
 
 	/**
@@ -62,26 +54,6 @@ export class Input {
 	}
 
 	/**
-	 * Validates the input.
-	 */
-	validate() {
-		const signature = this.signature
-		const givenArguments = { ...this.arguments }
-
-		const missingArguments = signature
-			.getArguments()
-			.map(arg => arg.getName())
-			.filter(argName => {
-				return true
-				// return givenArguments.find(given => given === argName) && signature.getArgument(argName).isRequired()
-			})
-
-		if (missingArguments.length > 0) {
-			throw new Error(`Not enough arguments (missing: "${missingArguments.join(', ')}").`)
-		}
-	}
-
-	/**
 	 * Parses a short option.
 	 */
 	protected parseShortOption(token: string) {
@@ -107,8 +79,7 @@ export class Input {
 
 		for (let i = 0; i < len; i++) {
 			if (!this.signature.hasShortcut(name[i])) {
-				// $encoding = mb_detect_encoding($name, null, true);
-				throw new Error('The "-%s" option does not exist.') // false === $encoding ? $name[$i] : mb_substr($name, $i, 1, $encoding))
+				throw new Error(`The "-${name[i]}" option does not exist.`)
 			}
 			const option = this.signature.getOptionForShortcut(name[i])
 			if (option.acceptValue()) {
@@ -159,8 +130,10 @@ export class Input {
 		} else {
 			const all = this.signature.getArguments()
 
+			console.log(all)
+
 			if (all.length) {
-				throw new Error(`Too many arguments, expected arguments "${all.join('" "')}".`)
+				throw new Error(`Too many arguments, expected arguments "${all.map(a => a.getName()).join('" "')}".`)
 			}
 
 			throw new Error(`No arguments expected, got "${token}".`)
@@ -294,16 +267,30 @@ export class Input {
 	 * Returns a stringified representation of the args passed to the command.
 	 */
 	toString() {
-		// $tokens = array_map(function ($token) {
-		//     if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-		//         return $match[1].$this -> escapeToken($match[2]);
-		//     }
-		//     if ($token && '-' !== $token[0]) {
-		//         return $this -> escapeToken($token);
-		//     }
-		//     return $token;
-		// }, $this -> tokens);
-		// return implode(' ', $tokens);
+		return this.tokens
+			.map(token => {
+				const match = /{^(-[^=]+=)(.+)}/g.exec(token)
+
+				console.log(match)
+
+				if (match) {
+					return match[0] + this.escapeToken(match[1])
+				}
+
+				if (token && token[0] !== '-') {
+					return this.escapeToken(token)
+				}
+
+				return token
+			})
+			.join(' ')
+	}
+
+	/**
+	 * Escapes a token through escapeshellarg if it contains unsafe chars.
+	 */
+	protected escapeToken(token: string): string {
+		return /{^[\w-]+$}/.test(token) ? token : '!escapeshellarg!' + token
 	}
 
 	/**
@@ -340,7 +327,10 @@ export class Input {
 	 * Returns all the given arguments merged with the default values.
 	 */
 	getArguments() {
-		return [...Object.values(this.signature.getArgumentDefaults()), ...Object.values(this.arguments)]
+		return {
+			...this.signature.getArgumentDefaults(),
+			...this.arguments,
+		}
 	}
 
 	/**
@@ -357,7 +347,10 @@ export class Input {
 	 * Returns all the given options merged with the default values.
 	 */
 	getOptions() {
-		return [...Object.values(this.signature.getOptionDefaults()), ...Object.values(this.options)]
+		return {
+			...this.signature.getOptionDefaults(),
+			...this.options,
+		}
 	}
 
 	/**

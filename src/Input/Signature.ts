@@ -99,7 +99,7 @@ export class Signature {
 		}
 
 		if (typeof name === 'number') {
-			return this.arguments[name]
+			return this.getArguments()[name]
 		}
 
 		return this.arguments[name]

@@ -12,7 +12,7 @@ describe('Option', () => {
 	})
 
 	test('ArrayModeWithoutValue', () => {
-		expect(() => new Option('foo', 'f', undefined, OptionMode.isArray)).toThrow()
+		expect(() => new Option('foo', 'f', OptionMode.isArray)).toThrow()
 	})
 
 	test('Shortcut', () => {
@@ -35,29 +35,29 @@ describe('Option', () => {
 		expect(option.isValueRequired()).toBeFalsy()
 		expect(option.isValueOptional()).toBeFalsy()
 
-		option = new Option('foo', 'f', undefined, undefined)
+		option = new Option('foo', 'f', undefined)
 		expect(option.acceptValue()).toBeFalsy()
 		expect(option.isValueRequired()).toBeFalsy()
 		expect(option.isValueOptional()).toBeFalsy()
 
-		option = new Option('foo', 'f', undefined, OptionMode.none)
+		option = new Option('foo', 'f', OptionMode.none)
 		expect(option.acceptValue()).toBeFalsy()
 		expect(option.isValueRequired()).toBeFalsy()
 		expect(option.isValueOptional()).toBeFalsy()
 
-		option = new Option('foo', 'f', undefined, OptionMode.required)
+		option = new Option('foo', 'f', OptionMode.required)
 		expect(option.acceptValue()).toBeTruthy()
 		expect(option.isValueRequired()).toBeTruthy()
 		expect(option.isValueOptional()).toBeFalsy()
 
-		option = new Option('foo', 'f', undefined, OptionMode.optional)
+		option = new Option('foo', 'f', OptionMode.optional)
 		expect(option.acceptValue()).toBeTruthy()
 		expect(option.isValueRequired()).toBeFalsy()
 		expect(option.isValueOptional()).toBeTruthy()
 	})
 
 	test('InvalidModes', () => {
-		expect(() => new Option('foo', 'f', undefined, -1)).toThrow()
+		expect(() => new Option('foo', 'f', -1)).toThrow()
 	})
 
 	test('EmptyNameIsInvalid', () => {
@@ -73,78 +73,78 @@ describe('Option', () => {
 	})
 
 	test('IsArray', () => {
-		option = new Option('foo', undefined, undefined, OptionMode.optional | OptionMode.isArray)
+		option = new Option('foo', undefined, OptionMode.optional | OptionMode.isArray)
 		expect(option.isArray()).toBeTruthy()
 
-		option = new Option('foo', undefined, undefined, OptionMode.none)
+		option = new Option('foo', undefined, OptionMode.none)
 		expect(option.isArray()).toBeFalsy()
 	})
 
 	test('GetDescription', () => {
-		option = new Option('foo', 'f', 'Some description')
+		option = new Option('foo', 'f', undefined, 'Some description')
 		expect(option.getDescription()).toBe('Some description')
 	})
 
 	test('GetDefault', () => {
-		option = new Option('foo', undefined, undefined, OptionMode.optional, 'default')
+		option = new Option('foo', undefined, OptionMode.optional, undefined, 'default')
 		expect(option.getDefault()).toBe('default')
 
-		option = new Option('foo', undefined, undefined, OptionMode.required, 'default')
+		option = new Option('foo', undefined, OptionMode.required, undefined, 'default')
 		expect(option.getDefault()).toBe('default')
 
-		option = new Option('foo', undefined, undefined, OptionMode.required)
+		option = new Option('foo', undefined, OptionMode.required)
 		expect(option.getDefault()).toBe(undefined)
 
-		option = new Option('foo', undefined, undefined, OptionMode.optional | OptionMode.isArray)
+		option = new Option('foo', undefined, OptionMode.optional | OptionMode.isArray)
 		expect(option.getDefault()).toEqual([])
 
-		option = new Option('foo', undefined, undefined, OptionMode.none)
+		option = new Option('foo', undefined, OptionMode.none)
 		expect(option.getDefault()).toBe(false)
 	})
 
 	test('SetDefault', () => {
-		option = new Option('foo', undefined, undefined, OptionMode.required, 'default')
+		option = new Option('foo', undefined, OptionMode.required, 'default')
 		option.setDefault(null)
 		expect(option.getDefault()).toBe(null)
 		option.setDefault('another')
 		expect(option.getDefault()).toBe('another')
 
-		option = new Option('foo', undefined, undefined, OptionMode.required | OptionMode.isArray)
+		option = new Option('foo', undefined, OptionMode.required | OptionMode.isArray)
 		option.setDefault([1, 2])
 		expect(option.getDefault()).toEqual([1, 2])
 	})
 
 	test('DefaultValueWithValueNoneMode', () => {
-		option = new Option('foo', 'f', undefined, OptionMode.none)
+		option = new Option('foo', 'f', OptionMode.none)
 
 		expect(() => option.setDefault('default')).toThrow()
 	})
 
 	test('DefaultValueWithIsArrayMode', () => {
-		option = new Option('foo', 'f', undefined, OptionMode.optional | OptionMode.isArray)
+		option = new Option('foo', 'f', OptionMode.optional | OptionMode.isArray)
 
 		expect(() => option.setDefault('default')).toThrow()
 	})
 
 	test('Equals', () => {
-		option = new Option('foo', 'f', 'Some description')
-		let option2 = new Option('foo', 'f', 'Alternative description')
+		option = new Option('foo', 'f', undefined, 'Some description')
+		let option2 = new Option('foo', 'f', undefined, 'Alternative description')
 		expect(option.equals(option2)).toBeTruthy()
 
-		option = new Option('foo', 'f', 'Some description', OptionMode.optional)
-		option2 = new Option('foo', 'f', 'Some description', OptionMode.optional, true)
+		option = new Option('foo', 'f', OptionMode.optional, 'Some description')
+		option2 = new Option('foo', 'f', OptionMode.optional, 'Some description', true)
 		expect(option.equals(option2)).toBeFalsy()
 
-		option = new Option('foo', 'f', 'Some description')
-		option2 = new Option('bar', 'f', 'Some description')
+		option = new Option('foo', 'f', undefined, 'Some description')
+		option2 = new Option('bar', 'f', undefined, 'Some description')
 		expect(option.equals(option2)).toBeFalsy()
 
-		option = new Option('foo', 'f', 'Some description')
-		option2 = new Option('foo', '', 'Some description')
+		option = new Option('foo', 'f', undefined, 'Some description')
+		option2 = new Option('foo', '', undefined, 'Some description')
 		expect(option.equals(option2)).toBeFalsy()
 
-		option = new Option('foo', 'f', 'Some description')
-		option2 = new Option('foo', 'f', 'Some description', OptionMode.optional)
+		option = new Option('foo', 'f', undefined, 'Some description')
+		option2 = new Option('foo', 'f', OptionMode.optional, 'Some description')
 		expect(option.equals(option2)).toBeFalsy()
 	})
 })

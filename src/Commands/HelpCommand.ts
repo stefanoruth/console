@@ -6,7 +6,7 @@ export class HelpCommand extends Command {
 	protected name = 'help'
 	protected description = 'Displays help for a command'
 	protected command: Command | null = null
-	protected signature = new Signature([new Argument('command_name', 'The command name', 'help', ArgumentMode.optional)])
+	protected signature = new Signature([new Argument('command_name', ArgumentMode.optional, 'The command name', 'help')])
 
 	async handle() {
 		if (this.command === null) {

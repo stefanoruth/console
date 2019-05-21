@@ -288,18 +288,19 @@ export class Application {
 	 */
 	getSignature() {
 		return new Signature([
-			new Argument('command', 'The command to execute'),
-			new Option('--help', '-h', 'Display this help message'),
-			new Option('--quiet', '-q', 'Do not output any message'),
+			new Argument('command', undefined, 'The command to execute'),
+			new Option('--help', '-h', undefined, 'Display this help message'),
+			new Option('--quiet', '-q', undefined, 'Do not output any message'),
+			new Option('--version', '-V', undefined, 'Display this application version'),
 			// new Option(
 			// 	'--verbose',
 			// 	'-v|vv|vvv',
+			// 	undefined,
 			// 	'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
 			// ),
-			new Option('--version', '-V', 'Display this application version'),
-			// new Option('--ansi', '', 'Force ANSI output'),
-			// new Option('--no-ansi', '', 'Disable ANSI output'),
-			// new Option('--no-interaction', '-n', 'Do not ask any interactive question'),
+			// new Option('--ansi', '', undefined, 'Force ANSI output'),
+			// new Option('--no-ansi', '', undefined, 'Disable ANSI output'),
+			// new Option('--no-interaction', '-n', undefined, 'Do not ask any interactive question'),
 		])
 	}
 }

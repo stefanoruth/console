@@ -6,17 +6,28 @@ export enum ArgumentMode {
 	isArray = 4,
 }
 
+type Mode = keyof typeof ArgumentMode
+
 export class Argument<T = any> {
 	protected mode: ArgumentMode
 
-	constructor(protected name: string, protected description?: string, protected defaultValue?: T, mode?: ArgumentMode) {
+	constructor(
+		protected name: string,
+		mode?: ArgumentMode | Mode,
+		protected description?: string,
+		protected defaultValue?: T
+	) {
 		if (typeof mode === 'undefined') {
 			mode = ArgumentMode.optional
 		} else if (mode > 7 || mode < 1) {
 			throw new InvalidArgumentException(`Argument mode "${mode}" is not valid.`)
 		}
 
-		this.mode = mode
+		if (typeof mode === 'string') {
+			this.mode = ArgumentMode[mode]
+		} else {
+			this.mode = mode
+		}
 	}
 
 	/**
