@@ -35,7 +35,7 @@ export class Input {
 		let token: string | undefined = this.parsed.shift()
 
 		while (token !== undefined) {
-			// console.log('parse', token)
+			// console.log('parse', token.length, token)
 
 			if (parseOptions && token === '') {
 				this.parseArgument(token)
@@ -76,7 +76,7 @@ export class Input {
 	 */
 	protected parseShortOptionSet(name: string) {
 		const len = name.length
-
+		// console.log('parseShortOptionSet', name, len)
 		for (let i = 0; i < len; i++) {
 			if (!this.signature.hasShortcut(name[i])) {
 				throw new Error(`The "-${name[i]}" option does not exist.`)
@@ -97,9 +97,11 @@ export class Input {
 	protected parseLongOption(token: string) {
 		const name = token.substr(2)
 		const pos = name.indexOf('=')
+		// console.log('parseLongOption', token, name, pos)
 
 		if (pos !== -1) {
 			const value = name.substr(pos + 1)
+			// console.log(value)
 			if (value.length === 0) {
 				this.parsed.unshift(value)
 			}
@@ -130,8 +132,6 @@ export class Input {
 		} else {
 			const all = this.signature.getArguments()
 
-			console.log(all)
-
 			if (all.length) {
 				throw new Error(`Too many arguments, expected arguments "${all.map(a => a.getName()).join('" "')}".`)
 			}
@@ -154,6 +154,7 @@ export class Input {
 	 * Adds a long option value.
 	 */
 	protected addLongOption(name: string, value: any) {
+		// console.log('addLongOption', name, value)
 		if (!this.signature.hasOption(name)) {
 			throw new Error(`The "--${name}" option does not exist.`)
 		}
@@ -163,27 +164,35 @@ export class Input {
 			throw new Error(`The "--${name}" option does not accept a value.`)
 		}
 
-		// if (\in_array($value, ['', null], true) && $option -> acceptValue() && \count($this -> parsed)) {
-		//     // if option accepts an optional or mandatory argument
-		//     // let's see if there is one provided
-		//     $next = array_shift($this -> parsed);
-		//     if ((isset($next[0]) && '-' !== $next[0]) || \in_array($next, ['', null], true)) {
-		//         $value = $next;
-		//     } else {
-		//         array_unshift($this -> parsed, $next);
-		//     }
-		// }
+		if (['', null].includes(value) && option.acceptValue() && this.parsed.length) {
+			// if option accepts an optional or mandatory argument
+			// let's see if there is one provided
+			const next = this.parsed.shift()
+
+			if (next !== undefined) {
+				if ((next[0] && next[0] !== '-') || ['', null].includes(next)) {
+					value = next
+				} else {
+					this.parsed.unshift(next)
+				}
+			}
+		}
 
 		if (value === null) {
 			if (option.isValueRequired()) {
 				throw new Error(`The "--${name}" option requires a value.`)
 			}
+
 			if (!option.isArray() && !option.isValueOptional()) {
 				value = true
 			}
 		}
 
 		if (option.isArray()) {
+			if (typeof this.options[name] === 'undefined') {
+				this.options[name] = []
+			}
+
 			const optionValues = this.options[name]
 
 			if (optionValues instanceof Array) {
@@ -209,13 +218,14 @@ export class Input {
 				}
 				// If it's a long option, consider that everything after "--" is the option name.
 				// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
-
 				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
-				const shortcutName = this.signature.shortcutToName(name)
 
 				if (!this.options[name] && !this.signature.hasShortcut(name)) {
 					// noop
-				} else if (this.options[name] || (this.options[shortcutName] && this.tokens[i + 1] === this.options[name])) {
+				} else if (
+					this.options[name] ||
+					(this.options[this.signature.shortcutToName(name)] && this.tokens[i + 1] === this.options[name])
+				) {
 					isOption = true
 				}
 
@@ -270,8 +280,6 @@ export class Input {
 		return this.tokens
 			.map(token => {
 				const match = /{^(-[^=]+=)(.+)}/g.exec(token)
-
-				console.log(match)
 
 				if (match) {
 					return match[0] + this.escapeToken(match[1])

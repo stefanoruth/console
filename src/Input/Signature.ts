@@ -242,6 +242,7 @@ export class Signature {
 	 * Returns the InputOption name given a shortcut.
 	 */
 	shortcutToName(shortcut: string): string {
+		console.log(shortcut, this.shortcuts)
 		if (!this.shortcuts[shortcut]) {
 			throw new InvalidArgumentException(`The "-${shortcut}" option does not exist.`)
 		}

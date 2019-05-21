@@ -48,18 +48,15 @@ export class Option<T = any> {
 
 		if (!mode) {
 			mode = OptionMode.none
+		} else if (typeof mode === 'string') {
+			mode = OptionMode[mode]
 		} else if (mode > 15 || mode < 1) {
 			throw new InvalidArgumentException(`Option mode "${mode}" is not valid.`)
 		}
 
 		this.name = name
 		this.shortcut = shortcut
-
-		if (typeof mode === 'string') {
-			this.mode = OptionMode[mode]
-		} else {
-			this.mode = mode
-		}
+		this.mode = mode
 
 		if (this.isArray() && !this.acceptValue()) {
 			throw new InvalidArgumentException(

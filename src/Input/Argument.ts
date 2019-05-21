@@ -19,15 +19,13 @@ export class Argument<T = any> {
 	) {
 		if (typeof mode === 'undefined') {
 			mode = ArgumentMode.optional
+		} else if (typeof mode === 'string') {
+			mode = ArgumentMode[mode]
 		} else if (mode > 7 || mode < 1) {
 			throw new InvalidArgumentException(`Argument mode "${mode}" is not valid.`)
 		}
 
-		if (typeof mode === 'string') {
-			this.mode = ArgumentMode[mode]
-		} else {
-			this.mode = mode
-		}
+		this.mode = mode
 	}
 
 	/**
