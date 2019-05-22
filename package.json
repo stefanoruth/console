@@ -13,7 +13,7 @@
 		"build": "tsc",
 		"watch": "tsc --watch",
 		"test": "jest --verbose=false",
-		"test:watch": "yarn test --watch",
+		"test:watch": "yarn test --watchAll",
 		"test:coverage": "yarn test --collectCoverage=true",
 		"lint": "tslint -c ./tslint.json ./src/*"
 	},
