@@ -16,3 +16,6 @@
 - [ ] Input Parser
 - [ ] EventDispatcher
 - [ ] Events
+- [ ] Question Output
+- [ ] Confirm Outout
+- [ ] Automatic command suggestion
