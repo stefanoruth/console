@@ -11,7 +11,7 @@ function initializeArguments() {
 	foo = new Argument('foo')
 	bar = new Argument('bar')
 	foo1 = new Argument('foo')
-	foo2 = new Argument('foo2', undefined, ArgumentMode.required)
+	foo2 = new Argument('foo2', ArgumentMode.required)
 }
 
 function initializeOptions() {
