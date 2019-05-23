@@ -101,7 +101,7 @@ export class Input {
 
 		if (pos !== -1) {
 			const value = name.substr(pos + 1)
-			// console.log(value)
+			// console.log(value, value.length)
 			if (value.length === 0) {
 				this.parsed.unshift(value)
 			}
@@ -154,11 +154,12 @@ export class Input {
 	 * Adds a long option value.
 	 */
 	protected addLongOption(name: string, value: any) {
-		// console.log('addLongOption', name, value)
+		console.log('addLongOption', name, value)
 		if (!this.signature.hasOption(name)) {
 			throw new Error(`The "--${name}" option does not exist.`)
 		}
 		const option = this.signature.getOption(name)
+		console.log(option)
 
 		if (value !== null && !option.acceptValue()) {
 			throw new Error(`The "--${name}" option does not accept a value.`)
@@ -250,27 +251,34 @@ export class Input {
 	 * when multiple flags are combined in the same option.
 	 */
 	getParameterOption(values: string | string[], defaultValue: any = false, onlyParams: boolean = false) {
-		// $values = (array) $values;
-		// $tokens = $this -> tokens;
-		// while (0 < \count($tokens)) {
-		//     $token = array_shift($tokens);
-		//     if ($onlyParams && '--' === $token) {
-		//         return $default;
-		//     }
-		//     foreach($values as $value) {
-		//         if ($token === $value) {
-		//             return array_shift($tokens);
-		//         }
-		//         // Options with values:
-		//         //   For long options, test for '--option=' at beginning
-		//         //   For short options, test for '-o' at beginning
-		//         $leading = 0 === strpos($value, '--') ? $value.'=' : $value;
-		//         if ('' !== $leading && 0 === strpos($token, $leading)) {
-		//             return substr($token, \strlen($leading));
-		//         }
-		//     }
-		// }
-		// return $default;
+		values = values instanceof Array ? values : [values]
+
+		const tokens = [...this.tokens]
+
+		while (tokens.length > 0) {
+			const token = tokens.shift()
+
+			if (onlyParams && token === '--') {
+				return defaultValue
+			}
+
+			for (const value of values) {
+				if (token === value) {
+					return tokens.shift()
+				}
+
+				// Options with values:
+				//   For long options, test for '--option=' at beginning
+				//   For short options, test for '-o' at beginning
+				const leading = value.indexOf('--') === 0 ? `${value}=` : value
+
+				if (leading !== '' && token && token.indexOf(leading) === 0) {
+					return token.substr(leading.length)
+				}
+			}
+		}
+
+		return defaultValue
 	}
 
 	/**

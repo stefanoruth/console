@@ -266,8 +266,79 @@ describe('Input', () => {
 		expect(input.getArguments()).toEqual({ file: '-' })
 	})
 
-	test('GetParameterOptionEqualSign', () => {
-		//
+	test.only('GetParameterOptionEqualSign', () => {
+		const tests = [
+			{
+				args: ['foo:bar'],
+				key: '-e',
+				only: false,
+				expect: 'default',
+			},
+			{
+				args: ['foo:bar', '-e', 'dev'],
+				key: '-e',
+				only: false,
+				expect: 'dev',
+			},
+			{
+				args: ['foo:bar', '--env=dev'],
+				key: '--env',
+				only: false,
+				expect: 'dev',
+			},
+			{
+				args: ['foo:bar', '-e', 'dev'],
+				key: ['-e', '--env'],
+				only: false,
+				expect: 'dev',
+			},
+			{
+				args: ['foo:bar', '--env=dev'],
+				key: ['-e', '--env'],
+				only: false,
+				expect: 'dev',
+			},
+			{
+				args: ['foo:bar', '--env=dev', '--en=1'],
+				key: ['--en'],
+				only: false,
+				expect: '1',
+			},
+			{
+				args: ['foo:bar', '--env=dev', '', '--en=1'],
+				key: ['--en'],
+				only: false,
+				expect: '1',
+			},
+			{
+				args: ['foo:bar', '--env', 'val'],
+				key: '--env',
+				only: false,
+				expect: 'val',
+			},
+			{
+				args: ['--env', 'val', '--dummy'],
+				key: '--env',
+				only: false,
+				expect: 'val',
+			},
+			{
+				args: ['--', '--env=dev'],
+				key: '--env',
+				only: false,
+				expect: 'dev',
+			},
+			{
+				args: ['--', '--env=dev'],
+				key: '--env',
+				only: true,
+				expect: 'default',
+			},
+		]
+
+		tests.forEach(test => {
+			expect(getInput(test.args).getParameterOption(test.key, 'default', test.only)).toEqual(test.expect)
+		})
 	})
 
 	test('ParseSingleDashAsArgument', () => {
