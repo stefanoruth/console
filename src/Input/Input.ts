@@ -154,12 +154,12 @@ export class Input {
 	 * Adds a long option value.
 	 */
 	protected addLongOption(name: string, value: any) {
-		console.log('addLongOption', name, value)
+		// console.log('addLongOption', name, value)
 		if (!this.signature.hasOption(name)) {
 			throw new Error(`The "--${name}" option does not exist.`)
 		}
 		const option = this.signature.getOption(name)
-		console.log(option)
+		// console.log(option)
 
 		if (value !== null && !option.acceptValue()) {
 			throw new Error(`The "--${name}" option does not accept a value.`)
