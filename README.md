@@ -4,7 +4,7 @@
 
 - [ ] Command template
 - [X] Signature
-- [ ] Options (`command -s --long --options="available"`)
+- [X] Options (`command -s --long --options="available"`)
 - [X] Arguments (`command args send to command`)
 - [ ] Text Output
 - [ ] Color Output

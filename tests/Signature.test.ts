@@ -135,13 +135,19 @@ describe('Signature', () => {
 		signature = new Signature()
 
 		signature.addArgument(a.foo2)
-		// expect(signature.getArgumentRequiredCount()).toBe(1)
+		expect(signature.getArgumentRequiredCount()).toBe(1)
 		signature.addArgument(a.foo)
-		// expect(signature.getArgumentRequiredCount()).toBe(1)
+		expect(signature.getArgumentRequiredCount()).toBe(1)
 	})
 
 	test('GetArgumentCount', () => {
-		//
+		initializeArguments()
+		signature = new Signature()
+
+		signature.addArgument(a.foo2)
+		expect(signature.getArgumentCount()).toBe(1)
+		signature.addArgument(a.foo)
+		expect(signature.getArgumentCount()).toBe(2)
 	})
 
 	test('GetArgumentDefaults', () => {
@@ -151,10 +157,14 @@ describe('Signature', () => {
 			new Argument('foo3', ArgumentMode.optional | ArgumentMode.isArray),
 		])
 
-		// expect(signature.getArgumentDefaults()).toEqual({ foo1: null, foo2: 'default', foo3: [] })
+		expect(signature.getArgumentDefaults()).toEqual({ foo1: undefined, foo2: 'default', foo3: [] })
 
 		signature = new Signature([new Argument('foo4', ArgumentMode.optional | ArgumentMode.isArray, '', [1, 2])])
 		expect(signature.getArgumentDefaults()).toEqual({ foo4: [1, 2] })
+	})
+
+	test('SetOptions', () => {
+		//
 	})
 
 	test('GetShortSynopsis', () => {

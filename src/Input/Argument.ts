@@ -71,7 +71,11 @@ export class Argument<T = any> {
 	/**
 	 * Returns the default value.
 	 */
-	getDefault(): T | undefined {
+	getDefault(): T | undefined | any {
+		if (this.isArray() && this.defaultValue === undefined) {
+			return []
+		}
+
 		return this.defaultValue
 	}
 

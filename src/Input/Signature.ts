@@ -251,6 +251,20 @@ export class Signature {
 	}
 
 	/**
+	 * Returns the number of InputArguments.
+	 */
+	getArgumentCount(): number {
+		return this.hasAnArrayArgument ? Infinity : this.getArguments().length
+	}
+
+	/**
+	 * Returns the number of required InputArguments.
+	 */
+	getArgumentRequiredCount(): number {
+		return this.requiredCount
+	}
+
+	/**
 	 * Gets the synopsis.
 	 */
 	getSynopsis(short: boolean = false): string {
