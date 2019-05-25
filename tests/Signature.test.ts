@@ -1,4 +1,4 @@
-import { Signature, Option, Argument, ArgumentMode } from '../src/Input'
+import { Signature, Option, Argument, ArgumentMode, OptionMode } from '../src/Input'
 
 let signature: Signature
 const a: { [k: string]: Argument } = {}
@@ -164,7 +164,185 @@ describe('Signature', () => {
 	})
 
 	test('SetOptions', () => {
-		//
+		initializeOptions()
+
+		signature = new Signature([o.foo])
+		expect(signature.getOptions()).toEqual([o.foo])
+		signature.setOptions([o.bar])
+		expect(signature.getOptions()).toEqual([o.bar])
+	})
+
+	test('SetOptionsClearsOptions', () => {
+		initializeOptions()
+
+		signature = new Signature([o.foo])
+		signature.setOptions([o.bar])
+
+		expect(() => {
+			signature.getOptionForShortcut('f')
+		}).toThrow('The "-f" option does not exist.')
+	})
+
+	test('AddOptions', () => {
+		initializeOptions()
+
+		signature = new Signature([o.foo])
+		expect(signature.getOptions()).toEqual([o.foo])
+		signature.addOptions([o.bar])
+		expect(signature.getOptions()).toEqual([o.foo, o.bar])
+	})
+
+	test('AddOption', () => {
+		initializeOptions()
+
+		signature = new Signature()
+		signature.addOption(o.foo)
+		expect(signature.getOptions()).toEqual([o.foo])
+		signature.addOption(o.bar)
+		expect(signature.getOptions()).toEqual([o.foo, o.bar])
+	})
+
+	test('AddDuplicateOption', () => {
+		initializeOptions()
+		signature = new Signature()
+
+		expect(() => {
+			signature.addOption(o.foo)
+			signature.addOption(o.foo2)
+		}).toThrow('An option named "foo" already exists.')
+	})
+
+	test('AddDuplicateShortcutOption', () => {
+		initializeOptions()
+		signature = new Signature()
+
+		expect(() => {
+			signature.addOption(o.foo)
+			signature.addOption(o.foo1)
+		}).toThrow('An option with shortcut "f" already exists.')
+	})
+
+	test('GetOption', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(signature.getOption('foo')).toBe(o.foo)
+	})
+
+	test('GetInvalidOption', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(() => signature.getOption('bar')).toThrow('The "--bar" option does not exist.')
+	})
+
+	test('HasOption', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(signature.hasOption('foo')).toBeTruthy()
+		expect(signature.hasOption('bar')).toBeFalsy()
+	})
+
+	test('HasShortcut', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(signature.hasShortcut('f')).toBeTruthy()
+		expect(signature.hasShortcut('b')).toBeFalsy()
+	})
+
+	test('GetOptionForShortcut', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(signature.getOptionForShortcut('f')).toEqual(o.foo)
+	})
+
+	test('GetOptionForMultiShortcut', () => {
+		initializeOptions()
+		signature = new Signature([o.multi])
+
+		expect(signature.getOptionForShortcut('m')).toEqual(o.multi)
+		expect(signature.getOptionForShortcut('mmm')).toEqual(o.multi)
+	})
+
+	test('GetOptionForInvalidShortcut', () => {
+		initializeOptions()
+		signature = new Signature([o.foo])
+
+		expect(() => signature.getOptionForShortcut('l')).toThrow('The "-l" option does not exist.')
+	})
+
+	test('GetOptionDefaults', () => {
+		signature = new Signature([
+			new Option('foo1', undefined, 'none'),
+			new Option('foo2', undefined, 'required'),
+			new Option('foo3', undefined, 'required', undefined, 'default'),
+			new Option('foo4', undefined, 'optional'),
+			new Option('foo5', undefined, 'optional', undefined, 'default'),
+			new Option('foo6', undefined, OptionMode.optional | OptionMode.isArray),
+			new Option('foo7', undefined, OptionMode.optional | OptionMode.isArray, undefined, [1, 2]),
+		])
+
+		expect(signature.getOptionDefaults()).toEqual({
+			foo1: false,
+			foo2: undefined,
+			foo3: 'default',
+			foo4: undefined,
+			foo5: 'default',
+			foo6: [],
+			foo7: [1, 2],
+		})
+	})
+
+	test('GetSynopsis', () => {
+		const tests = [
+			{
+				signature: [new Option('foo')],
+				synopsis: '[--foo]',
+			},
+			{
+				signature: [new Option('foo', 'f')],
+				synopsis: '[-f|--foo]',
+			},
+			{
+				signature: [new Option('foo', 'f', 'required')],
+				synopsis: '[-f|--foo FOO]',
+			},
+			{
+				signature: [new Option('foo', 'f', 'optional')],
+				synopsis: '[-f|--foo [FOO]]',
+			},
+			{
+				signature: [new Argument('foo', 'required')],
+				synopsis: '<foo>',
+			},
+			{
+				signature: [new Argument('foo')],
+				synopsis: '[<foo>]',
+			},
+			{
+				signature: [new Argument('foo'), new Argument('bar')],
+				synopsis: '[<foo> [<bar>]]',
+			},
+			{
+				signature: [new Argument('foo', 'isArray')],
+				synopsis: '[<foo>...]',
+			},
+			{
+				signature: [new Argument('foo', ArgumentMode.required | ArgumentMode.isArray)],
+				synopsis: '<foo>...',
+			},
+			{
+				signature: [new Option('foo'), new Argument('foo', 'required')],
+				synopsis: '[--foo] [--] <foo>',
+			},
+		]
+
+		tests.forEach(test => {
+			expect(new Signature(test.signature).getSynopsis()).toBe(test.synopsis)
+		})
 	})
 
 	test('GetShortSynopsis', () => {
