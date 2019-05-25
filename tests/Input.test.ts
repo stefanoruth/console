@@ -1,4 +1,5 @@
 import { Input, Signature, Option, Argument, OptionMode } from '../src/Input'
+import { escapeshellarg } from '../src/helpers'
 
 const reset = [...process.argv]
 let input: Input
@@ -200,11 +201,11 @@ describe('Input', () => {
 		input = getInput(['--foo', 'fooval', 'bar'], [new Option('foo', 'f', 'optional'), new Argument('arg')])
 		expect(input.getFirstArgument()).toBe('bar')
 
-		// input = getInput(
-		// 	['-bf', 'fooval', 'argval'],
-		// 	[new Option('bar', 'b', 'none'), new Option('foo', 'f', 'optional'), new Argument('arg')]
-		// )
-		// expect(input.getFirstArgument()).toBe('argval')
+		input = getInput(
+			['-bf', 'fooval', 'argval'],
+			[new Option('bar', 'b', 'none'), new Option('foo', 'f', 'optional'), new Argument('arg')]
+		)
+		expect(input.getFirstArgument()).toBe('argval')
 	})
 
 	test('HasParameterOption', () => {
@@ -254,16 +255,16 @@ describe('Input', () => {
 		input = getInput(['-edev'])
 		expect(input.hasParameterOption(['-e', ''])).toBeTruthy()
 		expect(input.hasParameterOption(['-m', ''])).toBeFalsy()
-		// expect(input.getParameterOption(['-e', ''])).toEqual('dev')
+		expect(input.getParameterOption(['-e', ''])).toEqual('dev')
 		expect(input.getParameterOption(['-m', ''])).toBeFalsy()
 	})
 
 	test('ToString', () => {
-		// input = getInput(['-f', 'foo'], [new Argument('file')])
-		// expect(input.toString()).toEqual({ file: '-' })
+		input = getInput(['-f', 'foo'])
+		expect(input.toString()).toBe('-f foo')
 
-		input = getInput(['-'], [new Argument('file')])
-		expect(input.getArguments()).toEqual({ file: '-' })
+		input = getInput(['-f', '--bar=foo', 'a b c d', "A\nB'C"])
+		expect(input.toString()).toBe(`-f --bar=foo ${escapeshellarg('a b c d')} ${escapeshellarg("A\nB'C")}`)
 	})
 
 	test('GetParameterOptionEqualSign', () => {
@@ -347,13 +348,13 @@ describe('Input', () => {
 	})
 
 	test('ParseOptionWithValueOptionalGivenEmptyAndRequiredArgument', () => {
-		// input = getInput(['--foo=', 'bar'], [new Option('foo', 'f', 'optional'), new Argument('name', 'required')])
-		// expect(input.getOptions()).toEqual({ foo: null })
-		// expect(input.getArguments()).toEqual({ name: 'bar' })
+		input = getInput(['--foo=', 'bar'], [new Option('foo', 'f', 'optional'), new Argument('name', 'required')])
+		expect(input.getArguments()).toEqual({ name: 'bar' })
+		expect(input.getOptions()).toEqual({ foo: null })
 
 		input = getInput(['--foo=0', 'bar'], [new Option('foo', 'f', 'optional'), new Argument('name', 'required')])
-		expect(input.getOptions()).toEqual({ foo: '0' })
 		expect(input.getArguments()).toEqual({ name: 'bar' })
+		expect(input.getOptions()).toEqual({ foo: '0' })
 	})
 
 	test('ParseOptionWithValueOptionalGivenEmptyAndOptionalArgument', () => {

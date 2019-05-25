@@ -1,5 +1,6 @@
 import { Signature } from './Signature'
 import { InvalidOptionException, InvalidArgumentException } from '../Exceptions'
+import { escapeshellarg } from '../helpers'
 
 export class Input {
 	protected tokens: string[] = []
@@ -214,18 +215,18 @@ export class Input {
 			const token = this.tokens[i]
 
 			if (token && token[0] === '-') {
-				if (token.indexOf('=') !== -1 || !this.tokens[i + 1]) {
+				if (token.indexOf('=') !== -1 || typeof this.tokens[i + 1] === 'undefined') {
 					continue
 				}
 				// If it's a long option, consider that everything after "--" is the option name.
 				// Otherwise, use the last char (if it's a short option set, only the last one can take a value with space separator)
-				const name = token[1] === '-' ? token.substr(2) : token.substr(-1)
+				let name = token[1] === '-' ? token.substr(2) : token.substr(-1)
 
-				if (!this.options[name] && !this.signature.hasShortcut(name)) {
+				if (typeof this.options[name] === 'undefined' && !this.signature.hasShortcut(name)) {
 					// noop
 				} else if (
 					this.options[name] ||
-					(this.options[this.signature.shortcutToName(name)] && this.tokens[i + 1] === this.options[name])
+					(this.options[(name = this.signature.shortcutToName(name))] && this.tokens[i + 1] === this.options[name])
 				) {
 					isOption = true
 				}
@@ -306,7 +307,7 @@ export class Input {
 	 * Escapes a token through escapeshellarg if it contains unsafe chars.
 	 */
 	protected escapeToken(token: string): string {
-		return /{^[\w-]+$}/.test(token) ? token : '!escapeshellarg!' + token
+		return /{^[\w-]+$}/.test(token) ? token : escapeshellarg(token)
 	}
 
 	/**
