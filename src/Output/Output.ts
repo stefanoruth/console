@@ -1,7 +1,7 @@
 import rl from 'readline'
 import { Color, CliColor } from './CliColor'
 import { ProgressBar } from './ProgressBar'
-import { Table } from './Table'
+import { Table } from './Table/Table'
 import { Question } from './Question/Question'
 import { Writer } from './Writer'
 

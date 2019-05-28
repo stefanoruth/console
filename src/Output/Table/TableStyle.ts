@@ -1,6 +1,13 @@
-import { Output } from './Output'
+enum PaddingType {
+	right,
+	left,
+	both,
+}
 
-export class Table {
+export class TableStyle {
+	/**
+	 * Table design.
+	 */
 	protected style = {
 		paddingChar: ' ',
 		horizontalOutsideBorderChar: '-',
@@ -25,19 +32,6 @@ export class Table {
 		cellRowFormat: '%s',
 		cellRowContentFormat: ' %s ',
 		borderFormat: '%s',
-	}
-
-	constructor(protected output: Output) {}
-
-	setHeaders(columns?: object) {
-		//
-	}
-
-	setRows(rows: object[]) {
-		//
-	}
-
-	render() {
-		//
+		padType: PaddingType.right,
 	}
 }
