@@ -13,6 +13,6 @@ export class TableCommand extends Command {
 			{ id: 5 },
 		]
 
-		this.output.table(rows)
+		this.output.table(rows, ['#', 'MyName'])
 	}
 }

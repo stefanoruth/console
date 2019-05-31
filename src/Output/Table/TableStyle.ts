@@ -35,6 +35,10 @@ export class TableStyle {
 		padType: PaddingType.right,
 	}
 
+	getStyle() {
+		return this.style
+	}
+
 	pad(str: string, amount: number): string {
 		return ''
 	}

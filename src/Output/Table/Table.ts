@@ -2,6 +2,8 @@ import { Output } from '../Output'
 import { TableStyle } from './TableStyle'
 import { TableCell } from './TableCell'
 import { TableRow } from './TableRow'
+import { TableDivider } from './TableDivider'
+import { TableHeader } from './TableHeader'
 
 export class Table {
 	/**
@@ -48,7 +50,9 @@ export class Table {
 	 *     +---------------+-----------------------+------------------+
 	 */
 	render() {
-		//
+		const renderTable: string[] = new TableHeader(this.headers, [10, 12, 8], this.style).render()
+
+		this.output.writer.write(renderTable)
 	}
 
 	setHeaders(headers?: string[]) {
