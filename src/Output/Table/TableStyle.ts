@@ -1,4 +1,4 @@
-enum PaddingType {
+export enum PaddingType {
 	right,
 	left,
 	both,
@@ -33,5 +33,9 @@ export class TableStyle {
 		cellRowContentFormat: ' %s ',
 		borderFormat: '%s',
 		padType: PaddingType.right,
+	}
+
+	pad(str: string, amount: number): string {
+		return ''
 	}
 }

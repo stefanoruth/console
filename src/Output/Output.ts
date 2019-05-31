@@ -85,7 +85,7 @@ export class Output {
 	/**
 	 * Display a table on the console.
 	 */
-	table(rows: object[], columns?: object) {
+	table(rows: object[], columns?: string[]) {
 		const table = new Table(this)
 		table.setHeaders(columns)
 		table.setRows(rows)
