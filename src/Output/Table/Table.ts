@@ -50,4 +50,18 @@ export class Table {
 	render() {
 		//
 	}
+
+	setHeaders(headers?: string[]) {
+		if (headers) {
+			this.headers = headers
+		}
+
+		return this
+	}
+
+	setRows(rows: object[]) {
+		this.rows = rows
+
+		return this
+	}
 }
