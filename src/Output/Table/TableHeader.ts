@@ -22,9 +22,7 @@ export class TableHeader {
 				line += this.style.fillEmpty(width)
 			}
 
-			if (key + 1 !== this.columnWidths.length) {
-				line += this.style.verticalInsideBorderChar
-			}
+			line += this.style.columnDivider(key + 1 !== this.columnWidths.length)
 		})
 
 		return this.style.verticalOutsideBorderChar + line + this.style.verticalOutsideBorderChar

@@ -64,4 +64,11 @@ export class TableStyle implements TableStyleOptions {
 	fillEmpty(width: number): string {
 		return this.paddingChar.repeat(width)
 	}
+
+	/**
+	 * Check if there should be placed a column divider in the output.
+	 */
+	columnDivider(show: boolean): string {
+		return show ? this.verticalInsideBorderChar : ''
+	}
 }
