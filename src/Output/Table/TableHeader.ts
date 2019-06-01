@@ -1,24 +1,15 @@
 import { TableStyle } from './TableStyle'
+import { TableDivider } from './TableDivider'
 
 export class TableHeader {
 	constructor(protected headers: string[] = [], protected columnWidths: number[], protected style: TableStyle) {}
 
 	render(): string[] {
-		return [this.renderStart(), this.renderRow(), this.renderEnd()]
-	}
-
-	renderStart(): string {
-		let line = ''
-
-		this.columnWidths.forEach((width, key) => {
-			line += this.style.getStyle().horizontalOutsideBorderChar.repeat(width)
-
-			if (key + 1 !== this.columnWidths.length) {
-				line += this.style.getStyle().crossingTopMidChar
-			}
-		})
-
-		return this.style.getStyle().crossingTopLeftChar + line + this.style.getStyle().crossingTopRightChar + '\n'
+		return [
+			new TableDivider('headerTop', this.columnWidths, this.style).render(),
+			this.renderRow(),
+			new TableDivider('headerBottom', this.columnWidths, this.style).render(),
+		].map(line => line + '\n')
 	}
 
 	renderRow(): string {
@@ -26,34 +17,16 @@ export class TableHeader {
 
 		this.columnWidths.forEach((width, key) => {
 			if (this.headers[key]) {
-				line += ' ' + this.headers[key] + ' '.repeat(width - this.headers[key].length - 2) + ' '
+				line += this.style.pad(this.headers[key], width)
 			} else {
-				line += ' '.repeat(width)
+				line += this.style.fillEmpty(width)
 			}
 
 			if (key + 1 !== this.columnWidths.length) {
-				line += this.style.getStyle().verticalInsideBorderChar
+				line += this.style.verticalInsideBorderChar
 			}
 		})
 
-		return (
-			this.style.getStyle().verticalOutsideBorderChar + line + this.style.getStyle().verticalOutsideBorderChar + '\n'
-		)
-	}
-
-	renderEnd(): string {
-		let line = ''
-
-		this.columnWidths.forEach((width, key) => {
-			line += this.style.getStyle().horizontalInsideBorderChar.repeat(width)
-
-			if (key + 1 !== this.columnWidths.length) {
-				line += this.style.getStyle().crossingTopMidBottomChar
-			}
-		})
-
-		return (
-			this.style.getStyle().crossingTopLeftBottomChar + line + this.style.getStyle().crossingTopRightBottomChar + '\n'
-		)
+		return this.style.verticalOutsideBorderChar + line + this.style.verticalOutsideBorderChar
 	}
 }

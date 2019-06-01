@@ -9,7 +9,7 @@ export class TableCommand extends Command {
 			{ id: 1, name: 'Foo' },
 			{ id: 2, name: 'Bar' },
 			{ id: 3, name: 'Baz' },
-			{ id: 4, name: 'Foobar' },
+			{ id: 10, name: 'Foobar' },
 			{ id: 5 },
 		]
 
