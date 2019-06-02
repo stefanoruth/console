@@ -4,7 +4,7 @@ import { Application } from '../Application'
 import { Command } from '../Commands/Command'
 import { Option } from '../Input/Option'
 import { Signature } from '../Input/Signature'
-import { CliColor, Color } from './CliColor'
+import { Color, ColorName } from './Color'
 import { OutputFormatter } from './OutputFormatter'
 
 export interface DescriptorOptions {
@@ -14,7 +14,7 @@ export interface DescriptorOptions {
 
 export class Descriptor {
 	protected output?: Output
-	protected color: CliColor = new CliColor()
+	protected color: Color = new Color()
 
 	/**
 	 * Describes an object if supported.
@@ -46,7 +46,7 @@ export class Descriptor {
 	/**
 	 * Writes content to output.
 	 */
-	protected write(content: string, color?: Color) {
+	protected write(content: string, color?: ColorName) {
 		if (!this.output) {
 			throw new Error('Output has not yet been set.')
 		}

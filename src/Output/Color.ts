@@ -1,4 +1,4 @@
-export type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
+export type ColorName = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
 
 interface ColorDefinition {
 	set: string
@@ -13,7 +13,7 @@ function colorFn(set: number, unset: number = 0): ColorDefinition {
 	}
 }
 
-export class CliColor {
+export class Color {
 	protected foregroundColors: { [c: string]: ColorDefinition } = {
 		black: colorFn(30),
 		red: colorFn(31),
@@ -39,7 +39,7 @@ export class CliColor {
 	/**
 	 * Apply a set of color codes to the text string
 	 */
-	apply(text: string, color?: { text?: Color; bg?: Color }) {
+	apply(text: string, color?: { text?: ColorName; bg?: ColorName }) {
 		if (!color) {
 			return text
 		}

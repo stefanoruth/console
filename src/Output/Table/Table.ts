@@ -3,7 +3,7 @@ import { TableStyle } from './TableStyle'
 import { TableRow } from './TableRow'
 import { TableDivider } from './TableDivider'
 import { TableHeader } from './TableHeader'
-import { CliColor } from '../CliColor'
+import { Color } from '../Color'
 
 export class Table {
 	/**
@@ -34,12 +34,12 @@ export class Table {
 	/**
 	 * Append colors to the table.
 	 */
-	protected color: CliColor
+	protected color: Color
 
 	/**
 	 * Construct the table builder.
 	 */
-	constructor(output: Output, color: CliColor, style: TableStyle = new TableStyle()) {
+	constructor(output: Output, color: Color, style: TableStyle = new TableStyle()) {
 		this.output = output
 		this.color = color
 		this.style = style

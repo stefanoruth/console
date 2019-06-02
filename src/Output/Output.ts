@@ -1,17 +1,17 @@
 import rl from 'readline'
-import { Color, CliColor } from './CliColor'
+import { ColorName, Color } from './Color'
 import { ProgressBar } from './ProgressBar'
 import { Table } from './Table/Table'
 import { Question } from './Question/Question'
 import { Writer } from './Writer'
 
 export class Output {
-	constructor(public writer: Writer = new Writer(), protected color: CliColor = new CliColor()) {}
+	constructor(public writer: Writer = new Writer(), protected color: Color = new Color()) {}
 
 	/**
 	 * Write a line to the console.
 	 */
-	line(message: string, newLine: boolean = true, color?: Color) {
+	line(message: string, newLine: boolean = true, color?: ColorName) {
 		this.writer.write(this.color.apply(message, { text: color }), newLine)
 	}
 

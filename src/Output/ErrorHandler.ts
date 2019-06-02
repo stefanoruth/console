@@ -6,6 +6,8 @@ export class ErrorHandler {
 	render(e: Error) {
 		const message = e.message.trim()
 
+		this.output.error(message)
+
 		console.log(e.constructor.name)
 		console.log(message)
 		console.log('ErrorRender')

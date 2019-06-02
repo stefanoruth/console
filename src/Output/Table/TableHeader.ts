@@ -1,13 +1,13 @@
 import { TableStyle } from './TableStyle'
 import { TableDivider } from './TableDivider'
-import { CliColor } from '../CliColor'
+import { Color } from '../Color'
 
 export class TableHeader {
 	constructor(
 		protected headers: string[] = [],
 		protected columnWidths: number[],
 		protected style: TableStyle,
-		protected color: CliColor
+		protected color: Color
 	) {}
 
 	render(): string[] {
