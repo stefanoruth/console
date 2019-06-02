@@ -88,7 +88,7 @@ export class Application {
 	 * Runs the current application.
 	 * int 0 if everything went fine, or an error code
 	 */
-	async doRun(input: Input, output: Output): Promise<number> {
+	protected async doRun(input: Input, output: Output): Promise<number> {
 		let command: Command
 		if (true === input.hasParameterOption(['--version', '-V'], true)) {
 			output.success(this.getHelp())
@@ -154,7 +154,7 @@ export class Application {
 	/**
 	 * Returns a registered command by name or alias.
 	 */
-	get(name: string): Command {
+	protected get(name: string): Command {
 		this.init()
 
 		if (!this.has(name)) {
@@ -176,7 +176,7 @@ export class Application {
 	/**
 	 * Returns true if the command exists, false otherwise.
 	 */
-	has(name: string) {
+	protected has(name: string) {
 		this.init()
 
 		if (typeof this.commands[name] !== 'undefined') {
