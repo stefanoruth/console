@@ -52,7 +52,7 @@ export class TableDivider {
 		let line = ''
 
 		this.columnWidths.forEach((width, key) => {
-			line += style.fill.repeat(width)
+			line += style.fill.repeat(width + 2)
 
 			if (key + 1 !== this.columnWidths.length) {
 				// Column divider.

@@ -1,8 +1,14 @@
 import { TableStyle } from './TableStyle'
 import { TableDivider } from './TableDivider'
+import { CliColor } from '../CliColor'
 
 export class TableHeader {
-	constructor(protected headers: string[] = [], protected columnWidths: number[], protected style: TableStyle) {}
+	constructor(
+		protected headers: string[] = [],
+		protected columnWidths: number[],
+		protected style: TableStyle,
+		protected color: CliColor
+	) {}
 
 	render(): string[] {
 		return [
@@ -17,7 +23,7 @@ export class TableHeader {
 
 		this.columnWidths.forEach((width, key) => {
 			if (this.headers[key]) {
-				line += this.style.pad(this.headers[key], width)
+				line += this.color.apply(this.style.pad(this.headers[key], width), { text: 'green' })
 			} else {
 				line += this.style.fillEmpty(width)
 			}
@@ -25,6 +31,6 @@ export class TableHeader {
 			line += this.style.columnDivider(key + 1 !== this.columnWidths.length)
 		})
 
-		return this.style.verticalOutsideBorderChar + line + this.style.verticalOutsideBorderChar
+		return this.style.wrapRow(line)
 	}
 }

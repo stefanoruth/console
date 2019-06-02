@@ -1,19 +1,26 @@
 import { TableStyle } from './TableStyle'
 
 export class TableRow {
-	protected space: string
+	/**
+	 * Text string to render.
+	 */
 	protected line: string = ''
-	constructor(protected row: object, protected columnsWidth: number[], protected style: TableStyle) {
-		this.space = style.paddingChar
-	}
 
-	render() {
+	/**
+	 * Initialate a new row.
+	 */
+	constructor(protected row: object, protected columnsWidth: number[], protected style: TableStyle) {}
+
+	/**
+	 * Build the row.
+	 */
+	render(): string {
 		const keys = Object.keys(this.row)
 
 		this.columnsWidth.forEach((width, key) => {
 			if (!keys[key]) {
 				this.line += this.style.fillEmpty(width)
-				this.divide(key)
+				this.line += this.style.columnDivider(key + 1 !== this.columnsWidth.length)
 				return
 			}
 
@@ -21,22 +28,16 @@ export class TableRow {
 
 			if (!(this.row as any)[objectKey]) {
 				this.line += this.style.fillEmpty(width)
-				this.divide(key)
+				this.line += this.style.columnDivider(key + 1 !== this.columnsWidth.length)
 				return
 			}
 
 			const text: string = String((this.row as any)[objectKey])
 
 			this.line += this.style.pad(text, width)
-			this.divide(key)
+			this.line += this.style.columnDivider(key + 1 !== this.columnsWidth.length)
 		})
 
-		return this.style.verticalOutsideBorderChar + this.line + this.style.verticalOutsideBorderChar
-	}
-
-	protected divide(key: number) {
-		if (key + 1 !== this.columnsWidth.length) {
-			this.line += this.style.verticalInsideBorderChar
-		}
+		return this.style.wrapRow(this.line)
 	}
 }

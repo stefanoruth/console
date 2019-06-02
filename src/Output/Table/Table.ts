@@ -3,6 +3,7 @@ import { TableStyle } from './TableStyle'
 import { TableRow } from './TableRow'
 import { TableDivider } from './TableDivider'
 import { TableHeader } from './TableHeader'
+import { CliColor } from '../CliColor'
 
 export class Table {
 	/**
@@ -16,14 +17,9 @@ export class Table {
 	protected rows: object[] = []
 
 	/**
-	 * Number of columns cache.
-	 */
-	protected numberOfColumns?: number
-
-	/**
 	 * Table styles.
 	 */
-	protected style: TableStyle = new TableStyle()
+	protected style: TableStyle
 
 	/**
 	 * User set column widths.
@@ -31,9 +27,23 @@ export class Table {
 	protected columnWidths: number[] = []
 
 	/**
+	 * Render text to console.
+	 */
+	protected output: Output
+
+	/**
+	 * Append colors to the table.
+	 */
+	protected color: CliColor
+
+	/**
 	 * Construct the table builder.
 	 */
-	constructor(protected output: Output) {}
+	constructor(output: Output, color: CliColor, style: TableStyle = new TableStyle()) {
+		this.output = output
+		this.color = color
+		this.style = style
+	}
 
 	/**
 	 * Renders table to output.
@@ -49,9 +59,15 @@ export class Table {
 	 *     +---------------+-----------------------+------------------+
 	 */
 	render() {
-		this.columnWidths = [10, 12, 8]
+		this.calcWidths()
 
-		const table: string[] = new TableHeader(this.headers, this.columnWidths, this.style).render()
+		let headers = this.headers
+
+		if (headers.length === 0) {
+			headers = Object.keys(this.rows[0])
+		}
+
+		const table: string[] = new TableHeader(headers, this.columnWidths, this.style, this.color).render()
 
 		this.rows.forEach(row => {
 			table.push(new TableRow(row, this.columnWidths, this.style).render() + '\n')
@@ -62,6 +78,9 @@ export class Table {
 		this.output.writer.write(table)
 	}
 
+	/**
+	 * Set contents for the table header.
+	 */
 	setHeaders(headers?: string[]) {
 		if (headers) {
 			this.headers = headers
@@ -70,9 +89,27 @@ export class Table {
 		return this
 	}
 
+	/**
+	 * Set row contents.
+	 */
 	setRows(rows: object[]) {
 		this.rows = rows
 
 		return this
+	}
+
+	/**
+	 * Calculate the max witdh of each row
+	 */
+	protected calcWidths() {
+		const rows = [...this.rows, this.headers]
+
+		rows.forEach(row => {
+			Object.keys(row).forEach((field, key) => {
+				const width: number = (row as any)[field].toString().length
+
+				this.columnWidths[key] = Math.max.apply(null, [this.columnWidths[key] || 0, width])
+			})
+		})
 	}
 }

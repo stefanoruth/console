@@ -55,14 +55,28 @@ export class TableStyle implements TableStyleOptions {
 	 * Pad a text to fill the required space
 	 */
 	pad(value: string, width: number): string {
-		return this.paddingChar + value + this.paddingChar + this.paddingChar.repeat(width - value.length - 2)
+		const padLength = width - value.length
+		value = this.paddingChar + value + this.paddingChar
+
+		if (padLength > 0) {
+			return value + this.paddingChar.repeat(padLength)
+		}
+
+		return value
+	}
+
+	/**
+	 * Wrap the entire row in a outside table set.
+	 */
+	wrapRow(value: string) {
+		return this.verticalOutsideBorderChar + value + this.verticalOutsideBorderChar
 	}
 
 	/**
 	 * Fill a void with spaces
 	 */
 	fillEmpty(width: number): string {
-		return this.paddingChar.repeat(width)
+		return this.paddingChar.repeat(width + 2)
 	}
 
 	/**

@@ -86,7 +86,7 @@ export class Output {
 	 * Display a table on the console.
 	 */
 	table(rows: object[], columns?: string[]) {
-		const table = new Table(this)
+		const table = new Table(this, this.color)
 		table.setHeaders(columns)
 		table.setRows(rows)
 
