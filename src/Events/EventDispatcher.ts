@@ -1,58 +1,50 @@
-import { ApplicationStarting } from './ApplicationStarting'
 import { ConsoleEvent } from './ConsoleEvent'
 
-type StaticEvent = new () => ConsoleEvent
-type Listener = (event: ConsoleEvent) => void
+// Todo find better way to define the Events.
+export type EventTypes = 'ApplicationStarting' | 'CommandStarting' | 'CommandFinished' | '*'
+export type EventListener = (event: ConsoleEvent) => void
 
 export class EventDispatcher {
-	protected listeners: { [eventName: string]: Listener[] } = {}
+	/**
+	 * Registered listeners.
+	 */
+	protected listeners: { [event: string]: EventListener[] } = {}
 
 	/**
 	 * Add new listenener
 	 */
-	addListener(event: StaticEvent, listener: Listener) {
-		const eventName = this.formatName(event)
-
-		if (this.listeners[eventName]) {
-			this.listeners[eventName] = []
+	addListener(event: EventTypes, listener: EventListener) {
+		if (!this.listeners[event]) {
+			this.listeners[event] = []
 		}
 
-		this.listeners[eventName].push(listener)
-	}
-
-	/**
-	 * Check if there is any listeners registered.
-	 */
-	hasListeners(event: StaticEvent | string) {
-		const eventName = this.formatName(event)
-
-		return !!(this.listeners[eventName] && this.listeners[eventName].length > 0)
+		this.listeners[event].push(listener)
 	}
 
 	/**
 	 * Dispatch an event.
 	 */
-	dispatch(event: ConsoleEvent) {
-		this.listeners[this.formatName(event)].forEach(listener => {
+	dispatch(event: ConsoleEvent): boolean {
+		const eventName = event.constructor.name
+		let listeners: EventListener[] = []
+
+		if (this.listeners[eventName]) {
+			listeners = listeners.concat(this.listeners[eventName])
+		}
+
+		if (this.listeners['*']) {
+			listeners = listeners.concat(this.listeners['*'])
+		}
+
+		if (listeners.length === 0) {
+			// In case no listerners has been registered, dont fire.
+			return false
+		}
+
+		listeners.forEach(listener => {
 			listener(event)
 		})
-	}
 
-	/**
-	 * Make sure to format the naming of the event correctly.
-	 */
-	protected formatName(eventStatic: StaticEvent | ConsoleEvent | string) {
-		if (typeof eventStatic === 'string') {
-			return eventStatic
-		}
-		return eventStatic.constructor.name
+		return true
 	}
 }
-
-const dispatcher = new EventDispatcher()
-
-dispatcher.addListener(ApplicationStarting, event => {
-	//
-})
-
-dispatcher.dispatch(new ApplicationStarting())

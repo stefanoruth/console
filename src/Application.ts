@@ -2,6 +2,16 @@ import { Command, HelpCommand, ListCommand, InspireCommand } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { CommandNotFoundException } from './Exceptions'
 import { Output, ErrorHandler } from './Output'
+import {
+	EventDispatcher,
+	ApplicationStarting,
+	CommandStarting,
+	CommandFinished,
+	EventListener,
+	EventTypes,
+} from './Events'
+
+export type Bootstrap = (application: Application) => void
 
 export class Application {
 	protected commands: { [key: string]: Command } = {}
@@ -13,11 +23,16 @@ export class Application {
 	protected singleCommand: boolean = false
 	protected help?: string
 	protected initialized: boolean = false
+	protected events: EventDispatcher = new EventDispatcher()
+	protected static bootstrappers: Bootstrap[] = []
 
 	/**
 	 * Build Console Application.
 	 */
-	constructor(protected name?: string, protected version?: string) {}
+	constructor(protected name?: string, protected version?: string) {
+		this.bootstrap()
+		this.events.dispatch(new ApplicationStarting())
+	}
 
 	/**
 	 * Register a new Command.
@@ -44,6 +59,10 @@ export class Application {
 			output = new Output()
 		}
 
+		const commandName: string | undefined = this.getCommandName(input)
+
+		this.events.dispatch(new CommandStarting(commandName, input, output))
+
 		try {
 			exitCode = await this.doRun(input, output)
 		} catch (error) {
@@ -55,6 +74,8 @@ export class Application {
 
 			exitCode = 1 // error.getCode()
 		}
+
+		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
 
 		if (this.autoExit) {
 			process.exit(exitCode)
@@ -277,6 +298,22 @@ export class Application {
 	}
 
 	/**
+	 * Register a console "starting" bootstrapper.
+	 */
+	static starting(callback: (application: Application) => void) {
+		this.bootstrappers.push(callback)
+	}
+
+	/**
+	 * Bootstrap the console application.
+	 */
+	protected bootstrap() {
+		Application.bootstrappers.forEach(bootstrapper => {
+			bootstrapper(this)
+		})
+	}
+
+	/**
 	 * Gets the name of the command based on input.
 	 */
 	protected getCommandName(input: Input): string | undefined {
@@ -302,5 +339,14 @@ export class Application {
 			// new Option('--no-ansi', '', undefined, 'Disable ANSI output'),
 			// new Option('--no-interaction', '-n', undefined, 'Do not ask any interactive question'),
 		])
+	}
+
+	/**
+	 * Listen for a specific event.
+	 */
+	listen(event: EventTypes, listener: EventListener) {
+		this.events.addListener(event, listener)
+
+		return this
 	}
 }

@@ -91,7 +91,6 @@ export class Output {
 		table.setRows(rows)
 
 		table.render()
-		this.newLine()
 	}
 
 	/**
