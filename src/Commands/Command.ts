@@ -2,7 +2,7 @@ import { Application } from '../Application'
 import { Signature } from '../Input/Signature'
 import { Output } from '../Output/Output'
 import { Input } from '../Input/Input'
-import { NamespaceExtactor } from './NamespaceExtactor'
+import { extractNamespace } from '../helpers'
 
 export abstract class Command {
 	protected abstract name: string
@@ -109,7 +109,7 @@ export abstract class Command {
 	 * Extract namespace from command name.
 	 */
 	getNamespace() {
-		return new NamespaceExtactor().extract(this.getName())
+		return extractNamespace(this.getName())
 	}
 
 	/**
@@ -146,14 +146,8 @@ export abstract class Command {
 		}
 
 		this.signature.addOptions(this.application.getSignature().getOptions())
+		// this.signature.addArguments(this.application.getSignature().getArguments())
 
 		this.applicationSignatureMerged = true
-
-		// if ($mergeArgs) {
-		//     $currentArguments = $this -> definition -> getArguments();
-		//     $this -> definition -> setArguments($this -> application -> getDefinition() -> getArguments());
-		//     $this -> definition -> addArguments($currentArguments);
-		//     $this -> applicationDefinitionMergedWithArgs = true;
-		// }
 	}
 }

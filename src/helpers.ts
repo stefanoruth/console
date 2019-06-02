@@ -24,3 +24,18 @@ export function strlen(str: string): number {
 		return len > memo ? len : memo
 	}, 0)
 }
+
+/**
+ * Split string to fetch the top level namespace.
+ */
+export function extractNamespace(commandName: string): string {
+	const parts = commandName.split(':')
+
+	if (parts.length < 2) {
+		return ''
+	}
+
+	parts.pop()
+
+	return parts.join(':')
+}
