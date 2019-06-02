@@ -1,7 +1,8 @@
-import { Command, HelpCommand, ListCommand, InspireCommand } from './Commands'
+import { Command } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { CommandNotFoundException } from './Exceptions'
 import { Output, ErrorHandler } from './Output'
+import { CommandRegistry } from './CommandRegistry'
 import {
 	EventDispatcher,
 	ApplicationStarting,
@@ -14,17 +15,12 @@ import {
 export type Bootstrap = (application: Application) => void
 
 export class Application {
-	protected commands: { [key: string]: Command } = {}
-	protected wantHelps: boolean = false
 	protected runningCommand: Command | null = null
 	protected catchExceptions: boolean = true
 	protected autoExit: boolean = true
-	protected defaultCommand: string = 'list'
-	protected singleCommand: boolean = false
-	protected help?: string
-	protected initialized: boolean = false
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
+	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
 
 	/**
 	 * Build Console Application.
@@ -39,10 +35,17 @@ export class Application {
 	 */
 	register(commands: Command[]): this {
 		commands.forEach((command: Command) => {
-			this.addCommand(command)
+			this.commandRegistry.addCommand(command)
 		})
 
 		return this
+	}
+
+	/**
+	 * Fetches a list of commands that are registered
+	 */
+	getCommands(): Command[] {
+		return this.commandRegistry.getCommands()
 	}
 
 	/**
@@ -59,7 +62,7 @@ export class Application {
 			output = new Output()
 		}
 
-		const commandName: string | undefined = this.getCommandName(input)
+		const commandName: string = this.commandRegistry.getCommandName(input)
 
 		this.events.dispatch(new CommandStarting(commandName, input, output))
 
@@ -70,7 +73,7 @@ export class Application {
 				throw error
 			}
 
-			this.renderException(error, output)
+			new ErrorHandler(output).render(error)
 
 			exitCode = 1 // error.getCode()
 		}
@@ -102,26 +105,18 @@ export class Application {
 			// Errors must be ignored, full binding/validation happens later when the command is known.
 		}
 
-		let name: string | undefined = this.getCommandName(input)
-
-		if (true === input.hasParameterOption(['--help', '-h'], true)) {
-			this.wantHelps = true
-		}
-
-		if (typeof name === 'undefined') {
-			name = this.defaultCommand
-		}
+		const name = this.commandRegistry.getCommandName(input)
 
 		try {
 			this.runningCommand = null
 
-			command = this.find(name)
+			command = this.commandRegistry.find(name)
 		} catch (error) {
 			if (!(error instanceof CommandNotFoundException)) {
 				throw error
 			}
 
-			console.error(error)
+			new ErrorHandler(output).render(error)
 
 			// Find alternatives
 
@@ -152,66 +147,6 @@ export class Application {
 	}
 
 	/**
-	 * Returns a registered command by name or alias.
-	 */
-	protected get(name: string): Command {
-		this.init()
-
-		if (!this.has(name)) {
-			throw new CommandNotFoundException(`The command "${name}" does not exist.`)
-		}
-
-		const command = this.commands[name]
-
-		if (this.wantHelps) {
-			this.wantHelps = false
-			const helpCommand: HelpCommand = this.get('help') as any
-			helpCommand.setCommand(command)
-			return helpCommand
-		}
-
-		return command
-	}
-
-	/**
-	 * Returns true if the command exists, false otherwise.
-	 */
-	protected has(name: string) {
-		this.init()
-
-		if (typeof this.commands[name] !== 'undefined') {
-			return true
-		}
-
-		// ($this -> commandLoader && $this -> commandLoader -> has($name) && $this -> add($this -> commandLoader -> get($name))
-		// if () {
-		//     return true
-		// }
-
-		return false
-	}
-
-	/**
-	 * Finds a command by name or alias.
-	 *
-	 * Contrary to get, this command tries to find the best
-	 * match if you give it an abbreviation of a name or alias.
-	 */
-	find(name: string): Command {
-		this.init()
-
-		if (typeof this.commands[name] === 'undefined') {
-			throw new CommandNotFoundException(name)
-		}
-
-		if (this.has(name)) {
-			return this.get(name)
-		}
-
-		throw new Error('Not yet implmeneted this part.')
-	}
-
-	/**
 	 * Runs the current command.
 	 *
 	 * If an event dispatcher has been attached to the application,
@@ -229,17 +164,10 @@ export class Application {
 	}
 
 	/**
-	 * Renders a caught exception.
+	 * Sets whether to automatically exit after a command execution or not.
 	 */
-	renderException(e: Error, output: Output) {
-		output.newLine()
-
-		new ErrorHandler(output).render(e)
-
-		if (this.runningCommand !== null) {
-			output.line(this.runningCommand.getSynopsis() + this.getName())
-			output.newLine()
-		}
+	setAutoExit(bool: boolean) {
+		this.autoExit = bool
 	}
 
 	/**
@@ -257,47 +185,6 @@ export class Application {
 	}
 
 	/**
-	 * Adds a command object.
-	 *
-	 * If a command with the same name already exists, it will be overridden.
-	 * If the command is not enabled it will not be added.
-	 */
-	addCommand(command: Command) {
-		command.setApplication(this)
-
-		this.commands[command.getName()] = command
-
-		return command
-	}
-
-	/**
-	 * Gets the default commands that should always be available.
-	 */
-	protected getDefaultCommands() {
-		return [new HelpCommand(), new ListCommand(), new InspireCommand()]
-	}
-
-	/**
-	 * Fetches a list of commands that are registered
-	 */
-	getCommands(): Command[] {
-		return Object.values(this.commands)
-	}
-
-	/**
-	 * Add base commands to the list of commands.
-	 */
-	protected init() {
-		if (this.initialized) {
-			return
-		}
-
-		this.initialized = true
-
-		this.register(this.getDefaultCommands())
-	}
-
-	/**
 	 * Register a console "starting" bootstrapper.
 	 */
 	static starting(callback: (application: Application) => void) {
@@ -311,13 +198,6 @@ export class Application {
 		Application.bootstrappers.forEach(bootstrapper => {
 			bootstrapper(this)
 		})
-	}
-
-	/**
-	 * Gets the name of the command based on input.
-	 */
-	protected getCommandName(input: Input): string | undefined {
-		return this.singleCommand ? this.defaultCommand : input.getFirstArgument()
 	}
 
 	/**
