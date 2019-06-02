@@ -20,7 +20,7 @@ export class TableDivider {
 
 		this.headerTop = {
 			left: styles.crossingTopLeftChar,
-			mid: styles.crossingTopMidBottomChar,
+			mid: styles.crossingTopMidChar,
 			right: styles.crossingTopRightChar,
 			fill: styles.horizontalInsideBorderChar,
 		}

@@ -23,7 +23,7 @@ export class TableHeader {
 
 		this.columnWidths.forEach((width, key) => {
 			if (this.headers[key]) {
-				line += this.color.apply(this.style.pad(this.headers[key], width), { text: 'green' })
+				line += this.color.apply(this.style.pad(this.headers[key].toString(), width), { text: 'green' })
 			} else {
 				line += this.style.fillEmpty(width)
 			}

@@ -59,6 +59,7 @@ export class Table {
 	 *     +---------------+-----------------------+------------------+
 	 */
 	render() {
+		this.setSlimStyle()
 		this.calcWidths()
 
 		let headers = this.headers
@@ -101,7 +102,7 @@ export class Table {
 	/**
 	 * Calculate the max witdh of each row
 	 */
-	protected calcWidths() {
+	protected calcWidths(): number {
 		const rows = [...this.rows, this.headers]
 
 		rows.forEach(row => {
@@ -111,5 +112,36 @@ export class Table {
 				this.columnWidths[key] = Math.max.apply(null, [this.columnWidths[key] || 0, width])
 			})
 		})
+
+		return this.columnWidths.length
+	}
+
+	setDefaultStyle() {
+		this.style = new TableStyle()
+
+		return this
+	}
+
+	setSlimStyle() {
+		this.style = new TableStyle({
+			horizontalOutsideBorderChar: '─',
+			horizontalInsideBorderChar: '─',
+			verticalOutsideBorderChar: '│',
+			verticalInsideBorderChar: '│',
+			crossingChar: '┼',
+			crossingTopRightChar: '┐',
+			crossingTopMidChar: '┬',
+			crossingTopLeftChar: '┌',
+			crossingMidRightChar: '┤',
+			crossingBottomRightChar: '┘',
+			crossingBottomMidChar: '┴',
+			crossingBottomLeftChar: '└',
+			crossingMidLeftChar: '├',
+			crossingTopLeftBottomChar: '├',
+			crossingTopMidBottomChar: '┼',
+			crossingTopRightBottomChar: '┤',
+		})
+
+		return this
 	}
 }
