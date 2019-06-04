@@ -131,6 +131,16 @@ export class Application {
 	}
 
 	/**
+	 * Finds a command by name or alias.
+	 *
+	 * Contrary to get, this command tries to find the best
+	 * match if you give it an abbreviation of a name or alias.
+	 */
+	find(name: string): Command {
+		return this.commandRegistry.find(name)
+	}
+
+	/**
 	 * Gets the help message.
 	 */
 	getHelp(): string {

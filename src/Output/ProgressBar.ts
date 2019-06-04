@@ -1,4 +1,5 @@
 import { Output } from './Output'
+import { Verbosity } from './Verbosity'
 
 export class ProgressBar {
 	protected barWidth: number = 28
@@ -24,10 +25,14 @@ export class ProgressBar {
 	/**
 	 * Starts the progress output.
 	 */
-	start() {
+	start(max?: number) {
 		this.startTime = new Date().getTime()
 		this.step = 0
 		this.percent = 0.0
+
+		if (max !== undefined) {
+			this.setMaxSteps(max)
+		}
 
 		this.display()
 	}
@@ -61,6 +66,15 @@ export class ProgressBar {
 	}
 
 	/**
+	 * Set max steps.
+	 */
+	setMaxSteps(max: number) {
+		this.format = undefined
+		this.max = Math.max.apply(null, [0, max])
+		this.stepWidth = this.max ? this.max.toString().length : 4
+	}
+
+	/**
 	 * Finishes the progress output.
 	 */
 	finish() {
@@ -80,12 +94,14 @@ export class ProgressBar {
 	 * Outputs the current progress string.
 	 */
 	display(): void {
-		// if (OutputInterface:: VERBOSITY_QUIET === $this -> output -> getVerbosity()) {
-		//     return;
-		// }
-		// if (null === $this -> format) {
-		//     $this -> setRealFormat($this -> internalFormat ?: $this -> determineBestFormat());
-		// }
-		// $this -> overwrite($this -> buildLine());
+		if (this.output.getVerbosity() === Verbosity.quiet) {
+			return
+		}
+
+		if (this.format === null) {
+			this.setRealFormat(this.internalFormat || this.determineBestFormat())
+		}
+
+		this.overwrite(this.buildLine())
 	}
 }

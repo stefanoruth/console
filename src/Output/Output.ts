@@ -4,9 +4,17 @@ import { ProgressBar } from './ProgressBar'
 import { Table } from './Table/Table'
 import { Question } from './Question/Question'
 import { Writer } from './Writer'
+import { Verbosity } from './Verbosity'
 
 export class Output {
 	constructor(public writer: Writer = new Writer(), protected color: Color = new Color()) {}
+
+	/**
+	 * Gets the current verbosity of the output.
+	 */
+	getVerbosity(): Verbosity {
+		return Verbosity.debug
+	}
 
 	/**
 	 * Write a line to the console.
