@@ -11,6 +11,7 @@ import {
 	EventListener,
 	EventTypes,
 } from './Events'
+import { Verbosity } from './Output/Verbosity'
 
 export type Bootstrap = (application: Application) => void
 
@@ -65,6 +66,8 @@ export class Application {
 		const commandName: string = this.commandRegistry.getCommandName(input)
 
 		this.events.dispatch(new CommandStarting(commandName, input, output))
+
+		this.configureIO(input, output)
 
 		try {
 			exitCode = await this.doRun(input, output)
@@ -157,6 +160,40 @@ export class Application {
 	}
 
 	/**
+	 * Configures the input and output instances based on the user arguments and options.
+	 */
+	protected configureIO(input: Input, output: Output) {
+		// Verbosity
+		if (input.hasParameterOption(['--quiet', '-q'], true)) {
+			output.setVerbosity(Verbosity.quiet)
+		} else if (
+			input.hasParameterOption(['-vvv', '--verbose=3'], true) ||
+			'3' === input.getParameterOption('--verbose', false, true)
+		) {
+			output.setVerbosity(Verbosity.debug)
+		} else if (
+			input.hasParameterOption(['-vv', '--verbose=2'], true) ||
+			'2' === input.getParameterOption('--verbose', false, true)
+		) {
+			output.setVerbosity(Verbosity.veryVerbose)
+		} else if (input.hasParameterOption(['-v', '--verbose=1', '--verbose'], true)) {
+			output.setVerbosity(Verbosity.verbose)
+		}
+
+		// Interaction
+		if (true === input.hasParameterOption(['--no-interaction', '-n'], true)) {
+			input.setInteractive(false)
+		}
+
+		// Ansi
+		if (true === input.hasParameterOption(['--ansi'], true)) {
+			// output.setDecorated(true);
+		} else if (true === input.hasParameterOption(['--no-ansi'], true)) {
+			// output.setDecorated(false);
+		}
+	}
+
+	/**
 	 * Runs the current command.
 	 *
 	 * If an event dispatcher has been attached to the application,
@@ -219,15 +256,15 @@ export class Application {
 			new Option('--help', '-h', undefined, 'Display this help message'),
 			new Option('--quiet', '-q', undefined, 'Do not output any message'),
 			new Option('--version', '-V', undefined, 'Display this application version'),
-			// new Option(
-			// 	'--verbose',
-			// 	'-v|vv|vvv',
-			// 	undefined,
-			// 	'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
-			// ),
+			new Option(
+				'--verbose',
+				'-v|vv|vvv',
+				undefined,
+				'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
+			),
 			// new Option('--ansi', '', undefined, 'Force ANSI output'),
 			// new Option('--no-ansi', '', undefined, 'Disable ANSI output'),
-			// new Option('--no-interaction', '-n', undefined, 'Do not ask any interactive question'),
+			new Option('--no-interaction', '-n', undefined, 'Do not ask any interactive question'),
 		])
 	}
 

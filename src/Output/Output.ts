@@ -7,13 +7,26 @@ import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 
 export class Output {
-	constructor(public writer: Writer = new Writer(), protected color: Color = new Color()) {}
+	constructor(
+		protected verbosity: Verbosity = Verbosity.normal,
+		public writer: Writer = new Writer(),
+		protected color: Color = new Color()
+	) {}
 
 	/**
 	 * Gets the current verbosity of the output.
 	 */
 	getVerbosity(): Verbosity {
-		return Verbosity.debug
+		return this.verbosity
+	}
+
+	/**
+	 * Sets the verbosity of the output.
+	 */
+	setVerbosity(level: Verbosity) {
+		this.verbosity = level
+
+		return this
 	}
 
 	/**

@@ -1,6 +1,7 @@
 export enum Verbosity {
-	quiet,
-	verbose,
-	veryVerbose,
-	debug,
+	normal = 'normal',
+	quiet = 'quiet',
+	verbose = 'verbose',
+	veryVerbose = 'very_verbose',
+	debug = 'debug',
 }

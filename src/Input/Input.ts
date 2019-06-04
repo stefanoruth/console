@@ -8,6 +8,7 @@ export class Input {
 	protected signature: Signature = new Signature()
 	protected options: { [k: string]: string[] | string } = {}
 	protected arguments: { [k: string]: string[] | string } = {}
+	protected interactive: boolean = true
 
 	constructor(argv?: string[]) {
 		if (!argv) {
@@ -251,7 +252,11 @@ export class Input {
 	 * Does not necessarily return the correct result for short options
 	 * when multiple flags are combined in the same option.
 	 */
-	getParameterOption(values: string | string[], defaultValue: any = false, onlyParams: boolean = false) {
+	getParameterOption(
+		values: string | string[],
+		defaultValue: any = false,
+		onlyParams: boolean = false
+	): string | undefined {
 		values = values instanceof Array ? values : [values]
 
 		const tokens = [...this.tokens]
@@ -338,6 +343,20 @@ export class Input {
 		}
 
 		return false
+	}
+
+	/**
+	 * Is this input means interactive?
+	 */
+	isInteractive() {
+		return this.interactive
+	}
+
+	/**
+	 * Sets the input interactivity.
+	 */
+	setInteractive(interactive: boolean) {
+		this.interactive = interactive
 	}
 
 	/**
