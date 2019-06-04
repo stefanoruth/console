@@ -18,6 +18,9 @@ export class ProgressBar {
 	protected overwrite: boolean = true
 	protected firstRun: boolean = true
 
+	/**
+	 * Build new progress bar.
+	 */
 	constructor(protected output: Output, protected max: number = 0) {
 		this.startTime = new Date().getTime()
 	}
