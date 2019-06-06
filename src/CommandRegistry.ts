@@ -50,7 +50,7 @@ export class CommandRegistry {
 		this.init()
 
 		if (!this.has(name)) {
-			throw new CommandNotFoundException(`The command "${name}" does not exist.`)
+			throw new CommandNotFoundException(`Command "${name}" is not defined.`)
 		}
 
 		const command = this.commands[name]
@@ -93,7 +93,7 @@ export class CommandRegistry {
 		this.init()
 
 		if (typeof this.commands[name] === 'undefined') {
-			throw new CommandNotFoundException(name)
+			throw new CommandNotFoundException(`Command "${name}" is not defined.`)
 		}
 
 		if (this.has(name)) {

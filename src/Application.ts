@@ -115,9 +115,9 @@ export class Application {
 
 			command = this.commandRegistry.find(name)
 		} catch (error) {
-			if (!(error instanceof CommandNotFoundException)) {
-				throw error
-			}
+			// if (!(error instanceof CommandNotFoundException)) {
+			// 	throw error
+			// }
 
 			new ErrorHandler(output).render(error)
 

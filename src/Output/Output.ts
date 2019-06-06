@@ -75,8 +75,7 @@ export class Output {
 	 * Formats an error result bar.
 	 */
 	error(message: string) {
-		this.writer.writeln(this.color.apply(message, { text: 'white', bg: 'red' }))
-		// this.block(message, 'ERROR', 'fg=white;bg=red', ' ', true)
+		this.writer.block(this.color.apply(message, { text: 'white', bg: 'red' }), 'ERROR', undefined, ' ', true)
 	}
 
 	/**
@@ -135,18 +134,8 @@ export class Output {
 	/**
 	 * Ask the user if they really wanna do it.
 	 */
-	confirm(question: string, defaultValue: boolean = true): Promise<boolean> {
-		return new Promise(resolve => {
-			const r = rl.createInterface({
-				input: process.stdin,
-				output: process.stdout,
-			})
-
-			r.question(question + '\n', (answer: string) => {
-				r.close()
-				resolve(answer.toUpperCase() === 'Y')
-			})
-		})
+	async confirm(question: string, defaultValue: boolean = true): Promise<boolean> {
+		throw new Error('Not yet implemented.')
 	}
 
 	/**

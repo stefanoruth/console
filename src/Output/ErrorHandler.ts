@@ -1,16 +1,22 @@
 import { Output } from './Output'
+import { CommandNotFoundException } from '../Exceptions'
+import { CommandRegistry } from '../CommandRegistry'
 
 export class ErrorHandler {
-	constructor(protected output: Output) {}
+	constructor(protected output: Output, protected commandRegistry?: CommandRegistry) {}
 
 	render(e: Error) {
-		const message = e.message.trim()
+		if (e instanceof CommandNotFoundException) {
+			return this.unknownCommand(e)
+		}
+		console.log(e)
+	}
 
-		this.output.error(message)
+	unknownCommand(e: CommandNotFoundException) {
+		this.output.error(e.message)
+	}
 
-		console.log(e.constructor.name)
-		console.log(message)
-		console.log('ErrorRender')
-		console.log(e.stack)
+	suggestOtherCommands() {
+		//
 	}
 }

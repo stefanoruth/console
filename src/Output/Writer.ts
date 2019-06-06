@@ -1,23 +1,9 @@
 import { BufferedOutput } from './BufferedOutput'
 import { OutputFormatter } from './OutputFormatter'
+import { strlen } from '../helpers'
 
 export class Writer {
-	static VERBOSITY_QUIET = 16
-	static VERBOSITY_NORMAL = 32
-	static VERBOSITY_VERBOSE = 64
-	static VERBOSITY_VERY_VERBOSE = 128
-	static VERBOSITY_DEBUG = 256
-
-	static OUTPUT_NORMAL = 1
-	static OUTPUT_RAW = 2
-	static OUTPUT_PLAIN = 4
-
-	protected bufferedOutput: BufferedOutput
-
-	constructor() {
-		//
-		this.bufferedOutput = new BufferedOutput()
-	}
+	protected bufferedOutput: BufferedOutput = new BufferedOutput()
 
 	/**
 	 * Writes a message to the output.
@@ -76,15 +62,7 @@ export class Writer {
 	}
 
 	protected autoPrependBlock() {
-		const chars = this.bufferedOutput.fetch().substr(-2)
-
-		if (!chars[0]) {
-			this.newLine() // Empty history, so we should start with a new line.
-			return
-		}
-
-		// Prepend new line for each non LF chars (This means no blank line was output before)
-		this.newLine(2 - chars.split('\n').length)
+		this.newLine(2)
 	}
 
 	protected createBlock(
@@ -97,7 +75,8 @@ export class Writer {
 	) {
 		let indentLength: number = 0
 		let lineIndentation: string = ''
-		// $prefixLength = Helper:: strlenWithoutDecoration($this -> getFormatter(), $prefix);
+		// let prefixLength = strlen(prefix)
+
 		let lines: string[] = []
 		if (type) {
 			type = `[${type}]`
@@ -123,6 +102,18 @@ export class Writer {
 		// 	lines.unshift('')
 		// 	lines.push('')
 		// }
+
+		// lines.forEach((line, i) => {
+		// 	if (type !== null) {
+		// 		line = firstLineIndex === i ? type + line : lineIndentation + line
+		// 	}
+		// 	line = prefix + line
+		// 	line += ' '.repeat(this.lineLength - strlen(line))
+
+		// 	if (style) {
+		// 		// line =
+		// 	}
+		// })
 
 		// foreach($lines as $i => & $line) {
 		//     if (null !== $type) {
