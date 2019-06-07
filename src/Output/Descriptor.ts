@@ -4,7 +4,7 @@ import { Application } from '../Application'
 import { Command } from '../Commands/Command'
 import { Option } from '../Input/Option'
 import { Signature } from '../Input/Signature'
-import { Color, ColorName } from './Color'
+import { Color, ColorName } from './Style/Color'
 import { OutputFormatter } from './OutputFormatter'
 
 export interface DescriptorOptions {

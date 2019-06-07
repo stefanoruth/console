@@ -1,3 +1,10 @@
+interface OutputStyles {
+	info: () => void
+	error: () => void
+}
+
+type da = keyof OutputStyles
+
 export class OutputFormatter {
 	/**
 	 * Escapes "<" special char in given text.

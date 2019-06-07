@@ -38,6 +38,8 @@ export class ProgressBar {
 		}
 
 		this.display()
+
+		return this
 	}
 
 	/**

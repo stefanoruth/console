@@ -1,15 +1,16 @@
-import rl from 'readline'
-import { ColorName, Color } from './Color'
+import { ColorName, Color } from './Style/Color'
 import { ProgressBar } from './ProgressBar'
 import { Table } from './Table/Table'
 import { Question } from './Question/Question'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
+import { Formatter } from './Style/Formatter'
 
 export class Output {
 	constructor(
 		protected verbosity: Verbosity = Verbosity.normal,
-		public writer: Writer = new Writer(),
+		protected writer: Writer = new Writer(),
+		protected style: Formatter = new Formatter(),
 		protected color: Color = new Color()
 	) {}
 
@@ -27,6 +28,13 @@ export class Output {
 		this.verbosity = level
 
 		return this
+	}
+
+	/**
+	 * Writes a string of text on the current line in console.
+	 */
+	raw(message: string | string[]) {
+		this.writer.write(message)
 	}
 
 	/**
@@ -123,12 +131,15 @@ export class Output {
 	/**
 	 * Ask the user for a question.
 	 */
-	ask(question: string) {
+	async ask(question: string) {
 		return new Question().ask(question)
 	}
 
-	askQuestion(question: Question) {
-		//
+	/**
+	 * Ask a user for a question.
+	 */
+	async askQuestion(question: Question) {
+		throw new Error('Not yet implemented.')
 	}
 
 	/**
@@ -142,10 +153,6 @@ export class Output {
 	 * Start a new progress bar
 	 */
 	progressBar(max: number = 0): ProgressBar {
-		const progressBar = new ProgressBar(this, max)
-
-		progressBar.start()
-
-		return progressBar
+		return new ProgressBar(this, max)
 	}
 }

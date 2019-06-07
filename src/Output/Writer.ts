@@ -2,8 +2,14 @@ import { BufferedOutput } from './BufferedOutput'
 import { OutputFormatter } from './OutputFormatter'
 import { strlen } from '../helpers'
 
+interface WriteStream {
+	write: (buffer: string | Buffer) => void
+}
+
 export class Writer {
 	protected bufferedOutput: BufferedOutput = new BufferedOutput()
+
+	constructor(protected stdout: WriteStream = process.stdout) {}
 
 	/**
 	 * Writes a message to the output.
@@ -14,11 +20,11 @@ export class Writer {
 		}
 
 		for (const message of messages) {
-			process.stdout.write(message)
+			this.stdout.write(message)
+		}
 
-			if (newline) {
-				process.stdout.write('\n')
-			}
+		if (newline) {
+			this.stdout.write('\n')
 		}
 	}
 
@@ -47,7 +53,9 @@ export class Writer {
 		padding: boolean = false,
 		escape: boolean = true
 	) {
-		messages = messages instanceof Array ? messages : [messages]
+		if (!(messages instanceof Array)) {
+			messages = [messages]
+		}
 
 		this.autoPrependBlock()
 		this.writeln(this.createBlock(messages, type, style, prefix, padding, escape))

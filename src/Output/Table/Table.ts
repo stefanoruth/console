@@ -3,7 +3,7 @@ import { TableStyle } from './TableStyle'
 import { TableRow } from './TableRow'
 import { TableDivider } from './TableDivider'
 import { TableHeader } from './TableHeader'
-import { Color } from '../Color'
+import { Color } from '../Style/Color'
 
 export class Table {
 	/**
@@ -76,7 +76,7 @@ export class Table {
 
 		table.push(new TableDivider('footer', this.columnWidths, this.style).render() + '\n')
 
-		this.output.writer.write(table)
+		this.output.raw(table)
 	}
 
 	/**

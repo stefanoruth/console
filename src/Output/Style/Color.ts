@@ -1,6 +1,6 @@
 export type ColorName = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
 
-interface ColorDefinition {
+export interface ColorDefinition {
 	set: string
 	unset: string
 }
@@ -34,6 +34,14 @@ export class Color {
 		magenta: colorFn(45),
 		cyan: colorFn(46),
 		white: colorFn(47),
+	}
+
+	getTextColorSet(color: ColorName) {
+		return this.foregroundColors[color]
+	}
+
+	getBgColorSet(color: ColorName) {
+		return this.backgroundColors[color]
 	}
 
 	/**

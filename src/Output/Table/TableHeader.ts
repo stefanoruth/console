@@ -1,6 +1,6 @@
 import { TableStyle } from './TableStyle'
 import { TableDivider } from './TableDivider'
-import { Color } from '../Color'
+import { Color } from '../Style/Color'
 
 export class TableHeader {
 	constructor(
