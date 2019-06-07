@@ -16,13 +16,6 @@ export abstract class Command {
 	private _output?: Output
 
 	/**
-	 * Build Command.
-	 */
-	constructor() {
-		//
-	}
-
-	/**
 	 * Start running the command from inside the Console.
 	 */
 	async execute(input: Input, output: Output) {

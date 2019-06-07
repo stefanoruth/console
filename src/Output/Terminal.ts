@@ -1,39 +1,61 @@
+import rl from 'readline'
+
 export class Terminal {
-	protected width?: number
-	protected height?: number
+	constructor(
+		protected stdin: NodeJS.ReadStream = process.stdin,
+		protected stdout: NodeJS.WriteStream = process.stdout,
+		protected readline: typeof rl = rl
+	) {}
 
-	constructor() {
-		this.width = process.stdout.columns
-		this.height = process.stdout.rows
+	/**
+	 * Write a string to the terminal.
+	 */
+	write(buffer: string | Buffer) {
+		this.stdout.write(buffer)
 	}
 
 	/**
-	 * Gets the terminal width.
+	 * Clear previus line.
 	 */
-	getWidth() {
-		return this.width
-		// $width = getenv('COLUMNS');
-		// if (false !== $width) {
-		//     return (int) trim($width);
-		// }
-		// if (null === self:: $width) {
-		//     self:: initDimensions();
-		// }
-		// return self:: $width ?: 80;
+	clearLine() {
+		this.readline.clearLine(this.stdout, -1)
 	}
 
 	/**
-	 * Gets the terminal height.
+	 * Reset cursor to start of current line.
 	 */
-	getHeight() {
-		return this.height
-		// $height = getenv('LINES');
-		// if (false !== $height) {
-		//     return (int) trim($height);
-		// }
-		// if (null === self:: $height) {
-		//     self:: initDimensions();
-		// }
-		// return self:: $height ?: 50;
+	cursorReset() {
+		this.readline.cursorTo(this.stdout, 0)
+	}
+
+	/**
+	 * Calculate the number of columns in the console.
+	 */
+	width() {
+		return this.stdout.columns
+	}
+
+	/**
+	 * Calculate the number of rows in the console.
+	 */
+	height() {
+		return this.stdout.rows
+	}
+
+	/**
+	 * Ask the user a Question.
+	 */
+	question(question: string): Promise<string> {
+		return new Promise(resolve => {
+			const r = this.readline.createInterface({
+				input: this.stdin,
+				output: this.stdout,
+			})
+
+			r.question(question, (answer: string) => {
+				r.close()
+				return resolve(answer)
+			})
+		})
 	}
 }

@@ -1,10 +1,11 @@
 import { ColorName, Color } from './Style/Color'
-import { ProgressBar } from './ProgressBar'
+import { ProgressBar } from './ProgressBar/ProgressBar'
 import { Table } from './Table/Table'
 import { Question } from './Question/Question'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Formatter } from './Style/Formatter'
+import { Terminal } from './Terminal'
 
 export class Output {
 	constructor(
@@ -152,7 +153,7 @@ export class Output {
 	/**
 	 * Start a new progress bar
 	 */
-	progressBar(max: number = 0): ProgressBar {
-		return new ProgressBar(this, max)
+	progressBar(): ProgressBar {
+		return new ProgressBar(this, this.writer.getTerminal())
 	}
 }

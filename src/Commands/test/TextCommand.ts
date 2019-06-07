@@ -1,13 +1,18 @@
 import { Command } from '../Command'
+import { Terminal } from '../../Output/Terminal'
 
 export class TextCommand extends Command {
 	name = 'test:text'
 
 	async handle() {
-		this.output.success('Success')
-		this.output.error('Error')
-		this.output.warning('Warning')
-		this.output.note('Note')
-		this.output.caution('Caution')
+		// this.output.success('Success')
+		// this.output.error('Error')
+		// this.output.warning('Warning')
+		// this.output.note('Note')
+		// this.output.caution('Caution')
+
+		const t = new Terminal()
+
+		console.log('User:', await t.question('hi?'))
 	}
 }

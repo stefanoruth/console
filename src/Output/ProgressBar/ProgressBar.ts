@@ -1,5 +1,6 @@
-import { Output } from './Output'
-import { Verbosity } from './Verbosity'
+import { Output } from '../Output'
+import { Verbosity } from '../Verbosity'
+import { Terminal } from '../Terminal'
 
 export class ProgressBar {
 	protected barWidth: number = 28
@@ -15,15 +16,13 @@ export class ProgressBar {
 	protected percent: number = 0.0
 	protected formatLineCount?: number
 	protected messages: string[] = []
-	protected _overwrite: boolean = true
 	protected firstRun: boolean = true
+	protected max: number = 0
 
 	/**
 	 * Build new progress bar.
 	 */
-	constructor(protected output: Output, protected max: number = 0) {
-		this.startTime = new Date().getTime()
-	}
+	constructor(protected output: Output, protected terminal: Terminal) {}
 
 	/**
 	 * Starts the progress output.
@@ -50,17 +49,13 @@ export class ProgressBar {
 	}
 
 	/**
-	 * Sets whether to overwrite the progressbar, false for new line.
-	 */
-	setOverwrite(overwrite: boolean) {
-		this._overwrite = overwrite
-	}
-
-	/**
 	 * Set the progress output X steps.
 	 */
 	setProgress(step: number) {
-		console.log(step)
+		if (this.startTime === undefined) {
+			throw new Error('Progress bar need to be started first.')
+		}
+
 		if (this.max && step > this.max) {
 			this.max = step
 		} else if (step < 0) {
@@ -90,6 +85,10 @@ export class ProgressBar {
 	 * Finishes the progress output.
 	 */
 	finish() {
+		if (this.startTime === undefined) {
+			throw new Error('Progress bar need to be started first.')
+		}
+
 		if (!this.max) {
 			this.max = this.step
 		}
@@ -105,7 +104,7 @@ export class ProgressBar {
 	/**
 	 * Outputs the current progress string.
 	 */
-	display(): void {
+	protected display(): void {
 		if (this.output.getVerbosity() === Verbosity.quiet) {
 			return
 		}
@@ -124,16 +123,22 @@ export class ProgressBar {
 	 * while a progress bar is running.
 	 * Call display() to show the progress bar again.
 	 */
-	clear() {
-		if (!this.overwrite) {
-			return
-		}
+	protected clear() {
+		this.terminal.clearLine()
+		this.terminal.cursorReset()
 
 		if (this.format === null) {
 			this.setRealFormat(this.internalFormat || this.determineBestFormat())
 		}
 
 		this.overwrite('')
+	}
+
+	protected getBarCharacter(): string {
+		if (this.barChar === undefined) {
+			return this.max ? '=' : this.emptyBarChar
+		}
+		return this.barChar
 	}
 
 	protected setRealFormat(format: string) {
@@ -177,84 +182,94 @@ export class ProgressBar {
 	}
 
 	protected determineBestFormat(): string {
-		return ''
-		// switch ($this -> output -> getVerbosity()) {
-		//     // OutputInterface::VERBOSITY_QUIET: display is disabled anyway
-		//     case OutputInterface:: VERBOSITY_VERBOSE:
-		//         return $this -> max ? 'verbose' : 'verbose_nomax';
-		//     case OutputInterface:: VERBOSITY_VERY_VERBOSE:
-		//         return $this -> max ? 'very_verbose' : 'very_verbose_nomax';
-		//     case OutputInterface:: VERBOSITY_DEBUG:
-		//         return $this -> max ? 'debug' : 'debug_nomax';
-		//     default:
-		//         return $this -> max ? 'normal' : 'normal_nomax';
-		// }
+		switch (this.output.getVerbosity()) {
+			// OutputInterface::VERBOSITY_QUIET: display is disabled anyway
+			case Verbosity.verbose:
+				return this.max ? 'verbose' : 'verbose_nomax'
+
+			case Verbosity.veryVerbose:
+				return this.max ? 'very_verbose' : 'very_verbose_nomax'
+
+			case Verbosity.debug:
+				return this.max ? 'debug' : 'debug_nomax'
+
+			default:
+				return this.max ? 'normal' : 'normal_nomax'
+		}
 	}
 
-	protected static initPlaceholderFormatters(): [] {
-		return []
-		// return [
-		//     'bar' => function (self $bar, OutputInterface $output) {
-		//         $completeBars = floor($bar -> getMaxSteps() > 0 ? $bar -> getProgressPercent() * $bar -> getBarWidth() : $bar -> getProgress() % $bar -> getBarWidth());
-		//         $display = str_repeat($bar -> getBarCharacter(), $completeBars);
-		//         if ($completeBars < $bar -> getBarWidth()) {
-		//             $emptyBars = $bar -> getBarWidth() - $completeBars - Helper:: strlenWithoutDecoration($output -> getFormatter(), $bar -> getProgressCharacter());
-		//             $display.= $bar -> getProgressCharacter().str_repeat($bar -> getEmptyBarCharacter(), $emptyBars);
-		//         }
-		//         return $display;
-		//     },
-		//     'elapsed' => function (self $bar) {
-		//         return Helper:: formatTime(time() - $bar -> getStartTime());
-		//     },
-		//     'remaining' => function (self $bar) {
-		//         if (!$bar -> getMaxSteps()) {
-		//             throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
-		//         }
-		//         if (!$bar -> getProgress()) {
-		//             $remaining = 0;
-		//         } else {
-		//             $remaining = round((time() - $bar -> getStartTime()) / $bar -> getProgress() * ($bar -> getMaxSteps() - $bar -> getProgress()));
-		//         }
-		//         return Helper:: formatTime($remaining);
-		//     },
-		//     'estimated' => function (self $bar) {
-		//         if (!$bar -> getMaxSteps()) {
-		//             throw new LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
-		//         }
-		//         if (!$bar -> getProgress()) {
-		//             $estimated = 0;
-		//         } else {
-		//             $estimated = round((time() - $bar -> getStartTime()) / $bar -> getProgress() * $bar -> getMaxSteps());
-		//         }
-		//         return Helper:: formatTime($estimated);
-		//     },
-		//     'memory' => function (self $bar) {
-		//         return Helper:: formatMemory(memory_get_usage(true));
-		//     },
-		//     'current' => function (self $bar) {
-		//         return str_pad($bar -> getProgress(), $bar -> getStepWidth(), ' ', STR_PAD_LEFT);
-		//     },
-		//     'max' => function (self $bar) {
-		//         return $bar -> getMaxSteps();
-		//     },
-		//     'percent' => function (self $bar) {
-		//         return floor($bar -> getProgressPercent() * 100);
-		//     },
-		// ];
+	protected getFormatters() {
+		return {
+			bar: (): string => {
+				const completeBars = Math.floor(this.max > 0 ? this.percent * this.barWidth : this.percent % this.barWidth)
+				let display = this.getBarCharacter().repeat(completeBars)
+
+				if (completeBars < this.barWidth) {
+					const emptyBar = this.barWidth - completeBars - this.progressChar.length
+					display += this.progressChar + this.emptyBarChar.repeat(emptyBar)
+				}
+
+				return display
+			},
+			elapsed: (): string => {
+				return `${new Date().getTime() - this.startTime!} secs`
+			},
+			remaining: (): string => {
+				return 'remaining'
+				// if (!$bar -> getMaxSteps()) {
+				//     throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
+				// }
+				// if (!$bar -> getProgress()) {
+				//     $remaining = 0;
+				// } else {
+				//     $remaining = round((time() - $bar -> getStartTime()) / $bar -> getProgress() * ($bar -> getMaxSteps() - $bar -> getProgress()));
+				// }
+				// return Helper:: formatTime($remaining);
+			},
+			estimated: (): string => {
+				return 'estimated'
+				// if (!$bar -> getMaxSteps()) {
+				//     throw new LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
+				// }
+				// if (!$bar -> getProgress()) {
+				//     $estimated = 0;
+				// } else {
+				//     $estimated = round((time() - $bar -> getStartTime()) / $bar -> getProgress() * $bar -> getMaxSteps());
+				// }
+				// return Helper:: formatTime($estimated);
+			},
+			memory: (): string => {
+				return 'memory'
+				// return Helper:: formatMemory(memory_get_usage(true));
+			},
+			current: (): string => {
+				return 'current'
+				// return str_pad($bar -> getProgress(), $bar -> getStepWidth(), ' ', STR_PAD_LEFT);
+			},
+			max: (): string => {
+				return 'max'
+				// return bar.getMaxSteps()
+			},
+			percent: (): string => {
+				return 'percent'
+				// return Math.floor(bar.getProgressPercent() * 100)
+			},
+		}
 	}
 
-	protected static initFormats(): [] {
-		return []
-		// return [
-		//     'normal' => ' %current%/%max% [%bar%] %percent:3s%%',
-		//     'normal_nomax' => ' %current% [%bar%]',
-		//     'verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
-		//     'verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
-		//     'very_verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
-		//     'very_verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
-		//     'debug' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
-		//     'debug_nomax' => ' %current% [%bar%] %elapsed:6s% %memory:6s%',
-		// ];
+	protected fetchFormat() {
+		const format = this.getFormatters()
+
+		return {
+			normal: ' %current%/%max% [%bar%] %percent:3s%%',
+			normal_nomax: ` %current% [%bar%]`,
+			verbose: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
+			verbose_nomax: ' %current% [%bar%] %elapsed:6s%',
+			very_verbose: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
+			very_verbose_nomax: ' %current% [%bar%] %elapsed:6s%',
+			debug: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
+			debug_nomax: ' %current% [%bar%] %elapsed:6s% %memory:6s%',
+		}
 	}
 
 	protected buildLine(): string {

@@ -1,15 +1,18 @@
 import { BufferedOutput } from './BufferedOutput'
 import { OutputFormatter } from './OutputFormatter'
-import { strlen } from '../helpers'
-
-interface WriteStream {
-	write: (buffer: string | Buffer) => void
-}
+import { Terminal } from './Terminal'
 
 export class Writer {
 	protected bufferedOutput: BufferedOutput = new BufferedOutput()
 
-	constructor(protected stdout: WriteStream = process.stdout) {}
+	constructor(protected terminal: Terminal = new Terminal()) {}
+
+	/**
+	 * Fetch the terminal.
+	 */
+	getTerminal() {
+		return this.terminal
+	}
 
 	/**
 	 * Writes a message to the output.
@@ -20,11 +23,11 @@ export class Writer {
 		}
 
 		for (const message of messages) {
-			this.stdout.write(message)
+			this.terminal.write(message)
 		}
 
 		if (newline) {
-			this.stdout.write('\n')
+			this.terminal.write('\n')
 		}
 	}
 

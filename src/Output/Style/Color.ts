@@ -1,4 +1,4 @@
-export type ColorName = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'meganta' | 'cyan' | 'white'
+export type ColorName = 'default' | 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white'
 
 export interface ColorDefinition {
 	set: string
@@ -14,7 +14,8 @@ function colorFn(set: number, unset: number = 0): ColorDefinition {
 }
 
 export class Color {
-	protected foregroundColors: { [c: string]: ColorDefinition } = {
+	protected foregroundColors: { [c in ColorName]: ColorDefinition } = {
+		default: colorFn(0),
 		black: colorFn(30),
 		red: colorFn(31),
 		green: colorFn(32),
@@ -25,7 +26,8 @@ export class Color {
 		white: colorFn(37),
 	}
 
-	protected backgroundColors: { [c: string]: ColorDefinition } = {
+	protected backgroundColors: { [c in ColorName]: ColorDefinition } = {
+		default: colorFn(0),
 		black: colorFn(40),
 		red: colorFn(41),
 		green: colorFn(42),

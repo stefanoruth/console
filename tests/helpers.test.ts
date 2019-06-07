@@ -1,5 +1,5 @@
 import { extractNamespace, escapeshellarg, strlen } from '../src/helpers'
-import { Color } from '../src/Output/Color'
+import { Color } from '../src/Output/Style/Color'
 
 describe('Helpers', () => {
 	test('Extract Namespace', () => {
