@@ -1,17 +1,4 @@
-import { Color, ColorDefinition, ColorName } from './Color'
-
-type StyleTags = 'info' | 'error' | 'comment' | 'question' | 'success' | 'warning' | 'note' | 'caution'
-
-const tags: { [k in StyleTags]: { text: ColorName; bg?: ColorName } } = {
-	info: { text: 'yellow' },
-	error: { text: 'white', bg: 'red' },
-	comment: { text: 'default', bg: 'default' },
-	warning: { text: 'black', bg: 'yellow' },
-	note: { text: 'yellow' },
-	caution: { text: 'white', bg: 'red' },
-	question: { text: 'white' },
-	success: { text: 'green' },
-}
+import { Color, ApplyColor } from './Color'
 
 export class Formatter {
 	constructor(protected color: Color = new Color()) {}
@@ -24,18 +11,65 @@ export class Formatter {
 	}
 
 	/**
-	 * Fetch the color codes for a specific type of text.
+	 * Format a string with a custom color.
 	 */
-	protected getCodes(tag: StyleTags): { text: ColorDefinition; bg?: ColorDefinition } {
-		const color = tags[tag]
-
-		return {
-			text: this.color.getTextColorSet(color.text),
-			bg: color.bg ? this.color.getBgColorSet(color.bg) : undefined,
-		}
+	format(text: string, color: ApplyColor) {
+		return this.color.apply(text, color)
 	}
 
-	format(text: string) {
-		return text
+	/**
+	 * Format text info.
+	 */
+	info(text: string) {
+		return this.color.apply(text, { text: 'yellow' })
+	}
+
+	/**
+	 * Format text error.
+	 */
+	error(text: string) {
+		return this.color.apply(text, { text: 'white', bg: 'red' })
+	}
+
+	/**
+	 * Format text comment.
+	 */
+	comment(text: string) {
+		return this.color.apply(text, { text: 'default', bg: 'default' })
+	}
+
+	/**
+	 * Format text warning.
+	 */
+	warning(text: string) {
+		return this.color.apply(text, { text: 'black', bg: 'yellow' })
+	}
+
+	/**
+	 * Format text note.
+	 */
+	note(text: string) {
+		return this.color.apply(text, { text: 'yellow' })
+	}
+
+	/**
+	 * Format text caution.
+	 */
+	caution(text: string) {
+		return this.color.apply(text, { text: 'white', bg: 'red' })
+	}
+
+	/**
+	 * Format text message.
+	 */
+	question(text: string) {
+		return this.color.apply(text, { text: 'white' })
+	}
+
+	/**
+	 * Format text success.
+	 */
+	success(text: string) {
+		return this.color.apply(text, { text: 'green' })
 	}
 }

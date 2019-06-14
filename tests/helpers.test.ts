@@ -1,4 +1,4 @@
-import { extractNamespace, escapeshellarg, strlen } from '../src/helpers'
+import { extractNamespace, escapeshellarg, strlen, formatTime } from '../src/helpers'
 import { Color } from '../src/Output/Style/Color'
 
 describe('Helpers', () => {
@@ -19,5 +19,34 @@ describe('Helpers', () => {
 		const textColor = new Color().apply('Foo', { text: 'green' })
 		expect(textColor).toBe('\x1b[32mFoo\x1b[0m')
 		expect(strlen(textColor)).toBe(3)
+	})
+
+	test('formatTime', () => {
+		const values = [
+			[0, '< 1 sec'],
+			[1, '1 sec'],
+			[2, '2 secs'],
+			[59, '59 secs'],
+			[60, '1 min'],
+			[61, '1 min'],
+			[119, '1 min'],
+			[120, '2 mins'],
+			[121, '2 mins'],
+			[3599, '59 mins'],
+			[3600, '1 hr'],
+			[7199, '1 hr'],
+			[7200, '2 hrs'],
+			[7201, '2 hrs'],
+			[86399, '23 hrs'],
+			[86400, '1 day'],
+			[86401, '1 day'],
+			[172799, '1 day'],
+			[172800, '2 days'],
+			[172801, '2 days'],
+		]
+
+		values.forEach(value => {
+			expect(formatTime((value as any)[0] * 1000)).toBe(value[1])
+		})
 	})
 })

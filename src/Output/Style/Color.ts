@@ -5,6 +5,8 @@ export interface ColorDefinition {
 	unset: string
 }
 
+export type ApplyColor = { text?: ColorName; bg?: ColorName }
+
 // https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 function colorFn(set: number, unset: number = 0): ColorDefinition {
 	return {
@@ -38,18 +40,10 @@ export class Color {
 		white: colorFn(47),
 	}
 
-	getTextColorSet(color: ColorName) {
-		return this.foregroundColors[color]
-	}
-
-	getBgColorSet(color: ColorName) {
-		return this.backgroundColors[color]
-	}
-
 	/**
 	 * Apply a set of color codes to the text string
 	 */
-	apply(text: string, color?: { text?: ColorName; bg?: ColorName }) {
+	apply(text: string, color: ApplyColor) {
 		if (!color) {
 			return text
 		}

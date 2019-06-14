@@ -62,8 +62,10 @@ export class ProgressBar {
 			step = 0
 		}
 
+		// Ensure we dont redraw to often.
 		const prevPeriod = this.step / this.redrawFreq
 		const currPeriod = step / this.redrawFreq
+		// Change step
 		this.step = step
 		this.percent = this.max ? this.step / this.max : 0
 
@@ -134,6 +136,14 @@ export class ProgressBar {
 		this.overwrite('')
 	}
 
+	protected getMaxSteps() {
+		return this.max
+	}
+
+	protected getProgress() {
+		return this.step
+	}
+
 	protected getBarCharacter(): string {
 		if (this.barChar === undefined) {
 			return this.max ? '=' : this.emptyBarChar
@@ -201,7 +211,9 @@ export class ProgressBar {
 	protected getFormatters() {
 		return {
 			bar: (): string => {
-				const completeBars = Math.floor(this.max > 0 ? this.percent * this.barWidth : this.percent % this.barWidth)
+				const completeBars = Math.floor(
+					this.getMaxSteps() > 0 ? this.getProgress() * this.barWidth : this.getProgress() % this.barWidth
+				)
 				let display = this.getBarCharacter().repeat(completeBars)
 
 				if (completeBars < this.barWidth) {
@@ -216,9 +228,18 @@ export class ProgressBar {
 			},
 			remaining: (): string => {
 				return 'remaining'
-				// if (!$bar -> getMaxSteps()) {
-				//     throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
-				// }
+				if (!this.max) {
+					throw new Error('Unable to display the remaining time if the maximum number of steps is not set.')
+				}
+
+				if (!this.getProgress()) {
+					const remaining = 0
+				} else {
+					// const remaining = Math.round()
+				}
+
+				// return Helper.formatTime(remaining)
+
 				// if (!$bar -> getProgress()) {
 				//     $remaining = 0;
 				// } else {
@@ -258,17 +279,18 @@ export class ProgressBar {
 	}
 
 	protected fetchFormat() {
-		const format = this.getFormatters()
+		const f = this.getFormatters()
 
 		return {
-			normal: ' %current%/%max% [%bar%] %percent:3s%%',
-			normal_nomax: ` %current% [%bar%]`,
-			verbose: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
-			verbose_nomax: ' %current% [%bar%] %elapsed:6s%',
-			very_verbose: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
-			very_verbose_nomax: ' %current% [%bar%] %elapsed:6s%',
-			debug: ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
-			debug_nomax: ' %current% [%bar%] %elapsed:6s% %memory:6s%',
+			normal: () => `${f.current()}/${f.max()} [${f.bar()}] ${f.percent()}`,
+			normal_nomax: () => `${f.current()} [${f.bar()}]`,
+			verbose: () => `${f.current()}/${f.max()} [${f.bar()}] ${f.percent()} ${f.elapsed()}`,
+			verbose_nomax: () => `${f.current()}} [${f.bar()}] ${f.elapsed()}`,
+			veryVerbose: () => `${f.current()}/${f.max()} [${f.bar()}] ${f.percent()} ${f.elapsed()}/${f.estimated()}`,
+			veryVerbose_nomax: () => `${f.current()}} [${f.bar()}] ${f.elapsed()}`,
+			debug: () =>
+				`${f.current()}/${f.max()} [${f.bar()}] ${f.percent()} ${f.elapsed()}/${f.estimated()} ${f.memory()}`,
+			debug_nomax: () => `${f.current()}} [${f.bar()}] ${f.elapsed()} ${f.memory()}`,
 		}
 	}
 

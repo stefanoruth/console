@@ -39,3 +39,37 @@ export function extractNamespace(commandName: string): string {
 
 	return parts.join(':')
 }
+
+export function formatTime(secs: number) {
+	// Date.getTime() in miliseconds
+	secs = secs / 1000
+
+	const timeFormats = [
+		[0, '< 1 sec'],
+		[1, '1 sec'],
+		[2, 'secs', 1],
+		[60, '1 min'],
+		[120, 'mins', 60],
+		[3600, '1 hr'],
+		[7200, 'hrs', 3600],
+		[86400, '1 day'],
+		[172800, 'days', 86400],
+	]
+
+	// tslint:disable-next-line:prefer-for-of
+	for (let i = 0; i < timeFormats.length; i++) {
+		const format = timeFormats[i]
+
+		if (secs >= format[0]) {
+			if ((timeFormats[i + 1] && secs < timeFormats[i + 1][0]) || i === timeFormats.length - 1) {
+				if (format.length === 2) {
+					return format[1] as string
+				}
+
+				return Math.floor(secs / (format as any)[2]) + ' ' + format[1]
+			}
+		}
+	}
+
+	throw new Error(`Out of scope timeformat: ${secs}`)
+}

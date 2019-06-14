@@ -11,8 +11,7 @@ export class Output {
 	constructor(
 		protected verbosity: Verbosity = Verbosity.normal,
 		protected writer: Writer = new Writer(),
-		protected style: Formatter = new Formatter(),
-		protected color: Color = new Color()
+		protected style: Formatter = new Formatter()
 	) {}
 
 	/**
@@ -42,7 +41,7 @@ export class Output {
 	 * Write a line to the console.
 	 */
 	line(message: string, newLine: boolean = true, color?: ColorName) {
-		this.writer.write(this.color.apply(message, { text: color }), newLine)
+		this.writer.write(this.style.format(message, { text: color }), newLine)
 	}
 
 	/**
@@ -77,21 +76,21 @@ export class Output {
 	 * Formats a success result bar.
 	 */
 	success(message: string) {
-		this.writer.writeln(this.color.apply(message, { text: 'green' }))
+		this.writer.writeln(this.style.success(message))
 	}
 
 	/**
 	 * Formats an error result bar.
 	 */
 	error(message: string) {
-		this.writer.block(this.color.apply(message, { text: 'white', bg: 'red' }), 'ERROR', undefined, ' ', true)
+		this.writer.block(this.style.error(message), 'ERROR', undefined, ' ', true)
 	}
 
 	/**
 	 * Formats an warning result bar.
 	 */
 	warning(message: string) {
-		this.writer.writeln(this.color.apply(message, { text: 'black', bg: 'yellow' }))
+		this.writer.writeln(this.style.warning(message))
 		// this.block(message, 'WARNING', 'fg=black;bg=yellow', ' ', true)
 	}
 
@@ -99,7 +98,7 @@ export class Output {
 	 * Formats a note admonition.
 	 */
 	note(message: string) {
-		this.writer.writeln(this.color.apply(message, { text: 'yellow' }))
+		this.writer.writeln(this.style.note(message))
 		// this.block(message, 'NOTE', 'fg=yellow', ' ! ')
 	}
 
@@ -107,7 +106,7 @@ export class Output {
 	 * Formats a caution admonition.
 	 */
 	caution(message: string) {
-		this.writer.writeln(this.color.apply(message, { text: 'white', bg: 'red' }))
+		this.writer.writeln(this.style.caution(message))
 		// this.block(message, 'CAUTION', 'fg=white;bg=red', ' ! ', true)
 	}
 
@@ -115,7 +114,7 @@ export class Output {
 	 * Display a table on the console.
 	 */
 	table(rows: object[], columns?: string[]) {
-		const table = new Table(this, this.color)
+		const table = new Table(this, this.style.getColor())
 		table.setHeaders(columns)
 		table.setRows(rows)
 
