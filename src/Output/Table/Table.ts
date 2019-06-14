@@ -59,7 +59,6 @@ export class Table {
 	 *     +---------------+-----------------------+------------------+
 	 */
 	render() {
-		this.setSlimStyle()
 		this.calcWidths()
 
 		let headers = this.headers

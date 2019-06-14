@@ -113,10 +113,14 @@ export class Output {
 	/**
 	 * Display a table on the console.
 	 */
-	table(rows: object[], columns?: string[]) {
+	table(rows: object[], columns?: string[], configure?: (table: Table) => void) {
 		const table = new Table(this, this.style.getColor())
 		table.setHeaders(columns)
 		table.setRows(rows)
+
+		if (configure) {
+			configure(table)
+		}
 
 		table.render()
 	}
