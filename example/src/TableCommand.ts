@@ -1,7 +1,7 @@
 import { Command } from 'kodo-console'
 
 export class TableCommand extends Command {
-	name = 'test:table'
+	name = 'example:table'
 
 	async handle() {
 		const rows = [

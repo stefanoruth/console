@@ -11,7 +11,7 @@ function format() {
 	)
 }
 
-describe('Output > Style > Formatter', () => {
+describe('StyleFormatter', () => {
 	test('Built in formats', () => {
 		expect(format().info('foo')).toBe('[yellow|]foo')
 		expect(format().error('foo')).toBe('[white|red]foo')
@@ -27,5 +27,9 @@ describe('Output > Style > Formatter', () => {
 		expect(format().format('foo', { text: 'yellow' })).toBe('[yellow|]foo')
 		expect(format().format('foo', { bg: 'yellow' })).toBe('[|yellow]foo')
 		expect(format().format('foo', { text: 'yellow', bg: 'green' })).toBe('[yellow|green]foo')
+	})
+
+	test('Exposes the color generator', () => {
+		expect(new Formatter().getColor()).toBeInstanceOf(Color)
 	})
 })
