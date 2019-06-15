@@ -6,7 +6,15 @@ import { ProgressBarCommand } from './ProgressBarCommand'
 import { TableCommand } from './TableCommand'
 import { TextCommand } from './TextCommand'
 import { InputCommand } from './InputCommand'
+import { QuestionCommand } from './QuestionCommand'
 
 new Application('Kodo Console')
-	.register([new ErrorCommand(), new ProgressBarCommand(), new TableCommand(), new TextCommand(), new InputCommand()])
+	.register([
+		new ErrorCommand(),
+		new ProgressBarCommand(),
+		new TableCommand(),
+		new TextCommand(),
+		new InputCommand(),
+		new QuestionCommand(),
+	])
 	.run()
