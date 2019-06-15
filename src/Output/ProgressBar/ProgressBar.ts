@@ -195,6 +195,9 @@ export class ProgressBar {
 	 * Overwrites a previous message to the output.
 	 */
 	protected overwrite(message: string) {
+		if (this.overwrite) {
+			//
+		}
 		// if ($this -> overwrite) {
 		//     if (!$this -> firstRun) {
 		//         if ($this -> output instanceof ConsoleSectionOutput) {

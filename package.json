@@ -24,9 +24,6 @@
 		"tslint": "^5.12.1",
 		"tslint-config-prettier": "^1.17.0"
 	},
-	"bin": {
-		"kodo": "./dist/cli.js"
-	},
 	"jest": {
 		"preset": "ts-jest",
 		"testEnvironment": "node",

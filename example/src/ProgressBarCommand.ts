@@ -1,6 +1,4 @@
-import { Command } from '../Command'
-import { WriteStream } from 'tty'
-import { Writable } from 'stream'
+import { Command } from 'kodo-console'
 import readline from 'readline'
 
 function sleep(time: any) {

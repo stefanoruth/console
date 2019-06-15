@@ -1,4 +1,4 @@
-import { Command } from '../Command'
+import { Command } from 'kodo-console'
 
 export class ErrorCommand extends Command {
 	name = 'test:error'

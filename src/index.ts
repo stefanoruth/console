@@ -1,6 +1,6 @@
 export { Application } from './Application'
 export { Input, Option, Signature, Argument } from './Input'
-export { Output } from './Output'
+export { Output, Terminal } from './Output'
 export { Command } from './Commands'
 export { ConsoleEvent, CommandFinished, CommandStarting, ApplicationStarting } from './Events'
 export * from './Exceptions'

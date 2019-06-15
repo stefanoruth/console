@@ -1,5 +1,4 @@
-import { Command } from '../Command'
-import { Terminal } from '../../Output/Terminal'
+import { Command, Terminal } from 'kodo-console'
 
 export class TextCommand extends Command {
 	name = 'test:text'
