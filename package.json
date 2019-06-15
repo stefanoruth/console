@@ -12,6 +12,8 @@
 		"clean": "rm -rf dist/",
 		"build": "tsc",
 		"watch": "tsc --watch",
+		"ex:build": "tsc --build ./example/tsconfig.json",
+		"ex:watch": "tsc --build ./example/tsconfig.json --watch",
 		"test": "jest --verbose=false",
 		"test:watch": "yarn test --watchAll",
 		"test:coverage": "yarn test --collectCoverage=true",
