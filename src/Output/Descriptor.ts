@@ -4,8 +4,10 @@ import { Application } from '../Application'
 import { Command } from '../Commands/Command'
 import { Option } from '../Input/Option'
 import { Signature } from '../Input/Signature'
-import { Color, ColorName } from './Style/Color'
+import { ColorName } from './Style/Color'
 import { OutputFormatter } from './OutputFormatter'
+import { extractNamespace } from '../helpers'
+import { Formatter } from './Style/Formatter'
 
 export interface DescriptorOptions {
 	totalWidth?: number
@@ -14,7 +16,7 @@ export interface DescriptorOptions {
 
 export class Descriptor {
 	protected output?: Output
-	protected color: Color = new Color()
+	protected style: Formatter = new Formatter()
 
 	/**
 	 * Describes an object if supported.
@@ -60,14 +62,14 @@ export class Descriptor {
 		let defaultValue = ''
 		const argumentDefault = argument.getDefault()
 		if (argumentDefault && (!(argumentDefault instanceof Array) || argumentDefault.length)) {
-			defaultValue = `<comment> [default: ${this.formatDefaultValue(argumentDefault)}]</comment>`
+			defaultValue = this.style.comment(` [default: ${this.formatDefaultValue(argumentDefault)}]`)
 		}
 
 		const totalWidth = options.totalWidth || argument.getName().length
 		const spacingWidth = totalWidth - argument.getName().length
 
 		const line: string[] = []
-		line.push('  ' + this.color.apply(argument.getName(), { text: 'green' }))
+		line.push('  ' + this.style.success(argument.getName()))
 		line.push(' '.repeat(spacingWidth))
 		// + 4 = 2 spaces before <info>, 2 spaces after </info>
 		line.push(argument.getDescription().replace(/\s*[\r\n]\s*/g, '\n' + ' '.repeat(totalWidth + 4)))
@@ -86,7 +88,7 @@ export class Descriptor {
 			(option.acceptValue() && optionValue && !(optionValue instanceof Array)) ||
 			(optionValue && optionValue.length)
 		) {
-			defaultValue = `<comment> [default: ${this.formatDefaultValue(optionValue)}]</comment>`
+			defaultValue = this.style.comment(`[default: ${this.formatDefaultValue(optionValue)}]`)
 		}
 
 		let value = ''
@@ -107,12 +109,12 @@ export class Descriptor {
 		const spacingWidth = totalWidth - synopsis.length
 
 		const line: string[] = []
-		line.push('  ' + this.color.apply(synopsis, { text: 'green' }))
+		line.push('  ' + this.style.success(synopsis))
 		line.push(' '.repeat(spacingWidth + 2))
 		// + 4 = 2 spaces before <info>, 2 spaces after </info>
 		line.push(option.getDescription().replace(/\s*[\r\n]\s*/g, '\n' + ' '.repeat(totalWidth + 4)))
 		line.push(defaultValue)
-		line.push(options.isArray ? '<comment> (multiple values allowed)</comment>' : '')
+		line.push(options.isArray ? this.style.comment(' (multiple values allowed)') : '')
 
 		this.write(line.join(''))
 	}
@@ -142,7 +144,7 @@ export class Descriptor {
 
 		if (signature.getOptions().length) {
 			const laterOptions: Option[] = []
-			this.write(this.color.apply('Options:', { text: 'yellow' }))
+			this.write(this.style.info('Options:'))
 
 			signature.getOptions().forEach(option => {
 				const shortcut = option.getShortcut()
@@ -166,9 +168,23 @@ export class Descriptor {
 	 * Describes a Command instance.
 	 */
 	protected describeCommand(command: Command, options: DescriptorOptions = {}): void {
-		command.getSynopsis(true)
-		command.getSynopsis(false)
-		command.mergeApplicationSignature(false)
+		const getSynopsis = (short: boolean = false) => {
+			const key = short ? 'short' : 'long'
+
+			return `${command.getName()} ${command.getSignature().getSynopsis(short)}`.trim()
+		}
+
+		const synopsis = {
+			short: getSynopsis(true),
+			long: getSynopsis(false),
+		}
+
+		command.getSignature().addOptions(
+			command
+				.getApplication()
+				.getSignature()
+				.getOptions()
+		)
 
 		const description = command.getDescription()
 		if (description) {
@@ -176,9 +192,8 @@ export class Descriptor {
 			this.write('  ' + description + '\n\n')
 		}
 
-		// [command.getUsages()]
 		this.write('Usage:', 'yellow')
-		const usages: string[] = [command.getSynopsis(true)]
+		const usages: string[] = [synopsis.short]
 		usages.forEach(usage => {
 			this.write('\n  ' + OutputFormatter.escape(usage))
 		})
@@ -191,7 +206,7 @@ export class Descriptor {
 			this.write('\n')
 		}
 
-		const help = command.getProcessedHelp()
+		const help = command.getHelp().length ? command.getHelp() : command.getDescription()
 		if (help && help !== description) {
 			this.write('\nHelp:\n', 'yellow')
 			this.write('  ' + help.replace(/\n/g, '\n  '))
@@ -208,7 +223,7 @@ export class Descriptor {
 		const namespaces: Array<{ namespace: string; commands: Command[] }> = []
 
 		commands.forEach(command => {
-			const namespace: string = command.getNamespace()
+			const namespace: string = extractNamespace(command.getName())
 
 			const space = namespaces.find(value => value.namespace === namespace)
 
@@ -224,20 +239,20 @@ export class Descriptor {
 
 		namespaces.sort((a, b) => (a.namespace > b.namespace ? 1 : -1))
 
-		this.write(`${application.getName()} ${this.color.apply(application.getVersion() || '0.1.0', { text: 'green' })}\n`)
+		this.write(`${application.getName()} ${this.style.success(application.getVersion() || '0.1.0')}\n`)
 
-		this.write(this.color.apply('\nUsage:\n', { text: 'yellow' }))
+		this.write(this.style.info('\nUsage:\n'))
 		this.write(`  command [options] [arguments]\n\n`)
 
 		this.describeSignature(new Signature(application.getSignature().getOptions()))
 
 		this.write('\n\n')
 
-		this.write(this.color.apply('Available commands:\n', { text: 'yellow' }))
+		this.write(this.style.info('Available commands:\n'))
 
 		for (const item of namespaces) {
 			if (item.namespace.length > 0) {
-				this.write(` ${this.color.apply(item.namespace, { text: 'yellow' })}\n`)
+				this.write(` ${this.style.info(item.namespace)}\n`)
 			}
 
 			item.commands.sort((a, b) => (a.getName() > b.getName() ? 1 : -1))
@@ -246,11 +261,7 @@ export class Descriptor {
 				const spacingWidth = columnWidth - command.getName().length
 
 				this.write(
-					'  ' +
-						this.color.apply(command.getName(), { text: 'green' }) +
-						' '.repeat(spacingWidth) +
-						command.getDescription() +
-						'\n'
+					'  ' + this.style.success(command.getName()) + ' '.repeat(spacingWidth) + command.getDescription() + '\n'
 				)
 			}
 		}

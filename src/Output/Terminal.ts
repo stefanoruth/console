@@ -17,8 +17,8 @@ export class Terminal {
 	/**
 	 * Clear previus line.
 	 */
-	clearLine() {
-		this.readline.clearLine(this.stdout, -1)
+	clearLine(dir: number = -1) {
+		this.readline.clearLine(this.stdout, dir)
 	}
 
 	/**
