@@ -15,7 +15,7 @@ export class TableCommand extends Command {
 		this.output.table(rows)
 
 		this.output.table(rows, undefined, table => {
-			table.setSlimStyle()
+			table.setStyle('slim')
 		})
 	}
 }

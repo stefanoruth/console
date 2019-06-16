@@ -22,6 +22,13 @@ export class Terminal {
 	}
 
 	/**
+	 * Clears the terminal for all text.
+	 */
+	clear() {
+		console.clear()
+	}
+
+	/**
 	 * Reset cursor to start of current line.
 	 */
 	cursorReset() {

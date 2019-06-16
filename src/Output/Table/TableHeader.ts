@@ -4,18 +4,24 @@ import { Color } from '../Style/Color'
 
 export class TableHeader {
 	constructor(
-		protected headers: string[] = [],
-		protected columnWidths: number[],
+		protected headers: string[],
+		protected columnWidths: number[] = [],
 		protected style: TableStyle,
 		protected color: Color
-	) {}
+	) {
+		if (this.columnWidths.length === 0) {
+			this.headers.forEach(h => {
+				this.columnWidths.push(h.length)
+			})
+		}
+	}
 
 	render(): string[] {
 		return [
 			new TableDivider('headerTop', this.columnWidths, this.style).render(),
 			this.renderRow(),
 			new TableDivider('headerBottom', this.columnWidths, this.style).render(),
-		].map(line => line + '\n')
+		]
 	}
 
 	renderRow(): string {
@@ -23,7 +29,7 @@ export class TableHeader {
 
 		this.columnWidths.forEach((width, key) => {
 			if (this.headers[key]) {
-				line += this.color.apply(this.style.pad(this.headers[key].toString(), width), { text: 'green' })
+				line += this.color.apply(this.style.pad(this.headers[key].toString(), width), { text: 'blue' })
 			} else {
 				line += this.style.fillEmpty(width)
 			}

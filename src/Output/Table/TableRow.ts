@@ -9,7 +9,13 @@ export class TableRow {
 	/**
 	 * Initialate a new row.
 	 */
-	constructor(protected row: object, protected columnsWidth: number[], protected style: TableStyle) {}
+	constructor(protected row: object, protected columnsWidth: number[] = [], protected style: TableStyle) {
+		if (columnsWidth.length === 0) {
+			Object.keys(this.row).forEach(value => {
+				this.columnsWidth.push(value.length)
+			})
+		}
+	}
 
 	/**
 	 * Build the row.
@@ -25,12 +31,6 @@ export class TableRow {
 			}
 
 			const objectKey = keys[key]
-
-			if (!(this.row as any)[objectKey]) {
-				this.line += this.style.fillEmpty(width)
-				this.line += this.style.columnDivider(key + 1 !== this.columnsWidth.length)
-				return
-			}
 
 			const text: string = String((this.row as any)[objectKey])
 

@@ -32,4 +32,26 @@ describe('StyleFormatter', () => {
 	test('Exposes the color generator', () => {
 		expect(new Formatter().getColor()).toBeInstanceOf(Color)
 	})
+
+	test('Color Mapper', () => {
+		const c = new (class extends Color {
+			protected foregroundColors: any = {
+				black: {
+					set: '#',
+					unset: '#',
+				},
+			}
+
+			protected backgroundColors: any = {
+				black: {
+					set: '$',
+					unset: '$',
+				},
+			}
+		})()
+
+		expect(c.apply('foo', { text: 'black' })).toBe('#foo#')
+		expect(c.apply('foo', { bg: 'black' })).toBe('$foo$')
+		expect(c.apply('foo', { text: 'black', bg: 'black' })).toBe('#$foo#$')
+	})
 })

@@ -44,10 +44,6 @@ export class Color {
 	 * Apply a set of color codes to the text string
 	 */
 	apply(text: string, color: ApplyColor) {
-		if (!color) {
-			return text
-		}
-
 		const setCodes: string[] = []
 		const unsetCodes: string[] = []
 

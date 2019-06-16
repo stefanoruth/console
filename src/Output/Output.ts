@@ -5,7 +5,6 @@ import { Question } from './Question/Question'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Formatter } from './Style/Formatter'
-import { Terminal } from './Terminal'
 
 export class Output {
 	constructor(

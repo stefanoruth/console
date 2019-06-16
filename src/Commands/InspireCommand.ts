@@ -4,6 +4,10 @@ export class InspireCommand extends Command {
 	protected name = 'inspire'
 	protected description = 'Display an inspiring quote'
 
+	/**
+	 * All credits goes to the framework Laravel.
+	 * @author https://github.com/laravel/framework/blob/5.8/src/Illuminate/Foundation/Inspiring.php
+	 */
 	async handle() {
 		const qoutes = [
 			'When there is no desire, all things are at peace. - Laozi',

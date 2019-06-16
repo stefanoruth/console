@@ -187,7 +187,7 @@ export class Application {
 
 		// Ansi
 		if (true === input.hasParameterOption(['--ansi'], true)) {
-			// output.setDecorated(true);
+			// output.setDecorated(true)
 		} else if (true === input.hasParameterOption(['--no-ansi'], true)) {
 			// output.setDecorated(false);
 		}

@@ -63,19 +63,19 @@ export class Table {
 
 		let headers = this.headers
 
-		if (headers.length === 0) {
+		if (headers.length === 0 && this.rows[0]) {
 			headers = Object.keys(this.rows[0])
 		}
 
 		const table: string[] = new TableHeader(headers, this.columnWidths, this.style, this.color).render()
 
 		this.rows.forEach(row => {
-			table.push(new TableRow(row, this.columnWidths, this.style).render() + '\n')
+			table.push(new TableRow(row, this.columnWidths, this.style).render())
 		})
 
-		table.push(new TableDivider('footer', this.columnWidths, this.style).render() + '\n')
+		table.push(new TableDivider('footer', this.columnWidths, this.style).render())
 
-		this.output.raw(table)
+		this.output.raw(table.map(item => item + '\n'))
 	}
 
 	/**
@@ -115,31 +115,36 @@ export class Table {
 		return this.columnWidths.length
 	}
 
-	setDefaultStyle() {
-		this.style = new TableStyle()
+	/**
+	 * Change the style of the table.
+	 */
+	setStyle(styleType: TableStyle | 'default' | 'slim') {
+		let style: TableStyle
 
-		return this
-	}
-
-	setSlimStyle() {
-		this.style = new TableStyle({
-			horizontalOutsideBorderChar: '─',
-			horizontalInsideBorderChar: '─',
-			verticalOutsideBorderChar: '│',
-			verticalInsideBorderChar: '│',
-			crossingChar: '┼',
-			crossingTopRightChar: '┐',
-			crossingTopMidChar: '┬',
-			crossingTopLeftChar: '┌',
-			crossingMidRightChar: '┤',
-			crossingBottomRightChar: '┘',
-			crossingBottomMidChar: '┴',
-			crossingBottomLeftChar: '└',
-			crossingMidLeftChar: '├',
-			crossingTopLeftBottomChar: '├',
-			crossingTopMidBottomChar: '┼',
-			crossingTopRightBottomChar: '┤',
-		})
+		if (styleType === 'default') {
+			style = new TableStyle()
+		} else if (styleType === 'slim') {
+			style = new TableStyle({
+				horizontalOutsideBorderChar: '─',
+				horizontalInsideBorderChar: '─',
+				verticalOutsideBorderChar: '│',
+				verticalInsideBorderChar: '│',
+				crossingChar: '┼',
+				crossingTopRightChar: '┐',
+				crossingTopMidChar: '┬',
+				crossingTopLeftChar: '┌',
+				crossingMidRightChar: '┤',
+				crossingBottomRightChar: '┘',
+				crossingBottomMidChar: '┴',
+				crossingBottomLeftChar: '└',
+				crossingMidLeftChar: '├',
+				crossingTopLeftBottomChar: '├',
+				crossingTopMidBottomChar: '┼',
+				crossingTopRightBottomChar: '┤',
+			})
+		} else {
+			style = styleType
+		}
 
 		return this
 	}

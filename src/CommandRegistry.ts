@@ -1,6 +1,6 @@
 import { Command, HelpCommand, ListCommand, InspireCommand } from './Commands'
 import { Application } from './Application'
-import { CommandNotFoundException } from './Exceptions'
+import { CommandNotFoundException, InvalidArgumentException } from './Exceptions'
 import { Input } from './Input'
 
 export class CommandRegistry {
@@ -22,6 +22,8 @@ export class CommandRegistry {
 	 * If the command is not enabled it will not be added.
 	 */
 	addCommand(command: Command) {
+		this.validateName(command.getName())
+
 		command.setApplication(this.application)
 
 		this.commands[command.getName()] = command
@@ -74,11 +76,6 @@ export class CommandRegistry {
 		if (typeof this.commands[name] !== 'undefined') {
 			return true
 		}
-
-		// ($this -> commandLoader && $this -> commandLoader -> has($name) && $this -> add($this -> commandLoader -> get($name))
-		// if () {
-		//     return true
-		// }
 
 		return false
 	}
@@ -133,5 +130,14 @@ export class CommandRegistry {
 		}
 
 		return name
+	}
+
+	/**
+	 * Validate a command name
+	 */
+	protected validateName(name: string) {
+		if (/^[^\:]++(\:[^\:]++)*$/gi.test(name)) {
+			throw new InvalidArgumentException(`Command name "${name}" is invalid.`)
+		}
 	}
 }
