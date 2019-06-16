@@ -50,6 +50,13 @@ export class Terminal {
 	}
 
 	/**
+	 * Exit the current process.
+	 */
+	exit(code?: number) {
+		process.exit(code)
+	}
+
+	/**
 	 * Ask the user a Question.
 	 */
 	question(question: string): Promise<string> {

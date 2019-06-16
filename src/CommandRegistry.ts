@@ -119,7 +119,7 @@ export class CommandRegistry {
 	 * Gets the name of the command based on input.
 	 */
 	getCommandName(input: Input): string {
-		let name = this.singleCommand ? this.defaultCommand : input.getFirstArgument()
+		let name = input.getFirstArgument()
 
 		if (true === input.hasParameterOption(['--help', '-h'], true)) {
 			this.wantHelps = true
@@ -136,7 +136,7 @@ export class CommandRegistry {
 	 * Validate a command name
 	 */
 	protected validateName(name: string) {
-		if (/^[^\:]++(\:[^\:]++)*$/gi.test(name)) {
+		if (!/^[^\:]+(\:[^\:]+)*$/gi.test(name)) {
 			throw new InvalidArgumentException(`Command name "${name}" is invalid.`)
 		}
 	}

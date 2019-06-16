@@ -1,7 +1,7 @@
 import { Command } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { CommandNotFoundException } from './Exceptions'
-import { Output, ErrorHandler } from './Output'
+import { Output, ErrorHandler, Terminal } from './Output'
 import { CommandRegistry } from './CommandRegistry'
 import {
 	EventDispatcher,
@@ -22,6 +22,7 @@ export class Application {
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
 	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
+	protected terminal: Terminal = new Terminal()
 
 	/**
 	 * Build Console Application.
@@ -84,7 +85,7 @@ export class Application {
 		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
 
 		if (this.autoExit) {
-			process.exit(exitCode)
+			this.terminal.exit(exitCode)
 		}
 
 		return exitCode
