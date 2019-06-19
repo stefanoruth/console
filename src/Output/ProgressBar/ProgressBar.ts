@@ -79,6 +79,7 @@ export class ProgressBar {
 		this.percent = this.max ? this.step / this.max : 0
 
 		if (prevPeriod !== currPeriod || this.max === step) {
+			// console.log(this.step, this.percent)
 			this.display()
 		}
 	}
@@ -116,15 +117,25 @@ export class ProgressBar {
 	 * Outputs the current progress string.
 	 */
 	protected display(): void {
-		if (this.output.getVerbosity() === Verbosity.quiet) {
-			return
-		}
+		const filled = Number((this.step * (this.barWidth / 100)).toFixed(0))
+		const empty = this.barWidth - filled
 
-		if (this.format === null) {
-			this.setRealFormat(this.internalFormat || this.style.determineBestFormat())
-		}
+		// console.log(filled, empty)
+		const fill = '#'.repeat(filled)
+		const air = '-'.repeat(empty)
 
-		this.overwrite(this.buildLine())
+		this.clear()
+		this.terminal.write(`Current progress: [${fill}${air}] ${this.step}, ${this.percent}`)
+
+		// if (this.output.getVerbosity() === Verbosity.quiet) {
+		// 	return
+		// }
+
+		// if (this.format === null) {
+		// 	this.setRealFormat(this.internalFormat || this.style.determineBestFormat())
+		// }
+
+		// this.overwrite(this.buildLine())
 	}
 
 	/**
@@ -137,12 +148,6 @@ export class ProgressBar {
 	protected clear() {
 		this.terminal.clearLine()
 		this.terminal.cursorReset()
-
-		if (this.format === null) {
-			this.setRealFormat(this.internalFormat || this.style.determineBestFormat())
-		}
-
-		this.overwrite('')
 	}
 
 	getMaxSteps() {

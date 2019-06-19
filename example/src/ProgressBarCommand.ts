@@ -4,17 +4,19 @@ export class ProgressBarCommand extends Command {
 	name = 'example:bar'
 
 	async handle() {
-		const bar: any = this.output.progressBar()
-		bar.init(100)
+		const bar = this.output.progressBar()
+		bar.start(100)
 
 		let i = 0
-		while (i <= 100) {
-			bar.update(i)
+		while (i < 100) {
+			bar.advance()
 
 			this.sleep(10)
 
 			i++
 		}
+
+		bar.finish()
 	}
 
 	protected sleep(time: any) {
