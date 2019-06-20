@@ -1,73 +1,123 @@
-import { ProgressBar } from './ProgressBar'
-import { Verbosity } from '../Verbosity'
-import { Output } from '../Output'
+import { ProgressCounter } from './ProgressCounter'
+import { formatTime } from '../../helpers'
 
-type StyleType =
-	| 'normal'
-	| 'normal_nomax'
-	| 'verbose'
-	| 'verbose_nomax'
-	| 'veryVerbose'
-	| 'veryVerbose_nomax'
-	| 'debug'
-	| 'debug_nomax'
+interface ProgressFormats {
+	normal: () => string
+	normalNomax: () => string
+	verbose: () => string
+	verboseNomax: () => string
+	veryVerbose: () => string
+	veryVerboseNomax: () => string
+	debug: () => string
+	debugNomax: () => string
+}
 
-export class ProgressStyle {
-	constructor(protected output: Output, protected bar: ProgressBar) {}
+export type ProgressFormat = keyof ProgressFormats
 
-	determineBestFormat(): StyleType {
-		switch (this.output.getVerbosity()) {
-			// OutputInterface::VERBOSITY_QUIET: display is disabled anyway
-			case Verbosity.verbose:
-				return this.bar.getMaxSteps() ? 'verbose' : 'verbose_nomax'
+export class ProgressStyle implements ProgressFormats {
+	protected barWidth: number = 28
+	protected barChar?: string
+	protected emptyBarChar: string = '-'
+	protected progressChar: string = '>'
 
-			case Verbosity.veryVerbose:
-				return this.bar.getMaxSteps() ? 'veryVerbose' : 'veryVerbose_nomax'
+	constructor(protected counter: ProgressCounter) {}
 
-			case Verbosity.debug:
-				return this.bar.getMaxSteps() ? 'debug' : 'debug_nomax'
-
-			default:
-				return this.bar.getMaxSteps() ? 'normal' : 'normal_nomax'
-		}
+	protected getBarWidth() {
+		return this.barWidth
 	}
 
-	protected getStyle(style: StyleType, typeMax: boolean): () => string {
-		const f: any = {} // this.getFormatters()
-
-		const current = typeMax ? `${f.current()}/${f.max()}` : f.current()
-		const bar = `[${f.bar()}]`
-		const percent = typeMax ? f.percent() : ''
-		const base = `${current} ${bar} ${percent}`
-
-		const types = {
-			normal: () => base,
-			normal_nomax: () => base,
-			verbose: () => `${base} ${f.elapsed()}`,
-			verbose_nomax: () => `${base} ${f.elapsed()}`,
-			veryVerbose: () => `${base} ${f.elapsed()}/${f.estimated()}`,
-			veryVerbose_nomax: () => `${base} ${f.elapsed()}`,
-			debug: () => `${base} ${f.elapsed()}/${f.estimated()} ${f.memory()}`,
-			debug_nomax: () => `${base} ${f.elapsed()} ${f.memory()}`,
-		}
-
-		return types[style]
+	protected elapsed(): string {
+		return `${new Date().getTime() - this.counter.getStartTime()} secs`
 	}
 
-	protected formatBar(): string {
-		// const completeBars = Math.floor(
-		// 	this.bar.getMaxSteps() > 0
-		// 		? this.bar.getProgress() * this.bar.barWidth
-		// 		: this.bar.getProgress() % this.bar.barWidth
-		// )
-		// let display = this.bar.getBarCharacter().repeat(completeBars)
+	protected estimated(): string {
+		if (!this.counter.getMaxSteps()) {
+			throw new Error('Unable to display the estimated time if the maximum number of steps is not set.')
+		}
 
-		// if (completeBars < this.bar.barWidth) {
-		//     const emptyBar = this.bar.barWidth - completeBars - this.bar.progressChar.length
-		//     display += this.bar.progressChar + this.bar.emptyBarChar.repeat(emptyBar)
-		// }
+		let estimated = 0
 
-		// return display
+		if (this.counter.getProgress()) {
+			estimated = Math.round(
+				new Date().getTime() - (this.counter.getStartTime() / this.counter.getProgress()) * this.counter.getMaxSteps()
+			)
+		}
+
+		return formatTime(estimated)
+	}
+
+	protected max(): string {
+		return this.counter.getMaxSteps().toString()
+	}
+
+	protected percent(): string {
+		return Math.floor(this.counter.getProgressPercent() * 100).toString()
+	}
+
+	protected current(): string {
+		return this.counter
+			.getProgress()
+			.toString()
+			.padStart(4, ' ')
+	}
+
+	protected bar(): string {
+		const completeBars = Math.floor(
+			this.counter.getMaxSteps() > 0
+				? this.counter.getProgress() * this.barWidth
+				: this.counter.getProgress() % this.barWidth
+		)
+		let display = this.progressChar.repeat(completeBars)
+
+		if (completeBars < this.barWidth) {
+			const emptyBar = this.barWidth - completeBars - this.progressChar.length
+			display += this.progressChar + this.emptyBarChar.repeat(emptyBar)
+		}
+		return `[${display}]`
+	}
+
+	protected remaining(): string {
+		if (!this.counter.getMaxSteps()) {
+			throw new Error('Unable to display the remaining time if the maximum number of steps is not set.')
+		}
+
+		let remaining = 0
+
+		if (this.counter.getProgress()) {
+			remaining = Math.round(
+				(new Date().getTime() / this.counter.getProgress()) * (this.counter.getMaxSteps() - this.counter.getProgress())
+			)
+		}
+
+		return formatTime(remaining)
+	}
+	protected memory(): string {
+		return 'memory'
+		// return Helper:: formatMemory(memory_get_usage(true));
+	}
+
+	normal() {
+		return `${this.current()}/${this.max()} ${this.bar()} ${this.percent()}`
+	}
+	normalNomax() {
+		return `${this.current()} ${this.bar()}`
+	}
+	verbose() {
+		return `${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}`
+	}
+	verboseNomax() {
+		return `${this.current()} ${this.bar()} ${this.elapsed()}`
+	}
+	veryVerbose() {
+		return ''
+	}
+	veryVerboseNomax() {
+		return ''
+	}
+	debug() {
+		return ''
+	}
+	debugNomax() {
 		return ''
 	}
 }
