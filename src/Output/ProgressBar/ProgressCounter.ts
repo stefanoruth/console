@@ -44,6 +44,7 @@ export class ProgressCounter {
 		// Ensure we dont redraw to often.
 		const prevPeriod = this.step / this.redrawFreq
 		const currPeriod = step / this.redrawFreq
+
 		// Change step
 		this.step = step
 		this.percent = this.max ? this.step / this.max : 0
@@ -60,7 +61,7 @@ export class ProgressCounter {
 	 * Set max steps.
 	 */
 	setMaxSteps(max: number) {
-		this.max = Math.max.apply(null, [0, max])
+		this.max = Math.max(0, max)
 	}
 
 	/**

@@ -70,9 +70,11 @@ export class ProgressBar {
 			this.format = this.getFormat()
 		}
 
+		const render = this.style.format(this.format)
+
 		this.terminal.clearLine()
 		this.terminal.cursorReset()
-		this.terminal.write(this.style[this.format]())
+		this.terminal.write(render())
 	}
 
 	/**

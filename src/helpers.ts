@@ -73,3 +73,16 @@ export function formatTime(secs: number) {
 
 	throw new Error(`Out of scope timeformat: ${secs}`)
 }
+
+export function formatMemory(memory: number) {
+	if (memory >= 1024 * 1024 * 1024) {
+		return `${(memory / 1024 / 1024 / 1024).toFixed(1)} GiB`
+	}
+	if (memory >= 1024 * 1024) {
+		return `${(memory / 1024 / 1024).toFixed(1)} GiB`
+	}
+	if (memory >= 1024) {
+		return `${(memory / 1024).toFixed(1)} KiB`
+	}
+	return `${memory.toFixed(1)} B`
+}

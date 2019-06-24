@@ -5,10 +5,10 @@ export class ProgressBarCommand extends Command {
 
 	async handle() {
 		const bar = this.output.progressBar()
-		bar.start(100)
+		bar.start(200)
 
 		let i = 0
-		while (i < 100) {
+		while (i < 200) {
 			bar.advance()
 
 			this.sleep(10)

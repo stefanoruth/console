@@ -1,5 +1,5 @@
 import { ProgressCounter } from './ProgressCounter'
-import { formatTime } from '../../helpers'
+import { formatTime, formatMemory } from '../../helpers'
 
 interface ProgressFormats {
 	normal: () => string
@@ -14,20 +14,20 @@ interface ProgressFormats {
 
 export type ProgressFormat = keyof ProgressFormats
 
-export class ProgressStyle implements ProgressFormats {
+export class ProgressStyle {
 	protected barWidth: number = 28
-	protected barChar?: string
+	protected barChar: string = '='
 	protected emptyBarChar: string = '-'
 	protected progressChar: string = '>'
 
 	constructor(protected counter: ProgressCounter) {}
 
-	protected getBarWidth() {
-		return this.barWidth
+	protected runTime(): number {
+		return (new Date().getTime() - this.counter.getStartTime()) / 1000
 	}
 
 	protected elapsed(): string {
-		return `${new Date().getTime() - this.counter.getStartTime()} secs`
+		return formatTime(this.runTime()).padStart(6, ' ')
 	}
 
 	protected estimated(): string {
@@ -38,12 +38,14 @@ export class ProgressStyle implements ProgressFormats {
 		let estimated = 0
 
 		if (this.counter.getProgress()) {
-			estimated = Math.round(
-				new Date().getTime() - (this.counter.getStartTime() / this.counter.getProgress()) * this.counter.getMaxSteps()
-			)
+			estimated = Math.round((this.runTime() / this.counter.getProgress()) * this.counter.getMaxSteps())
 		}
 
-		return formatTime(estimated)
+		return '-' + formatTime(estimated).padStart(6, ' ')
+	}
+
+	protected getStepWidth() {
+		return this.max ? this.max.length : 4
 	}
 
 	protected max(): string {
@@ -51,73 +53,53 @@ export class ProgressStyle implements ProgressFormats {
 	}
 
 	protected percent(): string {
-		return Math.floor(this.counter.getProgressPercent() * 100).toString()
+		return Math.floor(this.counter.getProgressPercent() * 100)
+			.toString()
+			.padStart(3, ' ')
 	}
 
 	protected current(): string {
 		return this.counter
 			.getProgress()
 			.toString()
-			.padStart(4, ' ')
+			.padStart(this.getStepWidth(), ' ')
 	}
 
 	protected bar(): string {
 		const completeBars = Math.floor(
 			this.counter.getMaxSteps() > 0
-				? this.counter.getProgress() * this.barWidth
+				? (this.counter.getProgress() / this.counter.getMaxSteps()) * this.barWidth
 				: this.counter.getProgress() % this.barWidth
 		)
-		let display = this.progressChar.repeat(completeBars)
+
+		let display = this.barChar.repeat(completeBars)
 
 		if (completeBars < this.barWidth) {
 			const emptyBar = this.barWidth - completeBars - this.progressChar.length
 			display += this.progressChar + this.emptyBarChar.repeat(emptyBar)
 		}
+
 		return `[${display}]`
 	}
 
-	protected remaining(): string {
-		if (!this.counter.getMaxSteps()) {
-			throw new Error('Unable to display the remaining time if the maximum number of steps is not set.')
-		}
-
-		let remaining = 0
-
-		if (this.counter.getProgress()) {
-			remaining = Math.round(
-				(new Date().getTime() / this.counter.getProgress()) * (this.counter.getMaxSteps() - this.counter.getProgress())
-			)
-		}
-
-		return formatTime(remaining)
-	}
 	protected memory(): string {
-		return 'memory'
-		// return Helper:: formatMemory(memory_get_usage(true));
+		return formatMemory(process.memoryUsage().heapUsed / 1024 / 1024).padStart(6, ' ')
 	}
 
-	normal() {
-		return `${this.current()}/${this.max()} ${this.bar()} ${this.percent()}`
-	}
-	normalNomax() {
-		return `${this.current()} ${this.bar()}`
-	}
-	verbose() {
-		return `${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}`
-	}
-	verboseNomax() {
-		return `${this.current()} ${this.bar()} ${this.elapsed()}`
-	}
-	veryVerbose() {
-		return ''
-	}
-	veryVerboseNomax() {
-		return ''
-	}
-	debug() {
-		return ''
-	}
-	debugNomax() {
-		return ''
+	format(type: keyof ProgressFormats): () => string {
+		const formatters: ProgressFormats = {
+			normal: () => `${this.current()}/${this.max()} ${this.bar()} ${this.percent()}`,
+			normalNomax: () => `${this.current()} ${this.bar()}`,
+			verbose: () => `${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}`,
+			verboseNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()}`,
+			veryVerbose: () =>
+				`${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}/${this.estimated()}`,
+			veryVerboseNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()}`,
+			debug: () =>
+				`${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}/${this.estimated()} ${this.memory()}`,
+			debugNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()} ${this.memory()}`,
+		}
+
+		return formatters[type]
 	}
 }
