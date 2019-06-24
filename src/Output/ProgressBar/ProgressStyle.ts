@@ -45,7 +45,7 @@ export class ProgressStyle {
 	}
 
 	protected getStepWidth() {
-		return this.max ? this.max.length : 4
+		return this.counter.getMaxSteps() ? this.counter.getMaxSteps().toString().length : 4
 	}
 
 	protected max(): string {
@@ -53,9 +53,11 @@ export class ProgressStyle {
 	}
 
 	protected percent(): string {
-		return Math.floor(this.counter.getProgressPercent() * 100)
-			.toString()
-			.padStart(3, ' ')
+		return (
+			Math.floor(this.counter.getProgressPercent() * 100)
+				.toString()
+				.padStart(3, ' ') + '%'
+		)
 	}
 
 	protected current(): string {
