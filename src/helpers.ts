@@ -40,9 +40,9 @@ export function extractNamespace(commandName: string): string {
 	return parts.join(':')
 }
 
-export function formatTime(secs: number) {
+export function formatTime(time: number) {
 	// Date.getTime() in miliseconds
-	secs = secs / 1000
+	time = time / 1000
 
 	const timeFormats = [
 		[0, '< 1 sec'],
@@ -60,18 +60,18 @@ export function formatTime(secs: number) {
 	for (let i = 0; i < timeFormats.length; i++) {
 		const format = timeFormats[i]
 
-		if (secs >= format[0]) {
-			if ((timeFormats[i + 1] && secs < timeFormats[i + 1][0]) || i === timeFormats.length - 1) {
+		if (time >= format[0]) {
+			if ((timeFormats[i + 1] && time < timeFormats[i + 1][0]) || i === timeFormats.length - 1) {
 				if (format.length === 2) {
 					return format[1] as string
 				}
 
-				return Math.floor(secs / (format as any)[2]) + ' ' + format[1]
+				return Math.floor(time / (format as any)[2]) + ' ' + format[1]
 			}
 		}
 	}
 
-	throw new Error(`Out of scope timeformat: ${secs}`)
+	throw new Error(`Out of scope timeformat: ${time}`)
 }
 
 export function formatMemory(memory: number) {

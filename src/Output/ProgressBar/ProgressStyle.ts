@@ -1,77 +1,101 @@
-import { ProgressCounter } from './ProgressCounter'
-import { formatTime, formatMemory } from '../../helpers'
+import { Counter } from './ProgressCounter'
+import { formatMemory, formatTime } from '../../helpers'
 
-interface ProgressFormats {
-	normal: () => string
-	normalNomax: () => string
-	verbose: () => string
-	verboseNomax: () => string
-	veryVerbose: () => string
-	veryVerboseNomax: () => string
-	debug: () => string
-	debugNomax: () => string
+interface Style {
+	barWidth: number
+	barChar: string
+	emptyBarChar: string
+	progressChar: string
 }
 
-export type ProgressFormat = keyof ProgressFormats
-
 export class ProgressStyle {
-	protected barWidth: number = 28
-	protected barChar: string = '='
-	protected emptyBarChar: string = '-'
-	protected progressChar: string = '>'
-
-	constructor(protected counter: ProgressCounter) {}
-
-	protected runTime(): number {
-		return (new Date().getTime() - this.counter.getStartTime()) / 1000
+	protected style: Style = {
+		barWidth: 28,
+		barChar: '=',
+		emptyBarChar: '-',
+		progressChar: '>',
 	}
 
-	protected elapsed(): string {
+	constructor(protected counter: Counter) {}
+
+	/**
+	 * Calculate the amount of miliseconds the counter has been running.
+	 */
+	protected runTime(): number {
+		if (this.startTime === undefined) {
+			throw new Error('Progress bar need to be started first.')
+		}
+
+		return new Date().getTime() - this.getStartTime()
+	}
+
+	/**
+	 * Show in human form how long the command has been running.
+	 */
+	showElapsed(): string {
 		return formatTime(this.runTime()).padStart(6, ' ')
 	}
 
-	protected estimated(): string {
-		if (!this.counter.getMaxSteps()) {
+	/**
+	 * Estimate, how long the command is going to run.
+	 */
+	showEstimated(): string {
+		if (!this.getMaxSteps()) {
 			throw new Error('Unable to display the estimated time if the maximum number of steps is not set.')
 		}
 
 		let estimated = 0
 
-		if (this.counter.getProgress()) {
-			estimated = Math.round((this.runTime() / this.counter.getProgress()) * this.counter.getMaxSteps())
+		if (this.getProgress()) {
+			estimated = Math.round((this.runTime() / this.getProgress()) * this.getMaxSteps())
 		}
 
-		return '-' + formatTime(estimated).padStart(6, ' ')
+		return formatTime(estimated).padStart(6, ' ')
 	}
 
-	protected getStepWidth() {
-		return this.counter.getMaxSteps() ? this.counter.getMaxSteps().toString().length : 4
+	/**
+	 * Calculate the width of the progress counter.
+	 */
+	getStepWidth() {
+		return this.getMaxSteps() ? this.getMaxSteps().toString().length : 4
 	}
 
-	protected max(): string {
-		return this.counter.getMaxSteps().toString()
+	/**
+	 * Calcuate the max amount of steps.
+	 */
+	showMax(): string {
+		return this.getMaxSteps().toString()
 	}
 
-	protected percent(): string {
+	/**
+	 * Calculate how many procent of the work is done.
+	 */
+	showPercent(): string {
 		return (
-			Math.floor(this.counter.getProgressPercent() * 100)
+			Math.floor(this.percent * 100)
 				.toString()
 				.padStart(3, ' ') + '%'
 		)
 	}
 
-	protected current(): string {
+	/**
+	 * Show the current progress of the counter.
+	 */
+	current(): string {
 		return this.counter
 			.getProgress()
 			.toString()
 			.padStart(this.getStepWidth(), ' ')
 	}
 
-	protected bar(): string {
+	/**
+	 * Render the bar showing progress.
+	 */
+	showBar(): string {
 		const completeBars = Math.floor(
-			this.counter.getMaxSteps() > 0
-				? (this.counter.getProgress() / this.counter.getMaxSteps()) * this.barWidth
-				: this.counter.getProgress() % this.barWidth
+			this.getMaxSteps() > 0
+				? (this.getProgress() / this.getMaxSteps()) * this.barWidth
+				: this.getProgress() % this.barWidth
 		)
 
 		let display = this.barChar.repeat(completeBars)
@@ -84,24 +108,10 @@ export class ProgressStyle {
 		return `[${display}]`
 	}
 
-	protected memory(): string {
+	/**
+	 * Calculate the memory usages of the current progress.
+	 */
+	showMemory(): string {
 		return formatMemory(process.memoryUsage().heapUsed / 1024 / 1024).padStart(6, ' ')
-	}
-
-	format(type: keyof ProgressFormats): () => string {
-		const formatters: ProgressFormats = {
-			normal: () => `${this.current()}/${this.max()} ${this.bar()} ${this.percent()}`,
-			normalNomax: () => `${this.current()} ${this.bar()}`,
-			verbose: () => `${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}`,
-			verboseNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()}`,
-			veryVerbose: () =>
-				`${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}/${this.estimated()}`,
-			veryVerboseNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()}`,
-			debug: () =>
-				`${this.current()}/${this.max()} ${this.bar()} ${this.percent()} ${this.elapsed()}/${this.estimated()} ${this.memory()}`,
-			debugNomax: () => `${this.current()} ${this.bar()} ${this.elapsed()} ${this.memory()}`,
-		}
-
-		return formatters[type]
 	}
 }

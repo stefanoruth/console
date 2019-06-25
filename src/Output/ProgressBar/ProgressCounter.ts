@@ -84,18 +84,23 @@ export class ProgressCounter {
 		return this.setProgress(this.max)
 	}
 
+	/**
+	 * Display the calculated/set end result.
+	 */
 	getMaxSteps() {
 		return this.max
 	}
 
+	/**
+	 * Display the current progress.
+	 */
 	getProgress() {
 		return this.step
 	}
 
-	getProgressPercent() {
-		return this.percent
-	}
-
+	/**
+	 * Get start time of the counter.
+	 */
 	getStartTime() {
 		if (this.startTime === undefined) {
 			throw new Error('Progress bar need to be started first.')

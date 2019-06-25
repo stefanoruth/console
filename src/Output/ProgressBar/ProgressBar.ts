@@ -1,21 +1,24 @@
 import { Output } from '../Output'
 import { Terminal } from '../Terminal'
-import { ProgressStyle, ProgressFormat } from './ProgressStyle'
-import { ProgressCounter } from './ProgressCounter'
+import { ProgressBarStyle } from './ProgressBarStyle'
+import { Counter } from './Counter'
 import { Verbosity } from '../Verbosity'
+import { DisplayProgress } from './ProgressFormat'
 
 export class ProgressBar {
-	protected format?: ProgressFormat
+	protected render?: DisplayProgress
 	protected style: ProgressStyle
 	protected counter: ProgressCounter
 
 	/**
 	 * Build new progress bar.
 	 */
-	constructor(protected output: Output, protected terminal: Terminal) {
-		this.counter = new ProgressCounter()
-		this.style = new ProgressStyle(this.counter)
-	}
+	constructor(
+		protected output: Output,
+		protected terminal: Terminal,
+		protected counter: Counter = new Counter(),
+		protected style: ProgressBarStyle = new ProgressBarStyle()
+	) {}
 
 	/**
 	 * Starts the progress output.
@@ -66,34 +69,14 @@ export class ProgressBar {
 	 * Outputs the current progress string.
 	 */
 	protected display(): void {
-		if (!this.format) {
-			this.format = this.getFormat()
+		if (!this.render) {
+			this.render = this.style.format(this.getFormat())
 		}
 
-		const render = this.style.format(this.format)
+		const display = this.render(this.counter)
 
 		this.terminal.clearLine()
 		this.terminal.cursorReset()
-		this.terminal.write(render())
-	}
-
-	/**
-	 * Find out which format we should render for the user.
-	 */
-	protected getFormat(): ProgressFormat {
-		switch (this.output.getVerbosity()) {
-			// OutputInterface::VERBOSITY_QUIET: display is disabled anyway
-			case Verbosity.verbose:
-				return this.counter.getMaxSteps() ? 'verbose' : 'verboseNomax'
-
-			case Verbosity.veryVerbose:
-				return this.counter.getMaxSteps() ? 'veryVerbose' : 'veryVerboseNomax'
-
-			case Verbosity.debug:
-				return this.counter.getMaxSteps() ? 'debug' : 'debugNomax'
-
-			default:
-				return this.counter.getMaxSteps() ? 'normal' : 'normalNomax'
-		}
+		this.terminal.write(display)
 	}
 }
