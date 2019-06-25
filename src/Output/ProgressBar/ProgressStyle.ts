@@ -1,4 +1,4 @@
-import { Counter } from './ProgressCounter'
+import { ProgressCounter } from './ProgressCounter'
 import { formatMemory, formatTime } from '../../helpers'
 
 interface Style {
@@ -16,38 +16,34 @@ export class ProgressStyle {
 		progressChar: '>',
 	}
 
-	constructor(protected counter: Counter) {}
+	constructor(protected counter: ProgressCounter) {}
 
 	/**
 	 * Calculate the amount of miliseconds the counter has been running.
 	 */
 	protected runTime(): number {
-		if (this.startTime === undefined) {
-			throw new Error('Progress bar need to be started first.')
-		}
-
-		return new Date().getTime() - this.getStartTime()
+		return new Date().getTime() - this.counter.getStartTime()
 	}
 
 	/**
 	 * Show in human form how long the command has been running.
 	 */
-	showElapsed(): string {
+	elapsed(): string {
 		return formatTime(this.runTime()).padStart(6, ' ')
 	}
 
 	/**
 	 * Estimate, how long the command is going to run.
 	 */
-	showEstimated(): string {
-		if (!this.getMaxSteps()) {
+	estimated(): string {
+		if (!this.counter.getMaxSteps()) {
 			throw new Error('Unable to display the estimated time if the maximum number of steps is not set.')
 		}
 
 		let estimated = 0
 
-		if (this.getProgress()) {
-			estimated = Math.round((this.runTime() / this.getProgress()) * this.getMaxSteps())
+		if (this.counter.getProgress()) {
+			estimated = Math.round((this.runTime() / this.counter.getProgress()) * this.counter.getMaxSteps())
 		}
 
 		return formatTime(estimated).padStart(6, ' ')
@@ -57,22 +53,22 @@ export class ProgressStyle {
 	 * Calculate the width of the progress counter.
 	 */
 	getStepWidth() {
-		return this.getMaxSteps() ? this.getMaxSteps().toString().length : 4
+		return this.counter.getMaxSteps() ? this.counter.getMaxSteps().toString().length : 4
 	}
 
 	/**
 	 * Calcuate the max amount of steps.
 	 */
-	showMax(): string {
-		return this.getMaxSteps().toString()
+	max(): string {
+		return this.counter.getMaxSteps().toString()
 	}
 
 	/**
 	 * Calculate how many procent of the work is done.
 	 */
-	showPercent(): string {
+	percent(): string {
 		return (
-			Math.floor(this.percent * 100)
+			Math.floor(this.counter.getProgressPercent() * 100)
 				.toString()
 				.padStart(3, ' ') + '%'
 		)
@@ -91,18 +87,18 @@ export class ProgressStyle {
 	/**
 	 * Render the bar showing progress.
 	 */
-	showBar(): string {
+	bar(): string {
 		const completeBars = Math.floor(
-			this.getMaxSteps() > 0
-				? (this.getProgress() / this.getMaxSteps()) * this.barWidth
-				: this.getProgress() % this.barWidth
+			this.counter.getMaxSteps() > 0
+				? (this.counter.getProgress() / this.counter.getMaxSteps()) * this.style.barWidth
+				: this.counter.getProgress() % this.style.barWidth
 		)
 
-		let display = this.barChar.repeat(completeBars)
+		let display = this.style.barChar.repeat(completeBars)
 
-		if (completeBars < this.barWidth) {
-			const emptyBar = this.barWidth - completeBars - this.progressChar.length
-			display += this.progressChar + this.emptyBarChar.repeat(emptyBar)
+		if (completeBars < this.style.barWidth) {
+			const emptyBar = this.style.barWidth - completeBars - this.style.progressChar.length
+			display += this.style.progressChar + this.style.emptyBarChar.repeat(emptyBar)
 		}
 
 		return `[${display}]`
@@ -111,7 +107,7 @@ export class ProgressStyle {
 	/**
 	 * Calculate the memory usages of the current progress.
 	 */
-	showMemory(): string {
+	memory(): string {
 		return formatMemory(process.memoryUsage().heapUsed / 1024 / 1024).padStart(6, ' ')
 	}
 }

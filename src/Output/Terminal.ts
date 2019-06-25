@@ -4,6 +4,7 @@ export class Terminal {
 	constructor(
 		protected stdin: NodeJS.ReadStream = process.stdin,
 		protected stdout: NodeJS.WriteStream = process.stdout,
+		protected stderr: NodeJS.WriteStream = process.stderr,
 		protected readline: typeof rl = rl
 	) {}
 
@@ -12,6 +13,13 @@ export class Terminal {
 	 */
 	write(buffer: string | Buffer) {
 		this.stdout.write(buffer)
+	}
+
+	/**
+	 * Write a string to the error output.
+	 */
+	writeError(buffer: string | Buffer) {
+		this.stderr.write(buffer)
 	}
 
 	/**

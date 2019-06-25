@@ -99,6 +99,13 @@ export class ProgressCounter {
 	}
 
 	/**
+	 * Display the current progress percentage.
+	 */
+	getProgressPercent() {
+		return this.percent
+	}
+
+	/**
 	 * Get start time of the counter.
 	 */
 	getStartTime() {

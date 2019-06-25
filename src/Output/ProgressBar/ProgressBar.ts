@@ -1,14 +1,12 @@
 import { Output } from '../Output'
 import { Terminal } from '../Terminal'
-import { ProgressBarStyle } from './ProgressBarStyle'
-import { Counter } from './Counter'
-import { Verbosity } from '../Verbosity'
-import { DisplayProgress } from './ProgressFormat'
+import { ProgressStyle } from './ProgressStyle'
+import { ProgressCounter } from './ProgressCounter'
+import { DisplayProgress, ProgressFormat } from './ProgressFormat'
 
 export class ProgressBar {
 	protected render?: DisplayProgress
-	protected style: ProgressStyle
-	protected counter: ProgressCounter
+	protected style?: ProgressStyle
 
 	/**
 	 * Build new progress bar.
@@ -16,8 +14,8 @@ export class ProgressBar {
 	constructor(
 		protected output: Output,
 		protected terminal: Terminal,
-		protected counter: Counter = new Counter(),
-		protected style: ProgressBarStyle = new ProgressBarStyle()
+		protected counter: ProgressCounter = new ProgressCounter(),
+		protected formatter: ProgressFormat = new ProgressFormat(output)
 	) {}
 
 	/**
@@ -65,15 +63,27 @@ export class ProgressBar {
 		}
 	}
 
+	getStyle() {
+		if (!this.style) {
+			this.style = new ProgressStyle(this.counter)
+		}
+
+		return this.style
+	}
+
 	/**
 	 * Outputs the current progress string.
 	 */
 	protected display(): void {
 		if (!this.render) {
-			this.render = this.style.format(this.getFormat())
+			const hasMax = !!this.counter.getMaxSteps()
+
+			const format = this.formatter.getFormat(hasMax)
+
+			this.render = this.formatter.getRenderFn(format)
 		}
 
-		const display = this.render(this.counter)
+		const display = this.render(this.getStyle())
 
 		this.terminal.clearLine()
 		this.terminal.cursorReset()

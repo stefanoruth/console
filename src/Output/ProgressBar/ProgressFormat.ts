@@ -1,9 +1,7 @@
-import { ProgressCounter } from './ProgressCounter'
-import { Verbosity } from '../Verbosity'
 import { Output } from '../Output'
 import { ProgressStyle } from './ProgressStyle'
 
-export type DisplayProgress = (counter: ProgressCounter) => string
+export type DisplayProgress = (counter: ProgressStyle) => string
 
 enum Format {
 	normal,
@@ -16,15 +14,17 @@ enum Format {
 	debugNomax,
 }
 
+type FormatName = keyof typeof Format
+
 export class ProgressFormat {
 	constructor(protected output: Output) {}
 
 	/**
 	 * Find out which format we should render for the user.
 	 */
-	protected getFormat(showMax: boolean): Format {
+	getFormat(showMax: boolean): FormatName {
 		const verbosity = this.output.getVerbosity()
-		let type: keyof typeof Format
+		let type: FormatName
 
 		if (showMax) {
 			type = verbosity as any
@@ -32,11 +32,11 @@ export class ProgressFormat {
 			type = (verbosity + 'Nomax') as any
 		}
 
-		return Format[type]
+		return Format[type] as any
 	}
 
-	getRenderFn(type: keyof typeof Format) {
-		const types: { [k: keyof typeof Format]: DisplayProgress } = {
+	getRenderFn(format: FormatName): DisplayProgress {
+		const types: { [k in FormatName]: DisplayProgress } = {
 			normal: (c: ProgressStyle) => {
 				return `${c.current()}/${c.max()} ${c.bar()} ${c.percent()}`
 			},
@@ -63,6 +63,6 @@ export class ProgressFormat {
 			},
 		}
 
-		return types[type]
+		return types[format]
 	}
 }
