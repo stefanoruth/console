@@ -5,12 +5,13 @@ export type DisplayProgress = (counter: ProgressStyle) => string
 
 enum Format {
 	normal,
-	normalNomax,
+	quiet,
 	verbose,
-	verboseNomax,
 	veryVerbose,
-	veryVerboseNomax,
 	debug,
+	normalNomax,
+	verboseNomax,
+	veryVerboseNomax,
 	debugNomax,
 }
 
@@ -29,7 +30,7 @@ export class ProgressFormat {
 		if (showMax) {
 			type = verbosity as any
 		} else {
-			type = (verbosity + 'Nomax') as any
+			type = ((verbosity as any) + 'Nomax') as any
 		}
 
 		return Format[type] as any
@@ -60,6 +61,9 @@ export class ProgressFormat {
 			},
 			debugNomax: (c: ProgressStyle) => {
 				return `${c.current()} ${c.bar()} ${c.elapsed()} ${c.memory()}`
+			},
+			quiet: (c: ProgressStyle) => {
+				return ''
 			},
 		}
 
