@@ -1,7 +1,7 @@
 import { ProgressCounter } from './ProgressCounter'
 import { formatMemory, formatTime } from '../../helpers'
 
-interface Style {
+export interface BarStyle {
 	barWidth: number
 	barChar: string
 	emptyBarChar: string
@@ -9,14 +9,21 @@ interface Style {
 }
 
 export class ProgressStyle {
-	protected style: Style = {
+	protected style: BarStyle = {
 		barWidth: 28,
 		barChar: '=',
 		emptyBarChar: '-',
 		progressChar: '>',
 	}
 
-	constructor(protected counter: ProgressCounter) {}
+	/**
+	 * Allows the option to set a custom style.
+	 */
+	constructor(protected counter: ProgressCounter, style?: Partial<BarStyle>) {
+		if (style) {
+			this.style = { ...this.style, ...style }
+		}
+	}
 
 	/**
 	 * Calculate the amount of miliseconds the counter has been running.

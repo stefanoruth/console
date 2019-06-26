@@ -1,4 +1,4 @@
-import { extractNamespace, escapeshellarg, strlen, formatTime } from '../src/helpers'
+import { extractNamespace, escapeshellarg, strlen, formatTime, formatMemory } from '../src/helpers'
 import { Color } from '../src/Output/Style/Color'
 
 describe('Helpers', () => {
@@ -22,7 +22,7 @@ describe('Helpers', () => {
 	})
 
 	test('formatTime', () => {
-		const values = [
+		const values: Array<[number, string]> = [
 			[0, '< 1 sec'],
 			[1, '1 sec'],
 			[2, '2 secs'],
@@ -46,7 +46,25 @@ describe('Helpers', () => {
 		]
 
 		values.forEach(value => {
-			expect(formatTime((value as any)[0] * 1000)).toBe(value[1])
+			expect(formatTime(value[0] * 1000)).toBe(value[1])
+		})
+
+		expect(() => formatTime(-1)).toThrow()
+	})
+
+	test('formatMemory', () => {
+		const values: Array<[number, string]> = [
+			[0, '0 B'],
+			[1, '1 B'],
+			[2, '2 B'],
+			[1000, '1000 B'],
+			[1024, '1 KiB'],
+			[1024 * 1024, '1.0 MiB'],
+			[1024 * 1024 * 1024, '1.0 GiB'],
+		]
+
+		values.forEach(value => {
+			expect(formatMemory(value[0])).toBe(value[1])
 		})
 	})
 })

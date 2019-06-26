@@ -16,6 +16,8 @@ export class ProgressCounter {
 		if (max !== undefined) {
 			this.setMaxSteps(max)
 		}
+
+		return this
 	}
 
 	/**
