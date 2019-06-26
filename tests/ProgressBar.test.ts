@@ -1,4 +1,5 @@
 import { ProgressBar, ProgressCounter, ProgressFormat, ProgressStyle } from '../src/Output/ProgressBar'
+import { Mock } from 'ts-mockery'
 
 describe('ProgressBar', () => {
 	describe('Counter', () => {
@@ -86,6 +87,53 @@ describe('ProgressBar', () => {
 
 			c.advance(-10)
 			expect(c.getProgress()).toBe(0)
+		})
+	})
+
+	describe('Style', () => {
+		test('Calcuate elapsed time', () => {
+			const run = (dateFn: (d: Date) => number) => {
+				const c = Mock.of<ProgressCounter>({ getStartTime: () => dateFn(new Date()) })
+				const s = new ProgressStyle(c)
+
+				return s.elapsed().trim()
+			}
+
+			// expect(run(d => d.setDate(d.getDate() - 1))).toBe('1 day')
+			// expect(run(d => d.setHours(d.getHours() - 1))).toBe('1 hr')
+		})
+
+		test('Step widths', () => {
+			const run = (max?: number) => {
+				const c = new ProgressCounter()
+
+				if (max) {
+					c.setMaxSteps(max)
+				}
+
+				return new ProgressStyle(c).getStepWidth()
+			}
+
+			expect(run()).toBe(4)
+			expect(run(1)).toBe(1)
+			expect(run(99)).toBe(2)
+			expect(run(200)).toBe(3)
+			expect(run(50000)).toBe(5)
+		})
+
+		test('Display max step', () => {
+			const run = (max?: number) => {
+				const c = new ProgressCounter()
+
+				if (max) {
+					c.setMaxSteps(max)
+				}
+
+				return new ProgressStyle(c).max()
+			}
+
+			expect(run()).toBe('0')
+			expect(run(50)).toBe('50')
 		})
 	})
 })
