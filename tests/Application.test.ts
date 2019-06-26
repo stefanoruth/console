@@ -66,14 +66,14 @@ describe('Application', () => {
 		expect(new Application('foo', 'bar').getHelp()).toBe('foo bar')
 	})
 
-	test('Application can start', async () => {
-		const app = new Application()
-		app.setAutoExit(false)
+	// test('Application can start', async () => {
+	// 	const app = new Application()
+	// 	app.setAutoExit(false)
 
-		const code = await app.run(i, o)
+	// 	const code = await app.run(i, o)
 
-		expect(code).toBe(0)
-	})
+	// 	expect(code).toBe(0)
+	// })
 
 	// test('It can exit process automaticly', async () => {
 	// 	const exit = jest.spyOn(process, 'exit')
