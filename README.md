@@ -1,5 +1,7 @@
 # Typescript Console
 
+[![Build Status](https://travis-ci.org/stefanoruth/console.svg?branch=master)](https://travis-ci.org/stefanoruth/console)
+
 ## Todo
 
 - [ ] Command template
