@@ -6,6 +6,7 @@
 	"types": "dist/index.d.ts",
 	"dependencies": {
 		"@types/node": "^12.0.0",
+		"coveralls": "^3.0.4",
 		"typescript": "^3.2.4"
 	},
 	"scripts": {
@@ -17,7 +18,8 @@
 		"test": "jest --verbose=false",
 		"test:watch": "yarn test --watchAll",
 		"test:coverage": "yarn test --collectCoverage=true",
-		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*"
+		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
+		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls"
 	},
 	"devDependencies": {
 		"@types/jest": "^24.0.12",

@@ -1,6 +1,7 @@
 # Typescript Console
 
 [![Build Status](https://travis-ci.org/stefanoruth/console.svg?branch=master)](https://travis-ci.org/stefanoruth/console)
+[![Coverage Status](https://coveralls.io/repos/github/stefanoruth/console/badge.svg?branch=master)](https://coveralls.io/github/stefanoruth/console?branch=master)
 
 ## Todo
 
