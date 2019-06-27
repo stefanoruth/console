@@ -22,7 +22,7 @@
 		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls"
 	},
 	"devDependencies": {
-		"@types/jest": "^24.0.12",
+		"@types/jest": "^24.0.15",
 		"jest": "^24.8.0",
 		"ts-jest": "^24.0.2",
 		"ts-mockery": "^1.1.0",
