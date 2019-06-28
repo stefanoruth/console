@@ -76,6 +76,14 @@ describe('Terminal', () => {
 		expect(action).toHaveBeenCalledWith(0)
 	})
 
+	test('Get the enviroment', () => {
+		;(process.env as any).NODE_ENV = 'foobar'
+
+		const t = new Terminal()
+
+		expect(t.mode()).toBe('foobar')
+	})
+
 	test('Can promt the user', async () => {
 		jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
 		const action = jest.spyOn(readline, 'createInterface').mockImplementation(() => {
@@ -90,6 +98,23 @@ describe('Terminal', () => {
 		const t = new Terminal()
 
 		expect(await t.question('Foo')).toBe('y')
+		expect(action).toHaveBeenCalled()
+	})
+
+	test('Can promt the user hidden', async () => {
+		jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
+		const action = jest.spyOn(readline, 'createInterface').mockImplementation(() => {
+			return {
+				close: () => null,
+				question: (question: string, result: (answer: string) => void) => {
+					result('y')
+				},
+			} as any
+		})
+
+		const t = new Terminal()
+
+		expect(await t.hiddenQuestion('Foo')).toBe('y')
 		expect(action).toHaveBeenCalled()
 	})
 

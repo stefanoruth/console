@@ -13,6 +13,7 @@ enum Format {
 	verboseNomax,
 	veryVerboseNomax,
 	debugNomax,
+	quietNomax,
 }
 
 type FormatName = keyof typeof Format
@@ -25,15 +26,15 @@ export class ProgressFormat {
 	 */
 	getFormat(showMax: boolean): FormatName {
 		const verbosity = this.output.getVerbosity()
-		let type: FormatName
+		let type
 
 		if (showMax) {
-			type = verbosity as any
+			type = Format[verbosity as any]
 		} else {
-			type = ((verbosity as any) + 'Nomax') as any
+			type = (Format[verbosity as any] + 'Nomax') as any
 		}
 
-		return Format[type] as any
+		return type
 	}
 
 	getRenderFn(format: FormatName): DisplayProgress {
@@ -63,6 +64,9 @@ export class ProgressFormat {
 				return `${c.current()} ${c.bar()} ${c.elapsed()} ${c.memory()}`
 			},
 			quiet: (c: ProgressStyle) => {
+				return ''
+			},
+			quietNomax: (c: ProgressStyle) => {
 				return ''
 			},
 		}

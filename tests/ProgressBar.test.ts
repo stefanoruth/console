@@ -1,5 +1,7 @@
 import { ProgressBar, ProgressCounter, ProgressFormat, ProgressStyle } from '../src/Output/ProgressBar'
 import { Mock } from 'ts-mockery'
+import { Verbosity } from '../src/Output/Verbosity'
+import { Output, Terminal } from '../src'
 
 describe('ProgressBar', () => {
 	describe('Counter', () => {
@@ -231,5 +233,57 @@ describe('ProgressBar', () => {
 			c.finish()
 			expect(s.bar()).toBe('[=====]')
 		})
+	})
+
+	test('Render Format', () => {
+		const render = (verbosity: Verbosity, showMax: boolean) => {
+			const o = new Output(Mock.all<Terminal>())
+			const c = new ProgressCounter()
+
+			o.setVerbosity(verbosity)
+
+			const f = new ProgressFormat(o)
+
+			c.start()
+
+			if (showMax) {
+				c.setMaxSteps(80)
+			}
+
+			c.advance(20)
+
+			const formatType = f.getFormat(showMax)
+			const s = new ProgressStyle(c, { barWidth: 3 })
+
+			return f.getRenderFn(formatType)(s)
+		}
+
+		expect(render(Verbosity.normal, true)).toBe('20/80 [>--]  25%')
+		expect(render(Verbosity.normal, false)).toBe('  20 [==>]')
+		expect(render(Verbosity.verbose, true)).toBe('20/80 [>--]  25% < 1 sec')
+		expect(render(Verbosity.verbose, false)).toBe('  20 [==>] < 1 sec')
+		expect(render(Verbosity.veryVerbose, true)).toBe('20/80 [>--]  25% < 1 sec/< 1 sec')
+		expect(render(Verbosity.veryVerbose, false)).toBe('  20 [==>] < 1 sec')
+		expect(render(Verbosity.debug, true)).toBe('20/80 [>--]  25% < 1 sec/< 1 sec  500 B')
+		expect(render(Verbosity.debug, false)).toBe('  20 [==>] < 1 sec  500 B')
+		expect(render(Verbosity.quiet, true)).toBe('')
+		expect(render(Verbosity.quiet, false)).toBe('')
+	})
+
+	test('Public api', () => {
+		const write = jest.fn()
+		const t = Mock.of<Terminal>({ write, clearLine: jest.fn(), cursorReset: jest.fn() })
+		const o = new Output(t)
+		const b = new ProgressBar(o, t)
+
+		b.setMaxSteps(5)
+		b.start()
+		expect(write).toHaveBeenCalledTimes(1)
+		b.advance()
+		expect(write).toHaveBeenCalledTimes(2)
+		b.setProgress(4)
+		expect(write).toHaveBeenCalledTimes(3)
+		b.finish()
+		expect(write).toHaveBeenCalledTimes(4)
 	})
 })
