@@ -91,16 +91,46 @@ describe('ProgressBar', () => {
 	})
 
 	describe('Style', () => {
-		test('Calcuate elapsed time', () => {
-			const run = (dateFn: (d: Date) => number) => {
-				const c = Mock.of<ProgressCounter>({ getStartTime: () => dateFn(new Date()) })
-				const s = new ProgressStyle(c)
-
-				return s.elapsed().trim()
+		test('Change style', () => {
+			class TestStyle extends ProgressStyle {
+				getStyle() {
+					return this.style
+				}
 			}
 
-			// expect(run(d => d.setDate(d.getDate() - 1))).toBe('1 day')
-			// expect(run(d => d.setHours(d.getHours() - 1))).toBe('1 hr')
+			const s = new TestStyle(new ProgressCounter(), { barWidth: 10 })
+
+			expect(s.getStyle().barWidth).toBe(10)
+		})
+
+		test('Calcuate elapsed time', () => {
+			const s = (time: number) =>
+				new (class extends ProgressStyle {
+					runTime() {
+						return 1000 * time
+					}
+				})(new ProgressCounter())
+
+			expect(
+				s(60 * 60 * 24)
+					.elapsed()
+					.trim()
+			).toBe('1 day')
+		})
+
+		test('Calcuate elapsed time', () => {
+			const c = new ProgressCounter()
+			const s = new (class extends ProgressStyle {
+				runTime() {
+					return 1000 * 2 // 2 sec
+				}
+			})(c)
+
+			expect(() => s.estimated()).toThrow('Unable to display the estimated')
+			c.start(100)
+			c.advance(20)
+
+			expect(s.estimated().trim()).toBe('10 secs')
 		})
 
 		test('Step widths', () => {
@@ -134,6 +164,72 @@ describe('ProgressBar', () => {
 
 			expect(run()).toBe('0')
 			expect(run(50)).toBe('50')
+		})
+
+		test('Display progress without max', () => {
+			const c = new ProgressCounter()
+			const s = new ProgressStyle(c)
+
+			c.start()
+			expect(s.current()).toBe('   0')
+			expect(s.percent()).toBe('  0%')
+
+			c.advance()
+			expect(s.current()).toBe('   1')
+			expect(s.percent()).toBe('  0%')
+
+			c.advance(50)
+			expect(s.current()).toBe('  51')
+			expect(s.percent()).toBe('  0%')
+		})
+
+		test('Display progress with max', () => {
+			const c = new ProgressCounter()
+			const s = new ProgressStyle(c)
+
+			c.start(50)
+			expect(s.current()).toBe(' 0')
+			expect(s.percent()).toBe('  0%')
+			expect(s.max()).toBe('50')
+
+			c.advance()
+			expect(s.current()).toBe(' 1')
+			expect(s.percent()).toBe('  2%')
+			expect(s.max()).toBe('50')
+
+			c.advance(50)
+			expect(s.current()).toBe('51')
+			expect(s.percent()).toBe('100%')
+			expect(s.max()).toBe('51')
+		})
+
+		test('Display memory', () => {
+			const action = jest.spyOn(process, 'memoryUsage').mockImplementation(() => {
+				return {
+					heapUsed: 500 * 1024 * 1024,
+				} as any
+			})
+
+			const s = new ProgressStyle(new ProgressCounter())
+
+			expect(s.memory().trim()).toBe('500 B')
+			expect(action).toHaveBeenCalled()
+		})
+
+		test('Generate bar the damm bar', () => {
+			const c = new ProgressCounter()
+			const s = new ProgressStyle(c, { barWidth: 5 })
+			c.start()
+
+			expect(s.bar()).toBe('[>----]')
+			c.advance()
+			expect(s.bar()).toBe('[=>---]')
+			c.advance(2)
+			expect(s.bar()).toBe('[===>-]')
+			c.advance()
+			expect(s.bar()).toBe('[====>]')
+			c.finish()
+			expect(s.bar()).toBe('[=====]')
 		})
 	})
 })

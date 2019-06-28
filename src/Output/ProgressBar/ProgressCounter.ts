@@ -52,7 +52,6 @@ export class ProgressCounter {
 		this.percent = this.max ? this.step / this.max : 0
 
 		if (prevPeriod !== currPeriod || this.max === step) {
-			// console.log(this.step, this.percent)
 			return true
 		}
 
