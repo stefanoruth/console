@@ -58,16 +58,53 @@ export class Terminal {
 	}
 
 	/**
+	 * Get mode/environment for the application.
+	 */
+	mode() {
+		return process.env.NODE_ENV
+	}
+
+	/**
+	 * Ask the user a hidden Question.
+	 */
+	hiddenQuestion(question: string, newLine: boolean = true): Promise<string> {
+		return new Promise(resolve => {
+			const ogWrite = process.stdout.write
+			// tslint:disable-next-line:no-empty
+			const noop: any = () => {}
+
+			const r = readline.createInterface({
+				input: process.stdin,
+				output: process.stdout,
+			})
+
+			this.write(question + (newLine && '\n'))
+
+			// Mute
+			process.stdout.write = noop
+
+			r.question('', (answer: string) => {
+				r.close()
+
+				// Unmute
+				process.stdout.write = ogWrite
+
+				return resolve(answer)
+			})
+		})
+	}
+
+	/**
 	 * Ask the user a Question.
 	 */
-	question(question: string): Promise<string> {
+	question(question: string, newLine: boolean = true): Promise<string> {
 		return new Promise(resolve => {
 			const r = readline.createInterface({
 				input: process.stdin,
 				output: process.stdout,
 			})
 
-			r.question(question, (answer: string) => {
+			r.question(question + (newLine && '\n'), (answer: string) => {
 				r.close()
 				return resolve(answer)
 			})

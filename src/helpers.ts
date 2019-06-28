@@ -40,6 +40,9 @@ export function extractNamespace(commandName: string): string {
 	return parts.join(':')
 }
 
+/**
+ * Format time based on seconds.
+ */
 export function formatTime(time: number) {
 	// Date.getTime() in miliseconds
 	time = time / 1000
@@ -74,6 +77,9 @@ export function formatTime(time: number) {
 	throw new Error(`Out of scope timeformat: ${time}`)
 }
 
+/**
+ * Format the usage of memory.
+ */
 export function formatMemory(memory: number) {
 	if (memory >= 1024 * 1024 * 1024) {
 		return `${(memory / 1024 / 1024 / 1024).toFixed(1)} GiB`

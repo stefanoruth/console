@@ -1,23 +1,22 @@
-import { Output } from '../Output'
-import { Input } from '../../Input/Input'
+import { Question } from './Question'
 
-export class ConfirmToProceed {
-	constructor(protected input: Input, protected output: Output) {}
-
+export class ConfirmToProceed extends Question {
 	/**
 	 * Confirm before proceeding with the action.
 	 *
 	 * This method only asks for confirmation in production.
 	 */
-	confirm(warning: string = 'Application In Production!', callback?: (() => boolean) | boolean): boolean {
-		callback = !callback ? this.getDefaultConfirmCallback() : callback
+	async confirm(warning: string = 'Application In Production!', callback?: () => boolean) {
+		if (!callback) {
+			callback = this.getDefaultConfirmCallback()
+		}
 
-		const shouldConfirm = typeof callback === 'function' ? callback() : callback
+		const shouldConfirm = callback()
 
 		if (shouldConfirm) {
-			if (this.input.hasOption('force')) {
-				return true
-			}
+			// if (this.input.hasOption('force')) {
+			// 	return true
+			// }
 
 			this.output.warning(warning)
 
@@ -28,6 +27,7 @@ export class ConfirmToProceed {
 				return false
 			}
 		}
+
 		return true
 	}
 
@@ -36,7 +36,13 @@ export class ConfirmToProceed {
 	 */
 	protected getDefaultConfirmCallback(): () => boolean {
 		return () => {
-			return process.env.NODE_ENV === 'production'
+			const mode = this.terminal.mode()
+
+			if (!mode) {
+				return false
+			}
+
+			return mode.toLowerCase() === 'production'
 		}
 	}
 }

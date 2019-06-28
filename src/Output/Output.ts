@@ -1,11 +1,10 @@
-import { ColorName, Color } from './Style/Color'
-import { ProgressBar } from './ProgressBar/ProgressBar'
-import { Table } from './Table/Table'
-import { Question } from './Question/Question'
+import { ColorName, Formatter } from './Style'
+import { ProgressBar } from './ProgressBar'
+import { Table } from './Table'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
-import { Formatter } from './Style/Formatter'
 import { Terminal } from './Terminal'
+import { HiddenQuestion, ConfirmationQuestion, ChoiceQuestion, ConfirmToProceed, Question } from './Question'
 
 export class Output {
 	protected verbosity: Verbosity = Verbosity.normal
@@ -135,30 +134,41 @@ export class Output {
 	}
 
 	/**
-	 * Ask the user for a question.
+	 * Asks a question.
 	 */
 	async ask(question: string) {
-		return new Question().ask(question)
+		return new Question(this, this.terminal).ask(question)
 	}
 
 	/**
-	 * Ask a user for a question.
+	 * Asks a question with the user input hidden.
 	 */
-	async askQuestion(question: Question) {
-		throw new Error('Not yet implemented.')
+	async askHidden(question: string) {
+		return new HiddenQuestion(this, this.terminal).ask(question)
 	}
 
 	/**
-	 * Ask the user if they really wanna do it.
+	 * Asks for confirmation.
 	 */
-	async confirm(question: string, defaultValue: boolean = true): Promise<boolean> {
-		throw new Error('Not yet implemented.')
+	async confirm(question: string): Promise<boolean> {
+		return new ConfirmationQuestion(this, this.terminal).confirm(question)
+	}
+
+	/**
+	 * Asks a choice question.
+	 */
+	async choice(question: string, choices: string[]) {
+		return new ChoiceQuestion(this, this.terminal).choose(question, choices)
+	}
+
+	async confirmToProceed(warning?: string) {
+		return new ConfirmToProceed(this, this.terminal).confirm(warning)
 	}
 
 	/**
 	 * Start a new progress bar
 	 */
 	progressBar(): ProgressBar {
-		return new ProgressBar(this, this.writer.getTerminal())
+		return new ProgressBar(this, this.terminal)
 	}
 }

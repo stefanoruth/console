@@ -1,17 +1,22 @@
-import rl from 'readline'
+import { Terminal } from '../Terminal'
+import { Output } from '../Output'
 
 export class Question {
-	ask(question: string, defaultValue: boolean = true): Promise<string> {
-		return new Promise(resolve => {
-			const r = rl.createInterface({
-				input: process.stdin,
-				output: process.stdout,
-			})
+	constructor(protected output: Output, protected terminal: Terminal) {}
 
-			r.question(question + '\n', (answer: string) => {
-				r.close()
-				resolve(answer)
-			})
-		})
+	/**
+	 * Asks a question.
+	 */
+	async ask(question: string) {
+		return this.terminal.question(question).then(res => this.formatAnswer(res))
+	}
+
+	/**
+	 * Format the user's answer.
+	 */
+	protected formatAnswer(answer: string): string | null {
+		answer = answer.trim()
+
+		return answer.length > 0 ? answer : null
 	}
 }
