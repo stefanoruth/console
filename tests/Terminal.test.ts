@@ -3,7 +3,7 @@ import readline from 'readline'
 
 describe('Terminal', () => {
 	test('Can write to the cli', () => {
-		const action = jest.spyOn(process.stdout, 'write')
+		const action = jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
 
 		const t = new Terminal()
 
@@ -13,7 +13,7 @@ describe('Terminal', () => {
 	})
 
 	test('Can write to the error cli', () => {
-		const action = jest.spyOn(process.stderr, 'write')
+		const action = jest.spyOn(process.stderr, 'write').mockImplementation(() => true)
 
 		const t = new Terminal()
 
