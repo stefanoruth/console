@@ -22,7 +22,6 @@ export class Application {
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
 	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
-	protected terminal: Terminal = new Terminal()
 
 	/**
 	 * Build Console Application.
@@ -53,15 +52,19 @@ export class Application {
 	/**
 	 * Run the Commands.
 	 */
-	async run(input?: Input, output?: Output) {
+	async run(input?: Input, output?: Output, terminal?: Terminal): Promise<number> {
 		let exitCode: number = 0
+
+		if (!terminal) {
+			terminal = new Terminal()
+		}
 
 		if (!input) {
 			input = new Input()
 		}
 
 		if (!output) {
-			output = new Output()
+			output = new Output(terminal)
 		}
 
 		const commandName: string = this.commandRegistry.getCommandName(input)
@@ -85,7 +88,7 @@ export class Application {
 		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
 
 		if (this.autoExit) {
-			this.terminal.exit(exitCode)
+			terminal.exit(exitCode)
 		}
 
 		return exitCode

@@ -1,7 +1,7 @@
 import { Command } from '../src/Commands/Command'
 import { Signature, Argument, Input } from '../src/Input'
 import { Application } from '../src/Application'
-import { Output } from '../src/Output'
+import { Output, Terminal } from '../src/Output'
 import { ListCommand, InspireCommand, HelpCommand } from '../src/Commands'
 import { Mock } from 'ts-mockery'
 
@@ -14,15 +14,15 @@ class TestCommand extends Command {
 }
 
 process.on('unhandledRejection', err => {
-	console.log(err)
+	console.error(err)
 })
 
 describe('Command', () => {
 	test('Public api', async () => {
 		const a = new Application('foobar')
 		const s = new Signature([new Argument('foo')])
-		const i: Input = {} as any
-		const o: Output = {} as any
+		const i = new Input()
+		const o = new Output(Mock.all<Terminal>())
 
 		const c = new (class extends TestCommand {
 			protected description = 'desc'
@@ -51,8 +51,8 @@ describe('Command', () => {
 		test('List Command', async () => {
 			const c = new ListCommand()
 			c.setApplication(new Application())
-			const i = Mock.of<Input>()
-			const o = Mock.of<Output>({ line: jest.fn() })
+			const i = new Input()
+			const o = new Output(Mock.all<Terminal>())
 
 			expect(c.getName()).toBe('list')
 			expect(c.getDescription()).toBeTruthy()
@@ -63,7 +63,7 @@ describe('Command', () => {
 		test('Inspire Command', async () => {
 			const c = new InspireCommand()
 			const fn = jest.fn()
-			const i = Mock.of<Input>()
+			const i = new Input()
 			const o = Mock.of<Output>({ success: fn })
 
 			expect(c.getName()).toBe('inspire')
@@ -77,27 +77,39 @@ describe('Command', () => {
 		describe('Help Command', () => {
 			test('Simple use', async () => {
 				const c = new HelpCommand()
+				c.setApplication(new Application())
+
+				const i = new Input(['help', 'list'])
+				const o = new Output(Mock.all<Terminal>())
 
 				expect(c.getName()).toBe('help')
 				expect(c.getDescription()).toBeTruthy()
-				// expect(() => c.handle()).not.toThrow()
+				// expect(() => c.execute(i, o)).not.toThrow()
 			})
 
 			test('With command', async () => {
 				const c = new HelpCommand()
-				c.setCommand(
-					new (class extends Command {
-						protected name = 'foo'
+				const app = new Application()
+				c.setApplication(app)
 
-						async handle() {
-							//
-						}
-					})()
-				)
+				const fooCommand = new (class extends Command {
+					protected name = 'foo'
+
+					async handle() {
+						//
+					}
+				})()
+
+				fooCommand.setApplication(app)
+
+				c.setCommand(fooCommand)
+
+				const i = new Input()
+				const o = new Output(Mock.all<Terminal>())
 
 				expect(c.getName()).toBe('help')
 				expect(c.getDescription()).toBeTruthy()
-				// expect(() => c.handle()).not.toThrow()
+				expect(() => c.execute(i, o)).not.toThrow()
 			})
 		})
 	})

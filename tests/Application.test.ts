@@ -1,4 +1,4 @@
-import { Application, Command, Output, Input } from '../src/index'
+import { Application, Command, Output, Input, Terminal } from '../src/index'
 import { ListCommand } from '../src/Commands'
 import { Mock } from 'ts-mockery'
 import { Verbosity } from '../src/Output/Verbosity'
@@ -15,10 +15,6 @@ class TestCommand extends Command {
 		//
 	}
 }
-
-const i = new Input()
-const o = new Output()
-o.setVerbosity(Verbosity.quiet)
 
 describe('Application', () => {
 	test('Bootstrapping', () => {
@@ -53,7 +49,7 @@ describe('Application', () => {
 
 		app.register([new TestCommand('a'), new TestCommand('b')])
 
-		expect(app.getCommands().length).toBe(2)
+		expect(app.getCommands().length).toBe(3 + 2)
 	})
 
 	test('Find a command', () => {
@@ -66,14 +62,27 @@ describe('Application', () => {
 		expect(new Application('foo', 'bar').getHelp()).toBe('foo bar')
 	})
 
-	// test('Application can start', async () => {
-	// 	const app = new Application()
-	// 	app.setAutoExit(false)
+	test('Application can autoexit', async () => {
+		const app = new Application()
+		const t = Mock.all<Terminal>()
 
-	// 	const code = await app.run(i, o)
+		const code = await app.run(undefined, undefined, t)
 
-	// 	expect(code).toBe(0)
-	// })
+		expect(code).toBe(0)
+		expect(t.exit).toBeCalled()
+	})
+
+	test('Application can keep runing without exiting the process', async () => {
+		const app = new Application()
+		const t = Mock.all<Terminal>()
+
+		app.setAutoExit(false)
+
+		const code = await app.run(undefined, undefined, t)
+
+		expect(code).toBe(0)
+		expect(t.exit).not.toBeCalled()
+	})
 
 	// test('It can exit process automaticly', async () => {
 	// 	const exit = jest.spyOn(process, 'exit')

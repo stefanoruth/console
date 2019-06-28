@@ -8,12 +8,19 @@ export class CommandRegistry {
 	protected wantHelps: boolean = false
 	protected defaultCommand: string = 'list'
 	protected singleCommand: boolean = false
-	protected initialized: boolean = false
 
 	/**
 	 * Initialize the command registry.
 	 */
-	constructor(protected application: Application) {}
+	constructor(protected application: Application, defaultCommands?: Command[]) {
+		if (typeof defaultCommands === 'undefined') {
+			defaultCommands = [new HelpCommand(), new ListCommand(), new InspireCommand()]
+		}
+
+		defaultCommands.forEach(command => {
+			this.addCommand(command)
+		})
+	}
 
 	/**
 	 * Adds a command object.
@@ -32,13 +39,6 @@ export class CommandRegistry {
 	}
 
 	/**
-	 * Gets the default commands that should always be available.
-	 */
-	protected getDefaultCommands() {
-		return [new HelpCommand(), new ListCommand(), new InspireCommand()]
-	}
-
-	/**
 	 * Fetches a list of commands that are registered
 	 */
 	getCommands(): Command[] {
@@ -49,8 +49,6 @@ export class CommandRegistry {
 	 * Returns a registered command by name or alias.
 	 */
 	protected get(name: string): Command {
-		this.init()
-
 		if (!this.has(name)) {
 			throw new CommandNotFoundException(`Command "${name}" is not defined.`)
 		}
@@ -71,8 +69,6 @@ export class CommandRegistry {
 	 * Returns true if the command exists, false otherwise.
 	 */
 	protected has(name: string) {
-		this.init()
-
 		if (typeof this.commands[name] !== 'undefined') {
 			return true
 		}
@@ -87,32 +83,11 @@ export class CommandRegistry {
 	 * match if you give it an abbreviation of a name or alias.
 	 */
 	find(name: string): Command {
-		this.init()
-
-		if (typeof this.commands[name] === 'undefined') {
+		if (!this.has(name)) {
 			throw new CommandNotFoundException(`Command "${name}" is not defined.`)
 		}
 
-		if (this.has(name)) {
-			return this.get(name)
-		}
-
-		throw new Error('Not yet implmeneted this part.')
-	}
-
-	/**
-	 * Add base commands to the list of commands.
-	 */
-	protected init() {
-		if (this.initialized) {
-			return
-		}
-
-		this.initialized = true
-
-		this.getDefaultCommands().forEach(command => {
-			this.addCommand(command)
-		})
+		return this.get(name)
 	}
 
 	/**

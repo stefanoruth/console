@@ -5,11 +5,14 @@ import { Question } from './Question/Question'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Formatter } from './Style/Formatter'
+import { Terminal } from './Terminal'
 
 export class Output {
+	protected verbosity: Verbosity = Verbosity.normal
+
 	constructor(
-		protected verbosity: Verbosity = Verbosity.normal,
-		protected writer: Writer = new Writer(),
+		protected terminal: Terminal,
+		protected writer: Writer = new Writer(terminal),
 		protected style: Formatter = new Formatter()
 	) {}
 
