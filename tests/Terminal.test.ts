@@ -93,9 +93,12 @@ describe('Terminal', () => {
 	})
 
 	test('Get the size of the cli', () => {
+		;(process.stdout as any).columns = 123
+		;(process.stdout as any).rows = 321
+
 		const t = new Terminal()
 
-		expect(t.width()).toBeTruthy()
-		expect(t.height()).toBeTruthy()
+		expect(t.width()).toBe(123)
+		expect(t.height()).toBe(321)
 	})
 })
