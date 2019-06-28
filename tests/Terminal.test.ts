@@ -77,6 +77,7 @@ describe('Terminal', () => {
 	})
 
 	test('Can promt the user', async () => {
+		jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
 		const action = jest.spyOn(readline, 'createInterface').mockImplementation(() => {
 			return {
 				close: () => null,
