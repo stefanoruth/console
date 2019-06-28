@@ -5,14 +5,7 @@ import { Terminal } from './Terminal'
 export class Writer {
 	protected bufferedOutput: BufferedOutput = new BufferedOutput()
 
-	constructor(protected terminal: Terminal = new Terminal()) {}
-
-	/**
-	 * Fetch the terminal.
-	 */
-	getTerminal() {
-		return this.terminal
-	}
+	constructor(protected terminal: Terminal) {}
 
 	/**
 	 * Writes a message to the output.

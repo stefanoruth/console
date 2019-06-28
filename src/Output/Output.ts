@@ -161,6 +161,9 @@ export class Output {
 		return new ChoiceQuestion(this, this.terminal).choose(question, choices)
 	}
 
+	/**
+	 * Asks for confirmation to proceed.
+	 */
 	async confirmToProceed(warning?: string) {
 		return new ConfirmToProceed(this, this.terminal).confirm(warning)
 	}

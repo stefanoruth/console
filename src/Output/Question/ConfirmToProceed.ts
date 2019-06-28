@@ -20,7 +20,7 @@ export class ConfirmToProceed extends Question {
 
 			this.output.warning(warning)
 
-			const confirmed = this.output.confirm('Do you really wish to run this command?')
+			const confirmed = await this.output.confirm('Do you really wish to run this command?')
 
 			if (!confirmed) {
 				this.output.comment('Command Cancelled!')

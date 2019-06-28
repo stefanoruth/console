@@ -60,6 +60,8 @@ describe('Application', () => {
 		expect(new Application().getHelp()).toBe('Console Tool')
 		expect(new Application('foo').getHelp()).toBe('foo')
 		expect(new Application('foo', 'bar').getHelp()).toBe('foo bar')
+
+		expect(new Application().run(new Input(['--version']), undefined, Mock.all<Terminal>()))
 	})
 
 	test('Application can autoexit', async () => {
@@ -84,12 +86,38 @@ describe('Application', () => {
 		expect(t.exit).not.toBeCalled()
 	})
 
-	// test('It can exit process automaticly', async () => {
-	// 	const exit = jest.spyOn(process, 'exit')
-	// 	const app = Mock.of<Application>({ terminal: 'a' })
+	test('Change verbosity', () => {
+		const run = (args: string) => {
+			const t = Mock.all<Terminal>()
+			const o = new Output(t)
 
-	// 	await new Application().run(i, o)
+			const app = new Application()
 
-	// 	expect(exit).toHaveBeenCalledWith(0)
-	// })
+			app.run(new Input([args]), o, t)
+
+			return o
+		}
+
+		expect(run('').getVerbosity()).toBe(Verbosity.normal)
+		expect(run('-v').getVerbosity()).toBe(Verbosity.verbose)
+		expect(run('-vv').getVerbosity()).toBe(Verbosity.veryVerbose)
+		expect(run('-vvv').getVerbosity()).toBe(Verbosity.debug)
+		expect(run('-q').getVerbosity()).toBe(Verbosity.quiet)
+	})
+
+	test('Change interactivity', () => {
+		const run = (args: string) => {
+			const t = Mock.all<Terminal>()
+			const o = new Output(t)
+			const i = new Input([args])
+			const app = new Application()
+
+			app.run(i, o, t)
+
+			return i
+		}
+
+		expect(run('-n').isInteractive()).toBeFalsy()
+		expect(run('').isInteractive()).toBeTruthy()
+	})
 })
