@@ -6,16 +6,9 @@ export class ListCommand extends Command {
 	protected description = 'Lists commands'
 
 	/**
-	 * Inject this so it simpler to test.
-	 */
-	constructor(protected descriptor: Descriptor = new Descriptor()) {
-		super()
-	}
-
-	/**
 	 * Descripe the application it self.
 	 */
 	async handle() {
-		this.descriptor.describe(this.output, this.getApplication())
+		new Descriptor(this.output).describe(this.getApplication())
 	}
 }

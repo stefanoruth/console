@@ -15,15 +15,12 @@ export interface DescriptorOptions {
 }
 
 export class Descriptor {
-	protected output?: Output
-	protected style: Formatter = new Formatter()
+	constructor(protected output: Output, protected style: Formatter = new Formatter()) {}
 
 	/**
 	 * Describes an object if supported.
 	 */
-	describe(output: Output, object: any, options: DescriptorOptions = {}) {
-		this.output = output
-
+	describe(object: any, options: DescriptorOptions = {}) {
 		switch (true) {
 			case object instanceof Argument:
 				this.describeArgument(object, options)
@@ -43,15 +40,14 @@ export class Descriptor {
 			default:
 				throw new Error(`Object of type "${object.constructor.name}" is not describable.`)
 		}
+
+		return this
 	}
 
 	/**
 	 * Writes content to output.
 	 */
 	protected write(content: string, color?: ColorName) {
-		if (!this.output) {
-			throw new Error('Output has not yet been set.')
-		}
 		this.output.line(content, false, color)
 	}
 
@@ -66,7 +62,11 @@ export class Descriptor {
 		}
 
 		const totalWidth = options.totalWidth || argument.getName().length
-		const spacingWidth = totalWidth - argument.getName().length
+		let spacingWidth = totalWidth - argument.getName().length
+
+		if (spacingWidth === 0) {
+			spacingWidth = 1
+		}
 
 		const line: string[] = []
 		line.push('  ' + this.style.success(argument.getName()))
@@ -74,7 +74,7 @@ export class Descriptor {
 		// + 4 = 2 spaces before <info>, 2 spaces after </info>
 		line.push(argument.getDescription().replace(/\s*[\r\n]\s*/g, '\n' + ' '.repeat(totalWidth + 4)))
 		line.push(defaultValue)
-		this.write(line.join(''))
+		this.write(line.join('').trimRight())
 	}
 
 	/**
@@ -116,7 +116,7 @@ export class Descriptor {
 		line.push(defaultValue)
 		line.push(options.isArray ? this.style.comment(' (multiple values allowed)') : '')
 
-		this.write(line.join(''))
+		this.write(line.join('').trimRight())
 	}
 
 	/**
@@ -294,15 +294,11 @@ export class Descriptor {
 	/**
 	 * Calculate max column width
 	 */
-	protected getColumnWidth(commands: Array<Command | string>): number {
+	protected getColumnWidth(commands: Command[]): number {
 		const widths: number[] = [0]
 
 		commands.forEach(command => {
-			if (command instanceof Command) {
-				widths.push(command.getName().length)
-			} else {
-				widths.push(command.length)
-			}
+			widths.push(command.getName().length)
 		})
 
 		return Math.max.apply(null, widths) + 2

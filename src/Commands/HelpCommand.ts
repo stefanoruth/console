@@ -9,21 +9,16 @@ export class HelpCommand extends Command {
 	protected signature = new Signature([new Argument('command_name', ArgumentMode.optional, 'The command name', 'help')])
 
 	/**
-	 * Inject this so it simpler to test.
-	 */
-	constructor(protected descriptor: Descriptor = new Descriptor()) {
-		super()
-	}
-
-	/**
 	 * Help users learn more about the current command.
 	 */
 	async handle() {
+		const descriptor = new Descriptor(this.output)
+
 		if (this.command === null) {
 			this.command = this.getApplication().find(this.input.getArgument('command_name'))
 		}
 
-		this.descriptor.describe(this.output, this.command)
+		descriptor.describe(this.command)
 	}
 
 	/**

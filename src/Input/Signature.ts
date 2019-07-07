@@ -2,7 +2,7 @@ import { Argument } from './Argument'
 import { Option } from './Option'
 import { InvalidArgumentException, LogicException } from '../Exceptions'
 
-type CommandSignature = Array<Argument | Option>
+export type CommandSignature = Array<Argument | Option>
 
 export class Signature {
 	protected arguments: { [k: string]: Argument } = {}
