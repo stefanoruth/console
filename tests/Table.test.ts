@@ -7,6 +7,10 @@ class TestTable extends Table {
 	getWidth() {
 		return this.columnWidths
 	}
+
+	getStyle() {
+		return this.style
+	}
 }
 
 function getMock() {
@@ -98,5 +102,39 @@ describe('Table', () => {
 		t.setHeaders(['A', 'B'])
 
 		expect(t.render()).toBe(undefined)
+	})
+
+	describe('Table Styles', () => {
+		test('default style', () => {
+			const t = getMock()
+
+			t.setStyle('default')
+
+			expect(t.getStyle().horizontalInsideBorderChar).toBe('-')
+			expect(t.getStyle().verticalInsideBorderChar).toBe('|')
+		})
+
+		test('slim style', () => {
+			const t = getMock()
+
+			t.setStyle('slim')
+
+			expect(t.getStyle().horizontalInsideBorderChar).toBe('─')
+			expect(t.getStyle().verticalInsideBorderChar).toBe('│')
+		})
+
+		test('custom style', () => {
+			const t = getMock()
+
+			const s = new TableStyle({
+				horizontalInsideBorderChar: 'a',
+				verticalInsideBorderChar: 'b',
+			})
+
+			t.setStyle(s)
+
+			expect(t.getStyle().horizontalInsideBorderChar).toBe('a')
+			expect(t.getStyle().verticalInsideBorderChar).toBe('b')
+		})
 	})
 })

@@ -119,12 +119,10 @@ export class Table {
 	 * Change the style of the table.
 	 */
 	setStyle(styleType: TableStyle | 'default' | 'slim') {
-		let style: TableStyle
-
 		if (styleType === 'default') {
-			style = new TableStyle()
+			this.style = new TableStyle()
 		} else if (styleType === 'slim') {
-			style = new TableStyle({
+			this.style = new TableStyle({
 				horizontalOutsideBorderChar: '─',
 				horizontalInsideBorderChar: '─',
 				verticalOutsideBorderChar: '│',
@@ -143,7 +141,7 @@ export class Table {
 				crossingTopRightBottomChar: '┤',
 			})
 		} else {
-			style = styleType
+			this.style = styleType
 		}
 
 		return this
