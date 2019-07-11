@@ -6,7 +6,6 @@
 	"types": "dist/index.d.ts",
 	"dependencies": {
 		"@types/node": "^12.6.2",
-		"coveralls": "^3.0.4",
 		"typescript": "^3.5.3"
 	},
 	"scripts": {
@@ -19,15 +18,19 @@
 		"test:watch": "yarn test --watchAll",
 		"test:coverage": "yarn test --collectCoverage=true",
 		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
-		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls"
+		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls",
+		"docs:dev": "vuepress dev docs",
+		"docs:build": "vuepress build docs"
 	},
 	"devDependencies": {
 		"@types/jest": "^24.0.15",
+		"coveralls": "^3.0.4",
 		"jest": "^24.8.0",
 		"ts-jest": "^24.0.2",
 		"ts-mockery": "^1.1.0",
 		"tslint": "^5.18.0",
-		"tslint-config-prettier": "^1.17.0"
+		"tslint-config-prettier": "^1.17.0",
+		"vuepress": "^1.0.2"
 	},
 	"jest": {
 		"preset": "ts-jest",
