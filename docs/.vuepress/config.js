@@ -2,11 +2,23 @@ module.exports = {
 	title: 'Console',
 	description: 'Just playing around',
 	themeConfig: {
+		search: false,
+		repo: 'stefanoruth/console',
+		editLinks: true,
+		lastUpdated: 'Last Updated',
 		nav: [
 			{ text: 'Home', link: '/' },
-			{ text: 'Guide', link: '/setup/' },
-			{ text: 'External', link: 'https://google.com' },
+			{ text: 'Guide', link: '/guide/' },
+			{ text: 'Changelog', link: 'https://github.com/stefanoruth/console/releases' },
 		],
-		sidebar: 'auto',
+		sidebar: {
+			'/guide/': [
+				{
+					title: 'Guide',
+					collapsable: false,
+					children: ['', 'getting-started', 'table'],
+				},
+			],
+		},
 	},
 }
