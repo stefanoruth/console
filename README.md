@@ -5,20 +5,20 @@
 
 ## Todo
 
-- [ ] Command template
+- [X] Command template
 - [X] Signature
 - [X] Options (`command -s --long --options="available"`)
 - [X] Arguments (`command args send to command`)
 - [ ] Text Output
 - [ ] Color Output
-- [ ] Table Output
-- [ ] ProgressBar Output
+- [X] Table Output
+- [X] ProgressBar Output
 - [X] HelperCommand
 - [X] ListCommand
 - [ ] ErrorHandler
 - [ ] Input Parser
-- [ ] EventDispatcher
-- [ ] Events
+- [X] EventDispatcher
+- [X] Events
 - [ ] Question Output
 - [ ] Confirm Outout
 - [ ] Automatic command suggestion
