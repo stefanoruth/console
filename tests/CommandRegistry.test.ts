@@ -1,9 +1,9 @@
-import { CommandRegistry } from '../src/CommandRegistry'
+import { Registry } from '../src/Commands/Registry'
 import { Mock } from 'ts-mockery'
 import { Input } from '../src/Input'
 import { ListCommand, InspireCommand, HelpCommand } from '../src/Commands'
 
-class Registry extends CommandRegistry {
+class TestRegistry extends Registry {
 	testValidName(name: string) {
 		return this.validateName(name)
 	}
@@ -18,7 +18,7 @@ class Registry extends CommandRegistry {
 }
 
 function registry() {
-	return new Registry({} as any)
+	return new TestRegistry({} as any)
 }
 
 describe('CommandRegistry', () => {

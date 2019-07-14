@@ -2,7 +2,7 @@ import { Command } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { CommandNotFoundException } from './Exceptions'
 import { Output, ErrorHandler, Terminal } from './Output'
-import { CommandRegistry } from './CommandRegistry'
+import { Registry } from './Commands/Registry'
 import {
 	EventDispatcher,
 	ApplicationStarting,
@@ -21,7 +21,7 @@ export class Application {
 	protected autoExit: boolean = true
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
-	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
+	protected commandRegistry: Registry = new Registry(this)
 
 	/**
 	 * Build Console Application.

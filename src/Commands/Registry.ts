@@ -1,9 +1,9 @@
-import { Command, HelpCommand, ListCommand, InspireCommand } from './Commands'
-import { Application } from './Application'
-import { CommandNotFoundException, InvalidArgumentException } from './Exceptions'
-import { Input } from './Input'
+import { Command, HelpCommand, ListCommand, InspireCommand } from '.'
+import { Application } from '../Application'
+import { CommandNotFoundException, InvalidArgumentException } from '../Exceptions'
+import { Input } from '../Input'
 
-export class CommandRegistry {
+export class Registry {
 	protected commands: { [key: string]: Command } = {}
 	protected wantHelps: boolean = false
 	protected defaultCommand: string = 'list'
