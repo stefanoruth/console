@@ -1,5 +1,6 @@
 import { Output, Terminal } from '../src'
 import { Mock } from 'ts-mockery'
+import { ChoiceQuestion } from '../src/Output/Question'
 
 describe('Question', () => {
 	test('Simple question', async () => {
@@ -50,5 +51,19 @@ describe('Question', () => {
 		expect(await run('', 'development')).toBe(true)
 		expect(await run('', 'production')).toBe(false)
 		expect(await run('')).toBe(true)
+	})
+
+	test('Choice Question', async () => {
+		const run = (answer: string, mode?: string) => {
+			const action = jest.fn().mockImplementation(async (q: string) => {
+				return answer
+			})
+			const t = Mock.of<Terminal>({ question: action, write: jest.fn(), mode: () => mode })
+			const o = new Output(t)
+
+			return new ChoiceQuestion(o, t)
+		}
+
+		await expect(run('red').choose('Select color', ['red', 'blue'])).rejects.toThrow()
 	})
 })

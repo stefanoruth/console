@@ -155,13 +155,6 @@ export class Output {
 	}
 
 	/**
-	 * Asks a choice question.
-	 */
-	async choice(question: string, choices: string[]) {
-		return new ChoiceQuestion(this, this.terminal).choose(question, choices)
-	}
-
-	/**
 	 * Asks for confirmation to proceed.
 	 */
 	async confirmToProceed(warning?: string) {

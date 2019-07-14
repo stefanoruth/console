@@ -1,8 +1,7 @@
-import { Command } from '../src/Commands/Command'
-import { Signature, Argument, Input } from '../src/Input'
+import { Signature, Argument, Input, CommandSignature } from '../src/Input'
 import { Application } from '../src/Application'
 import { Output, Terminal } from '../src/Output'
-import { ListCommand, InspireCommand, HelpCommand } from '../src/Commands'
+import { ListCommand, InspireCommand, HelpCommand, Command } from '../src/Commands'
 import { Mock } from 'ts-mockery'
 
 class TestCommand extends Command {
@@ -11,6 +10,27 @@ class TestCommand extends Command {
 	async handle() {
 		//
 	}
+}
+
+const testCommand = async (callback: (i: Input) => void, input: string[] = [], signature: CommandSignature = []) => {
+	const a = new Application('foobar')
+	const s = new Signature(signature)
+	const i = new Input(input)
+	const o = new Output(Mock.all<Terminal>())
+
+	const c = new class extends TestCommand {
+		protected description = 'desc'
+		protected help = 'help'
+		protected signature = s
+
+		async handle() {
+			callback(this.input)
+		}
+	}()
+
+	c.setApplication(a)
+
+	return c.execute(i, o)
 }
 
 process.on('unhandledRejection', err => {
@@ -24,11 +44,11 @@ describe('Command', () => {
 		const i = new Input()
 		const o = new Output(Mock.all<Terminal>())
 
-		const c = new (class extends TestCommand {
+		const c = new class extends TestCommand {
 			protected description = 'desc'
 			protected help = 'help'
 			protected signature = s
-		})()
+		}()
 
 		expect(() => c.getApplication()).toThrow()
 		expect(() => c.input).toThrow()
@@ -92,13 +112,13 @@ describe('Command', () => {
 				const app = new Application()
 				c.setApplication(app)
 
-				const fooCommand = new (class extends Command {
+				const fooCommand = new class extends Command {
 					protected name = 'foo'
 
 					async handle() {
 						//
 					}
-				})()
+				}()
 
 				fooCommand.setApplication(app)
 
@@ -112,5 +132,15 @@ describe('Command', () => {
 				expect(() => c.execute(i, o)).not.toThrow()
 			})
 		})
+	})
+
+	test('Command inputs', async () => {
+		await testCommand(
+			i => {
+				expect(i.getArguments()).toEqual([])
+			},
+			['foo'],
+			[new Argument('foo')]
+		)
 	})
 })
