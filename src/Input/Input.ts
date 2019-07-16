@@ -2,6 +2,8 @@ import { Signature } from './Signature'
 import { InvalidOptionException, InvalidArgumentException } from '../Exceptions'
 import { escapeshellarg } from '../helpers'
 
+export type Args = { [k: string]: any }
+
 export class Input {
 	protected tokens: string[] = []
 	protected parsed: string[] = []
@@ -412,5 +414,15 @@ export class Input {
 	 */
 	hasArgument(arg: string): boolean {
 		return this.signature.hasArgument(arg)
+	}
+
+	/**
+	 * List args & options
+	 */
+	getArgs() {
+		return {
+			...this.getArguments(),
+			...this.getOptions(),
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Signature, Argument, Input, CommandSignature } from '../src/Input'
+import { Signature, Argument, Input, CommandSignature, Option } from '../src/Input'
 import { Application } from '../src/Application'
 import { Output, Terminal } from '../src/Output'
 import { ListCommand, InspireCommand, HelpCommand, Command } from '../src/Commands'
@@ -13,10 +13,11 @@ class TestCommand extends Command {
 }
 
 const testCommand = async (callback: (i: Input) => void, input: string[] = [], signature: CommandSignature = []) => {
-	const a = new Application('foobar')
+	const a = new Application('TestApp')
 	const s = new Signature(signature)
-	const i = new Input(input)
-	const o = new Output(Mock.all<Terminal>())
+	const i = new Input(['test', ...input])
+	const t = Mock.all<Terminal>()
+	const o = new Output(t)
 
 	const c = new class extends TestCommand {
 		protected description = 'desc'
@@ -30,7 +31,7 @@ const testCommand = async (callback: (i: Input) => void, input: string[] = [], s
 
 	c.setApplication(a)
 
-	return c.execute(i, o)
+	return a.run(i, o, t)
 }
 
 process.on('unhandledRejection', err => {
@@ -137,10 +138,30 @@ describe('Command', () => {
 	test('Command inputs', async () => {
 		await testCommand(
 			i => {
-				expect(i.getArguments()).toEqual([])
+				expect(i.getArguments()).toEqual({ foo: 'foobar' })
+				expect(i.getOptions()).toEqual({})
 			},
-			['foo'],
+			['foobar'],
 			[new Argument('foo')]
+		)
+
+		await testCommand(
+			i => {
+				expect(i.getArguments()).toEqual({ foo: 'foobar' })
+				expect(i.getOptions()).toEqual({})
+			},
+			['foobar'],
+			[new Argument('foo'), new Option('bar')]
+		)
+
+		await testCommand(
+			i => {
+				expect(i.getArguments()).toEqual({ foo: 'foobar' })
+				expect(i.getOptions()).toEqual({ bar: 'har' })
+				expect(i.getArgs()).toEqual({ foo: 'foobar', bar: 'har' })
+			},
+			['foobar', '-b', 'har'],
+			[new Argument('foo'), new Option('bar')]
 		)
 	})
 })

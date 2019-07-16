@@ -1,7 +1,7 @@
 import { Application } from '../Application'
 import { Signature } from '../Input/Signature'
 import { Output } from '../Output/Output'
-import { Input } from '../Input/Input'
+import { Input, Args } from '../Input/Input'
 
 export abstract class Command {
 	protected abstract name: string
@@ -19,7 +19,7 @@ export abstract class Command {
 		this._input = input
 		this._output = output
 
-		return this.handle()
+		return this.handle(this.input.getArgs())
 	}
 
 	/**
@@ -94,5 +94,5 @@ export abstract class Command {
 	/**
 	 * Handle what ever the command is suppose to do.
 	 */
-	abstract async handle(): Promise<void>
+	abstract async handle<T>(args: T): Promise<void>
 }
