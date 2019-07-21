@@ -76,6 +76,8 @@ export class Table {
 		table.push(new TableDivider('footer', this.columnWidths, this.style).render())
 
 		this.output.raw(table.map(item => item + '\n'))
+
+		return table
 	}
 
 	/**

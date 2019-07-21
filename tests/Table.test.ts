@@ -86,14 +86,14 @@ describe('Table', () => {
 	test('Table with no data', () => {
 		const t = getMock()
 
-		expect(t.render()).toBe(undefined)
+		expect(t.render()).toEqual(['++', '||', '++', '++'])
 	})
 
 	test('Table with no headers', () => {
 		const t = getMock()
 		t.setRows([{ a: 'foo', b: 'bar' }])
 
-		expect(t.render()).toBe(undefined)
+		expect(t.render()).toEqual(['+-----+-----+', '| a   | b   |', '+-----+-----+', '| foo | bar |', '+-----+-----+'])
 	})
 
 	test('Table with headers', () => {
@@ -101,7 +101,7 @@ describe('Table', () => {
 		t.setRows([{ a: 'foo', b: 'bar' }])
 		t.setHeaders(['A', 'B'])
 
-		expect(t.render()).toBe(undefined)
+		expect(t.render()).toEqual(['+-----+-----+', '| A   | B   |', '+-----+-----+', '| foo | bar |', '+-----+-----+'])
 	})
 
 	describe('Table Styles', () => {

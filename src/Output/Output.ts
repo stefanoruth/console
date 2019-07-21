@@ -4,7 +4,7 @@ import { Table } from './Table'
 import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Terminal } from './Terminal'
-import { HiddenQuestion, ConfirmationQuestion, ChoiceQuestion, ConfirmToProceed, Question } from './Question'
+import { HiddenQuestion, ConfirmationQuestion, ConfirmToProceed, Question } from './Question'
 
 export class Output {
 	protected verbosity: Verbosity = Verbosity.normal
@@ -35,14 +35,18 @@ export class Output {
 	 * Writes a string of text on the current line in console.
 	 */
 	raw(message: string | string[]) {
-		this.writer.write(message)
+		return this.writer.write(message)
 	}
 
 	/**
 	 * Write a line to the console.
 	 */
 	line(message: string, newLine: boolean = true, color?: ColorName) {
-		this.writer.write(this.style.format(message, { text: color }), newLine)
+		if (color) {
+			message = this.style.format(message, { text: color })
+		}
+
+		return this.writer.write(message, newLine)
 	}
 
 	/**
@@ -70,45 +74,42 @@ export class Output {
 	 * Formats a command comment.
 	 */
 	comment(message: string | string[]) {
-		this.writer.block(message, undefined, undefined, '<fg=default;bg=default> // </>', false, false)
+		return this.writer.writeln(message)
 	}
 
 	/**
 	 * Formats a success result bar.
 	 */
 	success(message: string) {
-		this.writer.writeln(this.style.success(message))
+		return this.writer.writeln(this.style.success(message))
 	}
 
 	/**
 	 * Formats an error result bar.
 	 */
 	error(message: string) {
-		this.writer.block(this.style.error(message), 'ERROR', undefined, ' ', true)
+		return this.writer.writeln(this.style.error(message))
 	}
 
 	/**
 	 * Formats an warning result bar.
 	 */
 	warning(message: string) {
-		this.writer.writeln(this.style.warning(message))
-		// this.block(message, 'WARNING', 'fg=black;bg=yellow', ' ', true)
+		return this.writer.writeln(this.style.warning(message))
 	}
 
 	/**
 	 * Formats a note admonition.
 	 */
 	note(message: string) {
-		this.writer.writeln(this.style.note(message))
-		// this.block(message, 'NOTE', 'fg=yellow', ' ! ')
+		return this.writer.writeln(this.style.note(message))
 	}
 
 	/**
 	 * Formats a caution admonition.
 	 */
 	caution(message: string) {
-		this.writer.writeln(this.style.caution(message))
-		// this.block(message, 'CAUTION', 'fg=white;bg=red', ' ! ', true)
+		return this.writer.writeln(this.style.caution(message))
 	}
 
 	/**
@@ -123,14 +124,14 @@ export class Output {
 			configure(table)
 		}
 
-		table.render()
+		return table.render()
 	}
 
 	/**
 	 * Display a set of new lines.
 	 */
 	newLine(count: number = 1) {
-		this.writer.newLine(count)
+		return this.writer.newLine(count)
 	}
 
 	/**

@@ -59,10 +59,13 @@ export class ProgressBar {
 	 */
 	finish() {
 		if (this.counter.finish()) {
-			this.display()
+			return this.display()
 		}
 	}
 
+	/**
+	 * Get progress styling.
+	 */
 	getStyle() {
 		if (!this.style) {
 			this.style = new ProgressStyle(this.counter)
@@ -74,7 +77,7 @@ export class ProgressBar {
 	/**
 	 * Outputs the current progress string.
 	 */
-	protected display(): void {
+	protected display(): string {
 		if (!this.render) {
 			const hasMax = !!this.counter.getMaxSteps()
 
@@ -88,5 +91,7 @@ export class ProgressBar {
 		this.terminal.clearLine()
 		this.terminal.cursorReset()
 		this.terminal.write(display)
+
+		return display
 	}
 }

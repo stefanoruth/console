@@ -28,7 +28,7 @@ export class Writer {
 	 * Writes a message to the output and adds a newline at the end.
 	 */
 	writeln(messages: string | string[]) {
-		this.write(messages, true)
+		return this.write(messages, true)
 	}
 
 	/**
@@ -62,7 +62,7 @@ export class Writer {
 	 * Display a set of new lines.
 	 */
 	newLine(count: number = 1) {
-		this.write('\n'.repeat(count))
+		return this.write('\n'.repeat(count))
 	}
 
 	protected autoPrependBlock() {
