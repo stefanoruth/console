@@ -22,6 +22,7 @@ describe('Output', () => {
 		expect(o.raw('foo')).toBe('foo')
 		expect(o.line('foo')).toBe('foo')
 		expect(o.comment('foo')).toBe('foo')
+		expect(o.info('foo')).toBe('[yellow,]foo')
 		expect(o.success('foo')).toBe('[green,]foo')
 		expect(o.error('foo')).toBe('[white,red]foo')
 		expect(o.warning('foo')).toBe('[black,yellow]foo')

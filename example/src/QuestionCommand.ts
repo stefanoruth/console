@@ -8,8 +8,6 @@ export class QuestionCommand extends Command {
 		let result
 
 		if (1) {
-			result = await this.output.choice('Select a value', ['Foo', 'Bar', 'Baz'])
-		} else if (1) {
 			result = await this.output.confirm('Are you there?')
 		} else if (1) {
 			result = await this.output.askHidden('Password')

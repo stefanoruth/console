@@ -52,12 +52,8 @@ export class Application {
 	/**
 	 * Run the Commands.
 	 */
-	async run(input?: Input, output?: Output, terminal?: Terminal): Promise<number> {
+	async run(input?: Input, output?: Output, terminal = new Terminal()): Promise<number> {
 		let exitCode: number = 0
-
-		if (!terminal) {
-			terminal = new Terminal()
-		}
 
 		if (!input) {
 			input = new Input()
@@ -80,9 +76,9 @@ export class Application {
 				throw error
 			}
 
-			new ErrorHandler(output).render(error)
+			output.renderException().render(error)
 
-			exitCode = 1 // error.getCode()
+			exitCode = 1
 		}
 
 		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
@@ -123,7 +119,7 @@ export class Application {
 			// 	throw error
 			// }
 
-			new ErrorHandler(output).render(error)
+			output.renderException().render(error)
 
 			// Find alternatives
 

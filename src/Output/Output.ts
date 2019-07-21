@@ -5,6 +5,7 @@ import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Terminal } from './Terminal'
 import { HiddenQuestion, ConfirmationQuestion, ConfirmToProceed, Question } from './Question'
+import { ErrorHandler } from './ErrorHandler'
 
 export class Output {
 	protected verbosity: Verbosity = Verbosity.normal
@@ -27,6 +28,7 @@ export class Output {
 	 */
 	setVerbosity(level: Verbosity) {
 		this.verbosity = level
+		this.writer.setVerbosity(level)
 
 		return this
 	}
@@ -71,6 +73,13 @@ export class Output {
 	}
 
 	/**
+	 * Format text info.
+	 */
+	info(message: string) {
+		return this.writer.writeln(this.style.info(message))
+	}
+
+	/**
 	 * Formats a command comment.
 	 */
 	comment(message: string | string[]) {
@@ -110,6 +119,13 @@ export class Output {
 	 */
 	caution(message: string) {
 		return this.writer.writeln(this.style.caution(message))
+	}
+
+	/**
+	 * Format exceptions.
+	 */
+	renderException() {
+		return new ErrorHandler(this)
 	}
 
 	/**
@@ -167,5 +183,12 @@ export class Output {
 	 */
 	progressBar(): ProgressBar {
 		return new ProgressBar(this, this.terminal)
+	}
+
+	/**
+	 * Get output formatter.
+	 */
+	getStyle(): Formatter {
+		return this.style
 	}
 }
