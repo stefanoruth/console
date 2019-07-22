@@ -1,11 +1,9 @@
-import { BufferedOutput } from './BufferedOutput'
 import { OutputFormatter } from './OutputFormatter'
 import { Terminal } from './Terminal'
 import { Verbosity } from './Verbosity'
 
 export class Writer {
 	protected verbosity: Verbosity = Verbosity.normal
-	protected bufferedOutput: BufferedOutput = new BufferedOutput()
 
 	constructor(protected terminal: Terminal) {}
 
@@ -58,43 +56,5 @@ export class Writer {
 	 */
 	newLine(count: number = 1) {
 		return this.write('\n'.repeat(count))
-	}
-
-	/**
-	 * Formats a message as a block of text.
-	 *
-	 * messages The message to write in the block
-	 * level of indentation
-	 */
-	block(messages: string | string[], indentationLevel: number = 0) {
-		if (!(messages instanceof Array)) {
-			messages = [messages]
-		}
-
-		this.newLine(2)
-
-		let indentation: string = ''
-		let lines: string[] = []
-
-		if (indentationLevel) {
-			indentation = ' '.repeat(indentationLevel)
-		}
-
-		// wrap and add newlines for each element
-		messages.forEach((message, key) => {
-			if (escape) {
-				message = OutputFormatter.escape(message)
-			}
-			lines = lines.concat() //     $lines = array_merge($lines, explode(PHP_EOL, wordwrap($message, $this -> lineLength - $prefixLength - $indentLength, PHP_EOL, true)));
-
-			if (messages.length > 1 && key < messages.length - 1) {
-				lines.push('')
-			}
-
-			lines.push(indentation + message)
-		})
-
-		this.writeln(messages)
-		this.newLine()
 	}
 }

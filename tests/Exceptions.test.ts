@@ -3,6 +3,7 @@ import {
 	InvalidArgumentException,
 	InvalidOptionException,
 	LogicException,
+	NamespaceNotFoundException,
 } from '../src/Exceptions'
 
 describe('Exceptions', () => {
@@ -20,5 +21,9 @@ describe('Exceptions', () => {
 
 	test('LogicException', () => {
 		expect(new LogicException()).toBeInstanceOf(Error)
+	})
+
+	test('NamespaceNotFoundException', () => {
+		expect(new NamespaceNotFoundException()).toBeInstanceOf(Error)
 	})
 })

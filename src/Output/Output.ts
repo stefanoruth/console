@@ -52,27 +52,6 @@ export class Output {
 	}
 
 	/**
-	 * Formats a command title.
-	 */
-	title(message: string) {
-		//
-	}
-
-	/**
-	 * Formats a section title.
-	 */
-	section(message: string) {
-		//
-	}
-
-	/**
-	 * Formats a list.
-	 */
-	listing(elements: any[]) {
-		//
-	}
-
-	/**
 	 * Format text info.
 	 */
 	info(message: string) {
