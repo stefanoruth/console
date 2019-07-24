@@ -253,21 +253,21 @@ describe('ProgressBar', () => {
 			c.advance(20)
 
 			const formatType = f.getFormat(showMax)
-			const s = new ProgressStyle(c, { barWidth: 3 })
+			const s = new ProgressStyle(c)
 
 			return f.getRenderFn(formatType)(s)
 		}
 
-		expect(render(Verbosity.normal, true)).toBe('20/80 [>--]  25%')
-		expect(render(Verbosity.normal, false)).toBe('  20 [==>]')
-		expect(render(Verbosity.verbose, true)).toBe('20/80 [>--]  25% < 1 sec')
-		expect(render(Verbosity.verbose, false)).toBe('  20 [==>] < 1 sec')
-		expect(render(Verbosity.veryVerbose, true)).toBe('20/80 [>--]  25% < 1 sec/< 1 sec')
-		expect(render(Verbosity.veryVerbose, false)).toBe('  20 [==>] < 1 sec')
-		expect(render(Verbosity.debug, true)).toBe('20/80 [>--]  25% < 1 sec/< 1 sec  500 B')
-		expect(render(Verbosity.debug, false)).toBe('  20 [==>] < 1 sec  500 B')
-		expect(render(Verbosity.quiet, true)).toBe('')
-		expect(render(Verbosity.quiet, false)).toBe('')
+		expect(render(Verbosity.normal, true)).toMatchSnapshot()
+		expect(render(Verbosity.normal, false)).toMatchSnapshot()
+		expect(render(Verbosity.verbose, true)).toMatchSnapshot()
+		expect(render(Verbosity.verbose, false)).toMatchSnapshot()
+		expect(render(Verbosity.veryVerbose, true)).toMatchSnapshot()
+		expect(render(Verbosity.veryVerbose, false)).toMatchSnapshot()
+		expect(render(Verbosity.debug, true)).toMatchSnapshot()
+		expect(render(Verbosity.debug, false)).toMatchSnapshot()
+		expect(render(Verbosity.quiet, true)).toMatchSnapshot()
+		expect(render(Verbosity.quiet, false)).toMatchSnapshot()
 	})
 
 	test('Public api', () => {

@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table Header Fill empty spaces 1`] = `
+Array [
+  "+-----+-----+",
+  "| foo |     |",
+  "+-----+-----+",
+]
+`;
+
+exports[`Table Header Show a basic header 1`] = `
+Array [
+  "+-----+-----+",
+  "| foo | bar |",
+  "+-----+-----+",
+]
+`;
+
+exports[`Table Table Styles custom style 1`] = `
+Array [
+  "+....+..........+.............+",
+  "| id : name     : email       |",
+  "+....+..........+.............+",
+  "| 1  : John Doe : john@doe.dk |",
+  "| 2  : Jane Doe : jane@doe.dk |",
+  "| 3  : Foobar   :             |",
+  "+....+..........+.............+",
+]
+`;
+
+exports[`Table Table Styles default style 1`] = `
+Array [
+  "+----+----------+-------------+",
+  "| id | name     | email       |",
+  "+----+----------+-------------+",
+  "| 1  | John Doe | john@doe.dk |",
+  "| 2  | Jane Doe | jane@doe.dk |",
+  "| 3  | Foobar   |             |",
+  "+----+----------+-------------+",
+]
+`;
+
+exports[`Table Table Styles slim style 1`] = `
+Array [
+  "┌────┬──────────┬─────────────┐",
+  "│ id │ name     │ email       │",
+  "├────┼──────────┼─────────────┤",
+  "│ 1  │ John Doe │ john@doe.dk │",
+  "│ 2  │ Jane Doe │ jane@doe.dk │",
+  "│ 3  │ Foobar   │             │",
+  "└────┴──────────┴─────────────┘",
+]
+`;
+
+exports[`Table Table with headers 1`] = `
+Array [
+  "+-----+-----+",
+  "| A   | B   |",
+  "+-----+-----+",
+  "| foo | bar |",
+  "+-----+-----+",
+]
+`;
+
+exports[`Table Table with no headers 1`] = `
+Array [
+  "+-----+-----+",
+  "| a   | b   |",
+  "+-----+-----+",
+  "| foo | bar |",
+  "+-----+-----+",
+]
+`;
