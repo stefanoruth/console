@@ -27,8 +27,6 @@ export class ErrorHandler {
 		error.push(...this.getErrorStack(e))
 
 		this.output.raw(error)
-
-		console.log(e)
 	}
 
 	runningCommand(e: Error, c: Command, applicationName: string) {
