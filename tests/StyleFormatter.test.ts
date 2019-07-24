@@ -37,21 +37,21 @@ describe('StyleFormatter', () => {
 		const c = new (class extends Color {
 			protected foregroundColors: any = {
 				black: {
-					set: '#',
-					unset: '#',
+					set: '#1',
+					unset: '#2',
 				},
 			}
 
 			protected backgroundColors: any = {
 				black: {
-					set: '$',
-					unset: '$',
+					set: '$1',
+					unset: '$2',
 				},
 			}
 		})()
 
-		expect(c.apply('foo', { text: 'black' })).toBe('#foo#')
-		expect(c.apply('foo', { bg: 'black' })).toBe('$foo$')
-		expect(c.apply('foo', { text: 'black', bg: 'black' })).toBe('#$foo#$')
+		expect(c.apply('foo', { text: 'black' })).toBe('#1foo#2')
+		expect(c.apply('foo', { bg: 'black' })).toBe('$1foo$2')
+		expect(c.apply('foo', { text: 'black', bg: 'black' })).toBe('#1$1foo#2$2')
 	})
 })
