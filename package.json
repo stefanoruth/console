@@ -23,7 +23,7 @@
 		"docs:build": "vuepress build docs"
 	},
 	"devDependencies": {
-		"@types/jest": "^24.0.15",
+		"@types/jest": "^24.0.16",
 		"coveralls": "^3.0.5",
 		"jest": "^24.8.0",
 		"ts-jest": "^24.0.2",
