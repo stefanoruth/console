@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"dependencies": {
-		"@types/node": "^12.6.8",
+		"@types/node": "^12.6.9",
 		"typescript": "^3.5.3"
 	},
 	"scripts": {
