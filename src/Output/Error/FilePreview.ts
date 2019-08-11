@@ -18,7 +18,7 @@ export class FilePreview {
 		const toLine = trace.line + this.afterLines
 
 		return contents.slice(fromLine, toLine).map((line, index) => {
-			const lineNumber = trace.line - this.beforeLines + index
+			const lineNumber = fromLine + index
 			const pointer = lineNumber === trace.line ? this.output.getStyle().error('  > ') : ' '.repeat(4)
 
 			return `${pointer}${lineNumber}| ${line}`
