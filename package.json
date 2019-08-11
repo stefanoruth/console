@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"dependencies": {
-		"@types/node": "^12.6.8",
+		"@types/node": "^12.7.1",
 		"typescript": "^3.5.3"
 	},
 	"scripts": {
@@ -23,14 +23,14 @@
 		"docs:build": "vuepress build docs"
 	},
 	"devDependencies": {
-		"@types/jest": "^24.0.15",
-		"coveralls": "^3.0.5",
+		"@types/jest": "^24.0.17",
+		"coveralls": "^3.0.6",
 		"jest": "^24.8.0",
 		"ts-jest": "^24.0.2",
 		"ts-mockery": "^1.1.0",
 		"tslint": "^5.18.0",
 		"tslint-config-prettier": "^1.17.0",
-		"vuepress": "^1.0.2"
+		"vuepress": "^1.0.3"
 	},
 	"jest": {
 		"preset": "ts-jest",

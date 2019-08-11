@@ -13,10 +13,32 @@ class TestTable extends Table {
 	}
 }
 
-function getMock() {
+function getMock(withData: boolean = false) {
 	const o = Mock.of<Output>({ raw: jest.fn() })
 
-	return new TestTable(o, new NullColor())
+	const t = new TestTable(o, new NullColor())
+
+	if (withData) {
+		t.setHeaders(['id', 'name', 'email'])
+		t.setRows([
+			{
+				id: 1,
+				name: 'John Doe',
+				email: 'john@doe.dk',
+			},
+			{
+				id: 2,
+				name: 'Jane Doe',
+				email: 'jane@doe.dk',
+			},
+			{
+				id: 3,
+				name: 'Foobar',
+			},
+		])
+	}
+
+	return t
 }
 
 describe('Table', () => {
@@ -60,19 +82,11 @@ describe('Table', () => {
 
 	describe('Header', () => {
 		test('Show a basic header', () => {
-			expect(new TableHeader(['foo', 'bar'], [], new TableStyle(), new NullColor()).render()).toEqual([
-				'+-----+-----+',
-				'| foo | bar |',
-				'+-----+-----+',
-			])
+			expect(new TableHeader(['foo', 'bar'], [], new TableStyle(), new NullColor()).render()).toMatchSnapshot()
 		})
 
 		test('Fill empty spaces', () => {
-			expect(new TableHeader(['foo'], [3, 3], new TableStyle(), new NullColor()).render()).toEqual([
-				'+-----+-----+',
-				'| foo |     |',
-				'+-----+-----+',
-			])
+			expect(new TableHeader(['foo'], [3, 3], new TableStyle(), new NullColor()).render()).toMatchSnapshot()
 		})
 	})
 
@@ -93,7 +107,7 @@ describe('Table', () => {
 		const t = getMock()
 		t.setRows([{ a: 'foo', b: 'bar' }])
 
-		expect(t.render()).toEqual(['+-----+-----+', '| a   | b   |', '+-----+-----+', '| foo | bar |', '+-----+-----+'])
+		expect(t.render()).toMatchSnapshot()
 	})
 
 	test('Table with headers', () => {
@@ -101,40 +115,34 @@ describe('Table', () => {
 		t.setRows([{ a: 'foo', b: 'bar' }])
 		t.setHeaders(['A', 'B'])
 
-		expect(t.render()).toEqual(['+-----+-----+', '| A   | B   |', '+-----+-----+', '| foo | bar |', '+-----+-----+'])
+		expect(t.render()).toMatchSnapshot()
 	})
 
 	describe('Table Styles', () => {
 		test('default style', () => {
-			const t = getMock()
+			const t = getMock(true)
 
 			t.setStyle('default')
-
-			expect(t.getStyle().horizontalInsideBorderChar).toBe('-')
-			expect(t.getStyle().verticalInsideBorderChar).toBe('|')
+			expect(t.render()).toMatchSnapshot()
 		})
 
 		test('slim style', () => {
-			const t = getMock()
+			const t = getMock(true)
 
 			t.setStyle('slim')
-
-			expect(t.getStyle().horizontalInsideBorderChar).toBe('─')
-			expect(t.getStyle().verticalInsideBorderChar).toBe('│')
+			expect(t.render()).toMatchSnapshot()
 		})
 
 		test('custom style', () => {
-			const t = getMock()
+			const t = getMock(true)
 
 			const s = new TableStyle({
-				horizontalInsideBorderChar: 'a',
-				verticalInsideBorderChar: 'b',
+				horizontalInsideBorderChar: '.',
+				verticalInsideBorderChar: ':',
 			})
 
 			t.setStyle(s)
-
-			expect(t.getStyle().horizontalInsideBorderChar).toBe('a')
-			expect(t.getStyle().verticalInsideBorderChar).toBe('b')
+			expect(t.render()).toMatchSnapshot()
 		})
 	})
 })
