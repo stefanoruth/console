@@ -1,9 +1,6 @@
 import { Input } from '../Input/Input'
 import { Output } from '../Output/Output'
-import { ConsoleEvent } from './ConsoleEvent'
 
-export class CommandStarting extends ConsoleEvent {
-	constructor(public command: string | undefined, public input: Input, public output: Output) {
-		super()
-	}
+export class CommandStarting {
+	constructor(public command: string | undefined, public input: Input, public output: Output) {}
 }

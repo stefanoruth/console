@@ -1,6 +1,5 @@
 import { Command } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
-import { CommandNotFoundException } from './Exceptions'
 import { Output, ErrorHandler, Terminal } from './Output'
 import { Registry } from './Commands/Registry'
 import {
@@ -9,14 +8,13 @@ import {
 	CommandStarting,
 	CommandFinished,
 	EventListener,
-	EventTypes,
+	EventName,
 } from './Events'
 import { Verbosity } from './Output/Verbosity'
 
 export type Bootstrap = (application: Application) => void
 
 export class Application {
-	protected runningCommand: Command | null = null
 	protected catchExceptions: boolean = true
 	protected autoExit: boolean = true
 	protected events: EventDispatcher = new EventDispatcher()
@@ -28,7 +26,7 @@ export class Application {
 	 */
 	constructor(protected name?: string, protected version?: string) {
 		this.bootstrap()
-		this.events.dispatch(new ApplicationStarting())
+		this.events.dispatch(new ApplicationStarting(this))
 	}
 
 	/**
@@ -96,6 +94,7 @@ export class Application {
 	 */
 	protected async doRun(input: Input, output: Output): Promise<number> {
 		let command: Command
+
 		if (true === input.hasParameterOption(['--version', '-V'], true)) {
 			output.success(this.getHelp())
 			return 0
@@ -111,8 +110,6 @@ export class Application {
 		const name = this.commandRegistry.getCommandName(input)
 
 		try {
-			this.runningCommand = null
-
 			command = this.commandRegistry.find(name)
 		} catch (error) {
 			// if (!(error instanceof CommandNotFoundException)) {
@@ -126,9 +123,7 @@ export class Application {
 			return 1
 		}
 
-		this.runningCommand = command
 		const exitCode = await this.doRunCommand(command, input, output)
-		this.runningCommand = null
 
 		return exitCode
 	}
@@ -234,7 +229,7 @@ export class Application {
 	/**
 	 * Register a console "starting" bootstrapper.
 	 */
-	static starting(callback: (application: Application) => void) {
+	static starting(callback: Bootstrap) {
 		this.bootstrappers.push(callback)
 	}
 
@@ -271,7 +266,7 @@ export class Application {
 	/**
 	 * Listen for a specific event.
 	 */
-	listen(event: EventTypes, listener: EventListener) {
+	listen(event: EventName, listener: EventListener) {
 		this.events.addListener(event, listener)
 
 		return this

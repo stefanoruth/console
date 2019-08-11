@@ -1,8 +1,7 @@
-import { ConsoleEvent } from './ConsoleEvent'
+import * as EventCollection from './EventCollection'
 
-// Todo find better way to define the Events.
-export type EventTypes = 'ApplicationStarting' | 'CommandStarting' | 'CommandFinished' | '*'
-export type EventListener = (event: ConsoleEvent) => void
+export type EventName = keyof typeof EventCollection | '*'
+export type EventListener = (event: object) => void
 
 export class EventDispatcher {
 	/**
@@ -13,7 +12,7 @@ export class EventDispatcher {
 	/**
 	 * Add new listenener
 	 */
-	addListener(event: EventTypes, listener: EventListener) {
+	addListener(event: EventName, listener: EventListener) {
 		if (!this.listeners[event]) {
 			this.listeners[event] = []
 		}
@@ -24,7 +23,7 @@ export class EventDispatcher {
 	/**
 	 * Dispatch an event.
 	 */
-	dispatch(event: ConsoleEvent): boolean {
+	dispatch(event: object): boolean {
 		const eventName = event.constructor.name
 		let listeners: EventListener[] = []
 

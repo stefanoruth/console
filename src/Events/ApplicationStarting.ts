@@ -1,5 +1,5 @@
-import { ConsoleEvent } from './ConsoleEvent'
+import { Application } from '../Application'
 
-export class ApplicationStarting extends ConsoleEvent {
-	//
+export class ApplicationStarting {
+	constructor(public app: Application) {}
 }
