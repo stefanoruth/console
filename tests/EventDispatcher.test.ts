@@ -1,4 +1,4 @@
-import { EventDispatcher, ApplicationStarting, CommandStarting, ConsoleEvent, CommandFinished } from '../src/Events'
+import { EventDispatcher, ApplicationStarting, CommandStarting, CommandFinished } from '../src/Events'
 
 describe('EventDispatcher', () => {
 	test('Events are registered and dispatched', () => {
@@ -19,12 +19,12 @@ describe('EventDispatcher', () => {
 	test('CommandStarting', () => {
 		const event = new CommandStarting('foo', {} as any, {} as any)
 
-		expect(event).toBeInstanceOf(ConsoleEvent)
+		expect(event).toBeInstanceOf(Object)
 	})
 
 	test('CommandFinished', () => {
 		const event = new CommandFinished('foo', {} as any, {} as any, 0)
 
-		expect(event).toBeInstanceOf(ConsoleEvent)
+		expect(event).toBeInstanceOf(Object)
 	})
 })

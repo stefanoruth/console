@@ -26,7 +26,7 @@ export class Application {
 	 */
 	constructor(protected name?: string, protected version?: string) {
 		this.bootstrap()
-		this.events.dispatch(new ApplicationStarting(this))
+		this.events.dispatch(new ApplicationStarting())
 	}
 
 	/**

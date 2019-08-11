@@ -15,7 +15,7 @@
 		"ex:build": "tsc --build ./example/tsconfig.json",
 		"ex:watch": "tsc --build ./example/tsconfig.json --watch",
 		"test": "jest --verbose=false",
-		"test:watch": "yarn test --watchAll",
+		"test:watch": "yarn test --watchAll --updateSnapshot",
 		"test:coverage": "yarn test --collectCoverage=true",
 		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
 		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls",

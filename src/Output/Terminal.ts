@@ -4,14 +4,14 @@ export class Terminal {
 	/**
 	 * Write a string to the terminal.
 	 */
-	write(buffer: string | Buffer) {
+	write(buffer: string) {
 		process.stdout.write(buffer)
 	}
 
 	/**
 	 * Write a string to the error output.
 	 */
-	writeError(buffer: string | Buffer) {
+	writeError(buffer: string) {
 		process.stderr.write(buffer)
 	}
 
