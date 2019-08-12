@@ -16,9 +16,9 @@
 		"ex:watch": "tsc --build ./example/tsconfig.json --watch",
 		"test": "jest --verbose=false",
 		"test:watch": "yarn test --watchAll --updateSnapshot",
-		"test:coverage": "yarn test --collectCoverage=true",
+		"test:coverage": "yarn test --collectCoverage=true --updateSnapshot",
 		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
-		"ci": "jest --coverage --coverageReporters=text-lcov | coveralls",
+		"ci": "jest --collectCoverage=true --coverageReporters=text-lcov | coveralls",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs"
 	},
