@@ -49,7 +49,7 @@ describe('Terminal', () => {
 
 		t.cursorReset()
 
-		expect(action).toHaveBeenCalledWith(process.stdout, 0)
+		expect(action).toHaveBeenCalledWith(process.stdout, 0, 0)
 	})
 
 	test('Can exit the current program', () => {

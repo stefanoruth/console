@@ -4,36 +4,25 @@ exports[`ErrorHandler Render Basic Error 1`] = `
 "
    Error  :  Foobar
 
-  at C:\\\\wamp\\\\www\\\\console\\\\tests\\\\__mocks__\\\\ThrowError.ts:5:8
-    1|  * Throws a simple error.
-    2|  */
-    3| export function TestThrow() {
-    4| 	throw new Error('Foobar')
-  > 5| }
-    6| 
-    7| /**
+  at /Users/stefano/Documents/Code/console/tests/__mocks__/ThrowError.ts:5:8
 
   Exception trace:
 
-  0   Object.test
-      C:\\\\wamp\\\\www\\\\console\\\\tests\\\\ErrorHandler.test.ts:27:4
+  0   Object.<anonymous>
+      /Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:27:4
 
   1   Object.asyncJestTest
-      C:\\\\wamp\\\\www\\\\console\\\\node_modules\\\\jest-jasmine2\\\\build\\\\jasmineAsyncInstall.js:102:37
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37
 
-  2   resolve
-      C:\\\\wamp\\\\www\\\\console\\\\node_modules\\\\jest-jasmine2\\\\build\\\\queueRunner.js:43:12
+  2   /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:43:12
 
   3   new Promise (<anonymous>) mapper
-      C:\\\\wamp\\\\www\\\\console\\\\node_modules\\\\jest-jasmine2\\\\build\\\\queueRunner.js:26:19
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:26:19
 
-  4   promise.then
-      C:\\\\wamp\\\\www\\\\console\\\\node_modules\\\\jest-jasmine2\\\\build\\\\queueRunner.js:73:41
+  4   /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:73:41
 
-  5   <anonymous>
-
-  6   process._tickCallback
-      internal/process/next_tick.js:188:7
+  5   processTicksAndRejections
+      internal/process/task_queues.js:89:5
 
 "
 `;

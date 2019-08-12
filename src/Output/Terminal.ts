@@ -1,4 +1,5 @@
 import readline from 'readline'
+import { Direction } from 'readline'
 
 export class Terminal {
 	/**
@@ -18,7 +19,7 @@ export class Terminal {
 	/**
 	 * Clear previus line.
 	 */
-	clearLine(dir: number = -1) {
+	clearLine(dir: Direction = -1) {
 		readline.clearLine(process.stdout, dir)
 	}
 
@@ -33,7 +34,7 @@ export class Terminal {
 	 * Reset cursor to start of current line.
 	 */
 	cursorReset() {
-		readline.cursorTo(process.stdout, 0)
+		readline.cursorTo(process.stdout, 0, 0)
 	}
 
 	/**
