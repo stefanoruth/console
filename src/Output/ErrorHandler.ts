@@ -47,6 +47,10 @@ export class ErrorHandler {
 		//
 	}
 
+	protected formatFile(file: string) {
+		return file
+	}
+
 	protected getErrorStack(error: Error) {
 		const style = this.output.getStyle()
 		const render: string[] = []
@@ -55,16 +59,16 @@ export class ErrorHandler {
 
 		const entry = tracing.shift()!
 
-		render.push(`  at ${style.success(`${entry.file}:${entry.line}:${entry.column}`)}`)
+		render.push(`  at ${style.success(`${this.formatFile(entry.file)}:${entry.line}:${entry.column}`)}`)
 		render.push(...this.filePreview.view(entry))
 		render.push('')
 
 		render.push(`  ${style.info('Exception trace:')}\n`)
 
 		tracing.forEach((trace, index) => {
-			render.push(`  ${style.format(String(index), { text: 'blue' })}   ${style.info(trace.method)}`)
+			render.push(`  ${style.format(String(index), { text: 'blue' })}   ${style.info(this.formatFile(trace.method))}`)
 			if (trace.file) {
-				render.push(`${' '.repeat(6)}${style.success(`${trace.file}:${trace.line}:${trace.column}`)}`)
+				render.push(`${' '.repeat(6)}${style.success(`${this.formatFile(trace.file)}:${trace.line}:${trace.column}`)}`)
 			}
 			render.push('')
 		})

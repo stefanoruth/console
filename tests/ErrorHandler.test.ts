@@ -8,7 +8,7 @@ import { TestColor, NullColor } from './__mocks__/TestColor'
 
 function getHandler(cb: (message: string) => void) {
 	const t = Mock.all<Terminal>()
-	const w = new class extends Writer {
+	const w = new (class extends Writer {
 		write(m: string | string[]) {
 			if (!(m instanceof Array)) {
 				m = [m]
@@ -16,9 +16,13 @@ function getHandler(cb: (message: string) => void) {
 
 			cb(m.join(''))
 		}
-	}(t)
+	})(t)
 
-	return new ErrorHandler(new Output(t, w, new Formatter(new NullColor())))
+	return new (class extends ErrorHandler {
+		protected formatFile(file: string) {
+			return file.replace(process.cwd(), '/project')
+		}
+	})(new Output(t, w, new Formatter(new NullColor())))
 }
 
 describe('ErrorHandler', () => {

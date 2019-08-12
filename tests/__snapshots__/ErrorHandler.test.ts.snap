@@ -4,22 +4,22 @@ exports[`ErrorHandler Render Basic Error 1`] = `
 "
    Error  :  Foobar
 
-  at /Users/stefano/Documents/Code/console/tests/__mocks__/ThrowError.ts:5:8
+  at /project/tests/__mocks__/ThrowError.ts:5:8
 
   Exception trace:
 
   0   Object.<anonymous>
-      /Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:27:4
+      /project/tests/ErrorHandler.test.ts:31:4
 
   1   Object.asyncJestTest
-      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37
+      /project/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37
 
-  2   /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:43:12
+  2   /project/node_modules/jest-jasmine2/build/queueRunner.js:43:12
 
   3   new Promise (<anonymous>) mapper
-      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:26:19
+      /project/node_modules/jest-jasmine2/build/queueRunner.js:26:19
 
-  4   /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:73:41
+  4   /project/node_modules/jest-jasmine2/build/queueRunner.js:73:41
 
   5   processTicksAndRejections
       internal/process/task_queues.js:89:5
