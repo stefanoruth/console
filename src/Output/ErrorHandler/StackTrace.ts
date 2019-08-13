@@ -1,61 +1,45 @@
-export interface TraceItem {
+export interface StackItem {
 	method: string
 	file: string
 	line: number
 	column: number
 }
 
+/**
+ * Split a single stacktrace item into sperate bits.
+ * @author https://github.com/felixge/node-stack-trace/blob/master/lib/stack-trace.js#L42
+ */
+function matchRegex(text: string) {
+	const matches = new RegExp(/at (?:(.+)\s+\()?(?:(.+?):(\d+)(?::(\d+))?|([^)]+))\)?/i).exec(text)
+
+	if (!matches) {
+		return []
+	}
+
+	matches.shift()
+
+	return matches
+}
+
 export class StackTrace {
-	static readonly fileRegex = /(.+) (?:\((.+):(\d+):(\d+)\))?/i
-	protected stack: TraceItem[] = []
+	constructor(protected fileFormatter?: (file: string) => string) {}
 
-	constructor(error: Error) {
-		//
-	}
-
-	protected matchFile(item: string): string[] {
-		const matches = new RegExp(StackTrace.fileRegex).exec(item)
-
-		if (!matches) {
-			// throw new Error(`Count not find file in stack ${item}`)
-			return [item, '', '', '']
-		}
-
-		matches.shift()
-
-		return matches
-	}
-
-	build(error: Error): TraceItem[] {
-		const tracing: TraceItem[] = []
-		let stack = (error.stack && error.stack.split('\n')) || []
+	/**
+	 * Converts a stacktrace into an array of stack elements.
+	 */
+	render(error: Error): StackItem[] {
+		const tracing: StackItem[] = []
+		const stack = (error.stack && error.stack.split('\n')) || []
 
 		if (stack.length) {
 			stack.shift()
-			stack = stack.map(item => item.trim().replace('at ', ''))
 
-			stack.forEach((item, index, arr) => {
-				let [method, file, line, column]: string[] = []
-
-				if (item.includes('(<anonymous>)')) {
-					const filePath = arr[index + 1]
-
-					if (typeof filePath !== 'undefined') {
-						if (filePath.includes('(')) {
-							item = `${item} ${filePath}`
-						} else {
-							item = `${item} (${filePath})`
-						}
-
-						arr.splice(index, 1)
-					}
-				}
-
-				;[method, file, line, column] = this.matchFile(item)
+			stack.forEach(item => {
+				const [message, file, line, column, extra] = matchRegex(item)
 
 				tracing.push({
-					method,
-					file,
+					method: extra ? `${message} (${extra})` : message,
+					file: this.fileFormatter && file ? this.fileFormatter(file) : file,
 					line: parseInt(line, 10),
 					column: parseInt(column, 10),
 				})

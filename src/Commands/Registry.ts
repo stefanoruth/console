@@ -1,7 +1,10 @@
-import { Command, HelpCommand, ListCommand, InspireCommand } from '.'
 import { Application } from '../Application'
 import { CommandNotFoundException, InvalidArgumentException } from '../Exceptions'
 import { Input } from '../Input'
+import { Command } from './Command'
+import { HelpCommand } from './HelpCommand'
+import { ListCommand } from './ListCommand'
+import { InspireCommand } from './InspireCommand'
 
 export class Registry {
 	protected commands: { [key: string]: Command } = {}

@@ -10,8 +10,16 @@ export class FilePreview {
 	/**
 	 * Preview a snapshot of a file with a marker of a specefic line.
 	 */
-	view(file: { path: string; line: number }) {
-		const contents = fs.readFileSync(file.path, 'utf8').split('\r\n')
+	render(file: { path: string; line: number }) {
+		// Read file.
+		const data = fs.readFileSync(file.path, 'utf8')
+
+		// Find split type.
+		const splitRN = data.split('\r\n')
+		const splitN = data.split('\n')
+		const contents = splitRN.length > splitN.length ? splitRN : splitN
+
+		// Preview offset.
 		const fromLine = file.line - this.beforeLines
 		const toLine = file.line + this.afterLines
 

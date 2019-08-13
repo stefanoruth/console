@@ -1,6 +1,7 @@
-import { Command } from '../../Commands'
 import { isRunningTestMode } from '../../helpers'
 import { Output } from '../Output'
+import { FilePreview } from './FilePreview'
+import { StackTrace } from './StackTrace'
 
 export interface ErrorHandlerContract {
 	report: (error: Error) => void
@@ -9,19 +10,40 @@ export interface ErrorHandlerContract {
 export class ErrorHandler {
 	constructor(protected output: Output) {}
 
-	report(e: Error) {
+	report(e: Error): string {
 		if (isRunningTestMode()) {
-			throw e
+			console.log('Running in test with error')
+			// throw e
 		}
-		console.log(e)
-	}
 
-	runningCommand(e: Error, c: Command, applicationName: string) {
-		this.output.newLine()
-		this.output.info(c.getSignature().getSynopsis() + applicationName)
+		const preview = new FilePreview(this.output)
+		const stackTrace = new StackTrace().render(e)
+		const style = this.output.getStyle()
 
-		this.report(e)
+		const render: string[] = []
 
-		this.output.newLine()
+		render.push(`\n  ${style.error(` ${e.name} `)} :  ${style.note(e.message)}\n`)
+
+		const entry = stackTrace.shift()!
+
+		render.push(`  at ${style.success(`${entry.file}:${entry.line}:${entry.column}`)}`)
+		render.push(...preview.render({ path: entry.file, line: entry.line }))
+		render.push('')
+
+		render.push(`  ${style.info('Exception trace:')}\n`)
+
+		stackTrace.forEach((trace, index) => {
+			render.push(`  ${style.format(index + '', { text: 'blue' })}   ${style.info(trace.method || '')}`)
+			if (trace.file) {
+				render.push(`${' '.repeat(6)}${style.success(`${trace.file}:${trace.line}:${trace.column}`)}`)
+			}
+			render.push('')
+		})
+
+		const errorMsg = render.join('\n')
+
+		this.output.raw(errorMsg)
+
+		return errorMsg
 	}
 }

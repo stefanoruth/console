@@ -1,38 +1,36 @@
-import { ErrorHandler } from '../src/Output/ErrorHandler'
-import { Output, Terminal } from '../src/Output'
-import { Writer } from '../src/Output/Writer'
-import { TestThrow, TestThrowCustom } from './__mocks__/ThrowError'
-import { Mock } from 'ts-mockery'
-import { Formatter } from '../src/Output/Style'
-import { TestColor, NullColor } from './__mocks__/TestColor'
-
-function getHandler(cb: (message: string) => void) {
-	const t = Mock.all<Terminal>()
-	const w = new (class extends Writer {
-		write(m: string | string[]) {
-			if (!(m instanceof Array)) {
-				m = [m]
-			}
-
-			cb(m.join(''))
-		}
-	})(t)
-
-	return new (class extends ErrorHandler {
-		protected formatFile(file: string) {
-			return file.replace(process.cwd(), '/project')
-		}
-	})(new Output(t, w, new Formatter(new NullColor())))
-}
+import { FilePreview, Output, Writer, TextStyle, NullColor, StackTrace, ErrorHandler } from '../src/Output'
+import { TerminalMock } from './__mocks__'
 
 describe('ErrorHandler', () => {
-	test('Render Basic Error', () => {
-		try {
-			TestThrow()
-		} catch (error) {
-			getHandler(m => {
-				expect(m).toMatchSnapshot()
-			}).render(error)
-		}
+	const output = new Output(TerminalMock, new Writer(TerminalMock), new TextStyle(new NullColor()))
+
+	test('Preview file content', () => {
+		const fp = new FilePreview(output)
+
+		expect(
+			fp
+				.render({
+					path: __dirname + '/__mocks__/ApplicationMock.ts',
+					line: 14,
+				})
+				.join('\n')
+		).toMatchSnapshot()
+	})
+
+	test('Format error stack trace', () => {
+		const e = new Error('Foobar Error Stack')
+		const s = new StackTrace(file => {
+			return file.replace(__dirname, '/project/')
+		})
+
+		expect(e.stack).toMatchSnapshot()
+		expect(s.render(e)).toMatchSnapshot()
+	})
+
+	test('Render error', () => {
+		const e = new Error('Foobar')
+		const h = new ErrorHandler(output)
+
+		expect(h.report(e)).toMatchSnapshot()
 	})
 })

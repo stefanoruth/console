@@ -1,5 +1,5 @@
 import { Command } from './Command'
-import { Descriptor } from '../Output/Descriptor'
+import { Descriptor } from '../Output'
 
 export class ListCommand extends Command {
 	protected name = 'list'
