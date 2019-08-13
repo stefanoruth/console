@@ -12,7 +12,15 @@ class TestCommand extends Command {
 	}
 }
 
-const testCommand = async (callback: (i: Input) => void, input: string[] = [], signature: CommandSignature = []) => {
+const baseOptions = {
+	help: false,
+	'no-interaction': false,
+	quiet: false,
+	verbose: false,
+	version: false,
+}
+
+const runTestCommand = async (callback: (i: Input) => void, input: string[] = [], signature: CommandSignature = []) => {
 	const a = new Application('TestApp')
 	const s = new Signature(signature)
 	const i = new Input(['test', ...input])
@@ -27,16 +35,12 @@ const testCommand = async (callback: (i: Input) => void, input: string[] = [], s
 		async handle() {
 			callback(this.input)
 		}
-	}()
+	})()
 
 	c.setApplication(a)
 
 	return a.run(i, o, t)
 }
-
-process.on('unhandledRejection', err => {
-	console.error(err)
-})
 
 describe('Command', () => {
 	test('Public api', async () => {
@@ -45,11 +49,11 @@ describe('Command', () => {
 		const i = new Input()
 		const o = new Output(Mock.all<Terminal>())
 
-		const c = new class extends TestCommand {
+		const c = new (class extends TestCommand {
 			protected description = 'desc'
 			protected help = 'help'
 			protected signature = s
-		}()
+		})()
 
 		expect(() => c.getApplication()).toThrow()
 		expect(() => c.input).toThrow()
@@ -113,13 +117,13 @@ describe('Command', () => {
 				const app = new Application()
 				c.setApplication(app)
 
-				const fooCommand = new class extends Command {
+				const fooCommand = new (class extends Command {
 					protected name = 'foo'
 
 					async handle() {
 						//
 					}
-				}()
+				})()
 
 				fooCommand.setApplication(app)
 
@@ -136,7 +140,7 @@ describe('Command', () => {
 	})
 
 	test('Command inputs', async () => {
-		await testCommand(
+		await runTestCommand(
 			i => {
 				expect(i.getArguments()).toEqual({ foo: 'foobar' })
 				expect(i.getOptions()).toEqual({})
@@ -145,7 +149,7 @@ describe('Command', () => {
 			[new Argument('foo')]
 		)
 
-		await testCommand(
+		await runTestCommand(
 			i => {
 				expect(i.getArguments()).toEqual({ foo: 'foobar' })
 				expect(i.getOptions()).toEqual({})
@@ -154,7 +158,7 @@ describe('Command', () => {
 			[new Argument('foo'), new Option('bar')]
 		)
 
-		await testCommand(
+		await runTestCommand(
 			i => {
 				expect(i.getArguments()).toEqual({ foo: 'foobar' })
 				expect(i.getOptions()).toEqual({ bar: 'har' })
