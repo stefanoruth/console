@@ -27,7 +27,7 @@ const runTestCommand = async (callback: (i: Input) => void, input: string[] = []
 	const t = Mock.all<Terminal>()
 	const o = new Output(t)
 
-	const c = new class extends TestCommand {
+	const c = new (class extends TestCommand {
 		protected description = 'desc'
 		protected help = 'help'
 		protected signature = s
@@ -37,7 +37,7 @@ const runTestCommand = async (callback: (i: Input) => void, input: string[] = []
 		}
 	})()
 
-	c.setApplication(a)
+	a.register([c])
 
 	return a.run(i, o, t)
 }
