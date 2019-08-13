@@ -1,14 +1,14 @@
 import { Application } from '../Application'
-import { Signature } from '../Input/Signature'
-import { Output } from '../Output/Output'
-import { Input, Args } from '../Input/Input'
+import { Input, Signature, CommandSignature } from '../Input'
+import { Output } from '../Output'
 
 export abstract class Command {
 	protected abstract name: string
 	protected description: string = ''
 	protected help: string = ''
-	protected signature: Signature = new Signature()
+	protected signature: CommandSignature = []
 	protected application?: Application
+	private _signature?: Signature
 	private _input?: Input
 	private _output?: Output
 
@@ -66,7 +66,11 @@ export abstract class Command {
 	 * Gets the InputDefinition attached to this Command.
 	 */
 	getSignature(): Signature {
-		return this.signature
+		if (!this._signature) {
+			this._signature = new Signature(this.signature)
+		}
+
+		return this._signature
 	}
 
 	/**

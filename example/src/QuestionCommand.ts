@@ -1,8 +1,8 @@
-import { Command, Option, Signature } from 'kodo-console'
+import { Command, Option } from 'kodo-console'
 
 export class QuestionCommand extends Command {
 	protected name = 'example:question'
-	protected signature = new Signature([new Option('hidden', 'p')])
+	protected signature = [new Option('hidden', 'p')]
 
 	async handle() {
 		let result

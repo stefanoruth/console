@@ -26,7 +26,7 @@ class TestCommand extends Command {
 	constructor(definition: CommandSignature = [], description: string = '', help: string = '') {
 		super()
 		this.application = new Application()
-		this.signature = new Signature(definition)
+		this.signature = definition
 		this.description = description
 		this.help = help
 	}

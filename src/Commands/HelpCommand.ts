@@ -1,12 +1,12 @@
 import { Command } from './Command'
-import { Descriptor } from '../Output/Descriptor'
-import { Signature, Argument, ArgumentMode } from '../Input'
+import { Descriptor } from '../Output'
+import { Argument, ArgumentMode } from '../Input'
 
 export class HelpCommand extends Command {
 	protected name = 'help'
 	protected description = 'Displays help for a command'
 	protected command: Command | null = null
-	protected signature = new Signature([new Argument('command_name', ArgumentMode.optional, 'The command name', 'help')])
+	protected signature = [new Argument('command_name', ArgumentMode.optional, 'The command name', 'help')]
 
 	/**
 	 * Help users learn more about the current command.

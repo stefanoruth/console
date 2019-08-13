@@ -1,13 +1,10 @@
 import { Output } from './Output'
-import { Argument } from '../Input/Argument'
 import { Application } from '../Application'
 import { Command } from '../Commands/Command'
-import { Option } from '../Input/Option'
-import { Signature } from '../Input/Signature'
-import { ColorName } from './Style/Color'
+import { Option, Signature, Argument } from '../Input'
+import { ColorName, TextStyle } from './Style'
 import { OutputFormatter } from './OutputFormatter'
 import { extractNamespace } from '../helpers'
-import { TextStyle } from './Style/TextStyle'
 
 export interface DescriptorOptions {
 	totalWidth?: number
