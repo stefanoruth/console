@@ -1,5 +1,3 @@
-import { Trace } from './Trace'
-
 export interface TraceItem {
 	method: string
 	file: string
@@ -28,8 +26,8 @@ export class StackTrace {
 		return matches
 	}
 
-	build(error: Error): Trace[] {
-		const tracing: Trace[] = []
+	build(error: Error): TraceItem[] {
+		const tracing: TraceItem[] = []
 		let stack = (error.stack && error.stack.split('\n')) || []
 
 		if (stack.length) {

@@ -34,7 +34,10 @@ export class Terminal {
 	 * Reset cursor to start of current line.
 	 */
 	cursorReset() {
-		readline.cursorTo(process.stdout, 0, 0)
+		// Works without 3 argument.
+		// Just moving the cursor to the start of the current line.
+		// @ts-ignore
+		readline.cursorTo(process.stdout, 0)
 	}
 
 	/**
