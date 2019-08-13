@@ -31,11 +31,10 @@ const baseOptions = {
 describe('Command', () => {
 	test('Public api', async () => {
 		const a = new Application('foobar')
-		const sa = [new Argument('foo')]
-		const s = new Signature(sa)
+		const s = [new Argument('foo')]
 		const i = new Input()
 		const o = new Output(Mock.all<Terminal>())
-		const c = new TestCommand(sa)
+		const c = new TestCommand(s)
 
 		expect(() => c.getApplication()).toThrow()
 		expect(() => c.input).toThrow()
@@ -48,7 +47,7 @@ describe('Command', () => {
 		expect(c.getName()).toBe('test')
 		expect(c.getHelp()).toBe('help')
 		expect(c.getDescription()).toBe('desc')
-		expect(c.getSignature()).toEqual(s)
+		expect(c.getSignature()).toEqual(new Signature(s))
 		expect(c.getApplication()).toBe(a)
 		expect(c.input).toBe(i)
 		expect(c.output).toBe(o)
@@ -121,34 +120,39 @@ describe('Command', () => {
 		})
 	})
 
-	test('Command inputs', async () => {
-		// const { command, run, app, input } = appMock(['test', 'foobar'], new TestCommand([new Argument('foo')]))
-		// await run()
-		// expect(input.getArguments()).toEqual({ command: 'test', foo: 'foobar' })
-		// await runTestCommand(
-		// 	i => {
-		// 		expect(i.getArguments()).toEqual({ command: 'test', foo: 'foobar' })
-		// 		expect(i.getOptions()).toEqual(baseOptions)
-		// 	},
-		// 	['foobar'],
-		// 	[new Argument('foo')]
-		// )
-		// await runTestCommand(
-		// 	i => {
-		// 		expect(i.getArguments()).toEqual({ foo: 'foobar' })
-		// 		expect(i.getOptions()).toEqual(baseOptions)
-		// 	},
-		// 	['foobar'],
-		// 	[new Argument('foo'), new Option('bar')]
-		// )
-		// await runTestCommand(
-		// 	i => {
-		// 		expect(i.getArguments()).toEqual({ foo: 'foobar' })
-		// 		expect(i.getOptions()).toEqual({ bar: 'har' })
-		// 		expect(i.getArgs()).toEqual({ foo: 'foobar', bar: 'har' })
-		// 	},
-		// 	['foobar', '-b', 'har'],
-		// 	[new Argument('foo'), new Option('bar')]
-		// )
+	describe('Command inputs', () => {
+		test('Single Argument', async () => {
+			const { run, input } = appMock(['test', 'foobar'], new TestCommand([new Argument('foo')]))
+
+			await run()
+
+			expect(input.getArguments()).toEqual({ command: 'test', foo: 'foobar' })
+			expect(input.getOptions()).toEqual(baseOptions)
+		})
+
+		test('Arg + empty Option', async () => {
+			const { run, input } = appMock(['test', 'foobar'], new TestCommand([new Argument('foo'), new Option('bar')]))
+
+			await run()
+
+			expect(input.getArguments()).toEqual({ command: 'test', foo: 'foobar' })
+			expect(input.getOptions()).toEqual({ ...baseOptions, bar: false })
+		})
+
+		test('Arg + filled short option', async () => {
+			const { run, input } = appMock(
+				['test', 'foobar', '-b', 'baz'],
+				new TestCommand([new Argument('foo'), new Option('bar')])
+			)
+
+			await run()
+
+			expect(input.getArguments()).toEqual({
+				command: 'test',
+				foo: 'foobar',
+			})
+			expect(input.getOptions()).toEqual({ ...baseOptions, bar: false })
+			// expect(input.getArgs()).toEqual({ foo: 'foobar', bar: 'baz' })
+		})
 	})
 })

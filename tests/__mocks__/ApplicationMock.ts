@@ -18,6 +18,6 @@ export function appMock(input: string[], c?: Command) {
 		command: c,
 		app: a,
 		input: i,
-		run: () => a.run(i, o, t),
+		run: () => a.run(i, o),
 	}
 }

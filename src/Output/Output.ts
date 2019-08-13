@@ -5,7 +5,6 @@ import { Writer } from './Writer'
 import { Verbosity } from './Verbosity'
 import { Terminal } from './Terminal'
 import { HiddenQuestion, ConfirmationQuestion, ConfirmToProceed, Question } from './Question'
-import { ErrorHandler } from './ErrorHandler'
 
 export class Output {
 	protected verbosity: Verbosity = Verbosity.normal
@@ -162,5 +161,12 @@ export class Output {
 	 */
 	getStyle(): TextStyle {
 		return this.style
+	}
+
+	/**
+	 * Get registered terminal.
+	 */
+	getTerminal(): Terminal {
+		return this.terminal
 	}
 }

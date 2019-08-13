@@ -61,14 +61,14 @@ describe('Application', () => {
 		expect(new Application('foo').getHelp()).toBe('foo')
 		expect(new Application('foo', 'bar').getHelp()).toBe('foo bar')
 
-		expect(new Application().run(new Input(['--version']), undefined, Mock.all<Terminal>()))
+		expect(new Application().run(new Input(['--version']), new Output(Mock.all<Terminal>())))
 	})
 
 	test('Application can autoexit', async () => {
 		const app = new Application()
 		const t = Mock.all<Terminal>()
 
-		const code = await app.run(new Input([]), undefined, t)
+		const code = await app.run(new Input([]), new Output(t))
 
 		expect(code).toBe(0)
 		expect(t.exit).toBeCalled()
@@ -80,7 +80,7 @@ describe('Application', () => {
 
 		app.setAutoExit(false)
 
-		const code = await app.run(new Input([]), undefined, t)
+		const code = await app.run(new Input([]), new Output(t))
 
 		expect(code).toBe(0)
 		expect(t.exit).not.toBeCalled()
@@ -95,7 +95,7 @@ describe('Application', () => {
 
 			app.register([new TestCommand('foo')])
 
-			app.run(new Input(['foo', args]), o, t)
+			app.run(new Input(['foo', args]), o)
 
 			return o
 		}
@@ -116,7 +116,7 @@ describe('Application', () => {
 
 			app.register([new TestCommand('foo')])
 
-			app.run(i, o, t)
+			app.run(i, o)
 
 			return i
 		}

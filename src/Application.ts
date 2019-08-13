@@ -1,7 +1,7 @@
-import { Command } from './Commands'
+import { Command, Registry } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
-import { Output, ErrorHandler, Terminal, ErrorHandlerContract } from './Output'
-import { Registry } from './Commands/Registry'
+import { Output, ErrorHandler, Terminal, Verbosity } from './Output'
+import { CommandNotFoundException } from './Exceptions'
 import {
 	EventDispatcher,
 	ApplicationStarting,
@@ -10,13 +10,10 @@ import {
 	EventListener,
 	EventName,
 } from './Events'
-import { Verbosity } from './Output/Verbosity'
-import { CommandNotFoundException } from './Exceptions'
 
 export type Bootstrap = (application: Application) => void
 
 export class Application {
-	protected catchExceptions: boolean = true
 	protected autoExit: boolean = true
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
@@ -52,19 +49,15 @@ export class Application {
 	/**
 	 * Run the Commands.
 	 */
-	async run(input?: Input, output?: Output, terminal?: Terminal): Promise<number> {
+	async run(input?: Input, output?: Output): Promise<number> {
 		let exitCode: number = 0
-
-		if (!terminal) {
-			terminal = new Terminal()
-		}
 
 		if (!input) {
 			input = new Input()
 		}
 
 		if (!output) {
-			output = new Output(terminal)
+			output = new Output(new Terminal())
 		}
 
 		const errorHandler = new ErrorHandler(output)
@@ -78,10 +71,6 @@ export class Application {
 		try {
 			exitCode = await this.doRun(input, output, errorHandler)
 		} catch (error) {
-			if (!this.catchExceptions) {
-				throw error
-			}
-
 			errorHandler.report(error)
 
 			exitCode = 1
@@ -90,7 +79,7 @@ export class Application {
 		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
 
 		if (this.autoExit) {
-			terminal.exit(exitCode)
+			output.getTerminal().exit(exitCode)
 		}
 
 		return exitCode
@@ -131,17 +120,9 @@ export class Application {
 			return 1
 		}
 
-		// Execute console command.
-		try {
-			await command.execute(input, output)
-		} catch (error) {
-			// Error happened in execution.
-			errorHandler.report(error)
+		const exitCode = await this.doRunCommand(command, input, output, errorHandler)
 
-			return 1
-		}
-
-		return 0
+		return exitCode
 	}
 
 	/**
@@ -203,6 +184,40 @@ export class Application {
 			// output.setDecorated(false);
 		}
 	}
+
+	/**
+	 * Runs the current command.
+	 *
+	 * If an event dispatcher has been attached to the application,
+	 * events are also dispatched during the life-cycle of the command.
+	 */
+	protected async doRunCommand(command: Command, input: Input, output: Output, errorHandler: ErrorHandler) {
+		// bind before the console.command event, so the listeners have access to input options/arguments
+		try {
+			command.getSignature().addOptions(this.getSignature().getOptions())
+
+			const currentArguments = command.getSignature().getArguments()
+			command.getSignature().setArguments(this.getSignature().getArguments())
+			command.getSignature().addArguments(currentArguments)
+
+			input.bind(command.getSignature())
+		} catch (error) {
+			// ignore invalid options/arguments for now, to allow the event listeners to customize the InputDefinition
+		}
+
+		// Execute console command.
+		try {
+			await command.execute(input, output)
+		} catch (error) {
+			// Error happened in execution.
+			errorHandler.report(error)
+
+			return 1
+		}
+
+		return 0
+	}
+
 	/**
 	 * Sets whether to automatically exit after a command execution or not.
 	 */
