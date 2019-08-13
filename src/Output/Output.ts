@@ -1,4 +1,4 @@
-import { ColorName, Formatter } from './Style'
+import { ColorName, TextStyle } from './Style'
 import { ProgressBar } from './ProgressBar'
 import { Table } from './Table'
 import { Writer } from './Writer'
@@ -13,7 +13,7 @@ export class Output {
 	constructor(
 		protected terminal: Terminal,
 		protected writer: Writer = new Writer(terminal),
-		protected style: Formatter = new Formatter()
+		protected style: TextStyle = new TextStyle()
 	) {}
 
 	/**
@@ -101,13 +101,6 @@ export class Output {
 	}
 
 	/**
-	 * Format exceptions.
-	 */
-	renderException() {
-		return new ErrorHandler(this)
-	}
-
-	/**
 	 * Display a table on the console.
 	 */
 	table(rows: object[], columns?: string[], configure?: (table: Table) => void) {
@@ -167,7 +160,7 @@ export class Output {
 	/**
 	 * Get output formatter.
 	 */
-	getStyle(): Formatter {
+	getStyle(): TextStyle {
 		return this.style
 	}
 }

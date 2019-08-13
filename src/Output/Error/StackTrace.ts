@@ -1,10 +1,22 @@
 import { Trace } from './Trace'
 
-export class Stack {
+export interface TraceItem {
+	method: string
+	file: string
+	line: number
+	column: number
+}
+
+export class StackTrace {
 	static readonly fileRegex = /(.+) (?:\((.+):(\d+):(\d+)\))?/i
+	protected stack: TraceItem[] = []
+
+	constructor(error: Error) {
+		//
+	}
 
 	protected matchFile(item: string): string[] {
-		const matches = new RegExp(Stack.fileRegex).exec(item)
+		const matches = new RegExp(StackTrace.fileRegex).exec(item)
 
 		if (!matches) {
 			// throw new Error(`Count not find file in stack ${item}`)

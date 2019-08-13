@@ -1,6 +1,6 @@
 import { Signature } from './Signature'
 import { InvalidOptionException, InvalidArgumentException } from '../Exceptions'
-import { escapeshellarg } from '../helpers'
+import { escapeshellarg, isRunningTestMode } from '../helpers'
 
 export type Args = { [k: string]: any }
 
@@ -14,7 +14,7 @@ export class Input {
 
 	constructor(argv?: string[]) {
 		if (!argv) {
-			argv = process.argv.slice(2)
+			argv = isRunningTestMode() ? [] : process.argv.slice(2)
 		}
 
 		this.tokens = argv

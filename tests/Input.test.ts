@@ -1,7 +1,6 @@
 import { Input, Signature, Option, Argument, OptionMode } from '../src/Input'
 import { escapeshellarg } from '../src/helpers'
 
-const reset = [...process.argv]
 let input: Input
 
 function getInput(argv: string[], signature?: Array<Argument | Option>) {
@@ -14,20 +13,11 @@ function getInput(argv: string[], signature?: Array<Argument | Option>) {
 	return base
 }
 
-function processReset() {
-	process.argv = [...reset]
-}
-
 describe('Input', () => {
-	beforeEach(() => {
-		processReset()
-	})
-
 	test('Constructor', () => {
-		process.argv = ['node', 'cli.js', 'foo']
 		const inputRaw = new (class extends Input {
 			getTokens = () => this.tokens
-		})()
+		})(['foo'])
 		expect(inputRaw.getTokens()).toEqual(['foo'])
 	})
 

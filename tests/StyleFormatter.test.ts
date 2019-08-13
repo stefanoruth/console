@@ -1,9 +1,8 @@
-import { Formatter } from '../src/Output/Style/Formatter'
+import { TextStyle, Color } from '../src/Output/Style'
 import { TestColor } from './__mocks__/TestColor'
-import { Color } from '../src/Output/Style'
 
 function format() {
-	return new Formatter(new TestColor())
+	return new TextStyle(new TestColor())
 }
 
 describe('StyleFormatter', () => {
@@ -25,11 +24,11 @@ describe('StyleFormatter', () => {
 	})
 
 	test('Exposes the color generator', () => {
-		expect(new Formatter().getColor()).toBeInstanceOf(Color)
+		expect(new TextStyle().getColor()).toBeInstanceOf(Color)
 	})
 
 	test('Color Mapper', () => {
-		const c = new class extends Color {
+		const c = new (class extends Color {
 			protected foregroundColors: any = {
 				black: {
 					set: '#1',
@@ -43,7 +42,7 @@ describe('StyleFormatter', () => {
 					unset: '$2',
 				},
 			}
-		}()
+		})()
 
 		expect(c.apply('foo', { text: 'black' })).toBe('#1foo#2')
 		expect(c.apply('foo', { bg: 'black' })).toBe('$1foo$2')

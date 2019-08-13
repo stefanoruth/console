@@ -1,6 +1,6 @@
 import { Color, ApplyColor } from './Color'
 
-export class Formatter {
+export class TextStyle {
 	constructor(protected color: Color = new Color()) {}
 
 	/**

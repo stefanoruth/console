@@ -92,3 +92,10 @@ export function formatMemory(memory: number) {
 	}
 	return `${memory.toFixed(0)} B`
 }
+
+/**
+ * Is testing with Jest.
+ */
+export function isRunningTestMode() {
+	return process.env.JEST_WORKER_ID !== undefined
+}

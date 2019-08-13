@@ -1,21 +1,21 @@
 import { Output, Terminal } from '../src'
 import { Mock } from 'ts-mockery'
 import { Writer } from '../src/Output/Writer'
-import { Color, Formatter, ApplyColor } from '../src/Output/Style'
+import { Color, TextStyle, ApplyColor } from '../src/Output/Style'
 
 describe('Output', () => {
 	const t = Mock.all<Terminal>()
-	const w = new class extends Writer {
+	const w = new (class extends Writer {
 		write(msg: string) {
 			return msg
 		}
-	}(t)
-	const s = new class extends Color {
+	})(t)
+	const s = new (class extends Color {
 		apply(text: string, color: ApplyColor) {
 			return `[${color.text || ''},${color.bg || ''}]${text}`
 		}
-	}()
-	const f = new Formatter(s)
+	})()
+	const f = new TextStyle(s)
 	const o = new Output(t, w, f)
 
 	test('Text Colors', () => {

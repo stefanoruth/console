@@ -68,7 +68,7 @@ describe('Application', () => {
 		const app = new Application()
 		const t = Mock.all<Terminal>()
 
-		const code = await app.run(undefined, undefined, t)
+		const code = await app.run(new Input([]), undefined, t)
 
 		expect(code).toBe(0)
 		expect(t.exit).toBeCalled()
@@ -80,7 +80,7 @@ describe('Application', () => {
 
 		app.setAutoExit(false)
 
-		const code = await app.run(undefined, undefined, t)
+		const code = await app.run(new Input([]), undefined, t)
 
 		expect(code).toBe(0)
 		expect(t.exit).not.toBeCalled()
@@ -93,7 +93,9 @@ describe('Application', () => {
 
 			const app = new Application()
 
-			app.run(new Input([args]), o, t)
+			app.register([new TestCommand('foo')])
+
+			app.run(new Input(['foo', args]), o, t)
 
 			return o
 		}
@@ -109,8 +111,10 @@ describe('Application', () => {
 		const run = (args: string) => {
 			const t = Mock.all<Terminal>()
 			const o = new Output(t)
-			const i = new Input([args])
+			const i = new Input(['foo', args])
 			const app = new Application()
+
+			app.register([new TestCommand('foo')])
 
 			app.run(i, o, t)
 

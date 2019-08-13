@@ -7,7 +7,7 @@ import { Signature } from '../Input/Signature'
 import { ColorName } from './Style/Color'
 import { OutputFormatter } from './OutputFormatter'
 import { extractNamespace } from '../helpers'
-import { Formatter } from './Style/Formatter'
+import { TextStyle } from './Style/TextStyle'
 
 export interface DescriptorOptions {
 	totalWidth?: number
@@ -15,7 +15,7 @@ export interface DescriptorOptions {
 }
 
 export class Descriptor {
-	constructor(protected output: Output, protected style: Formatter = new Formatter()) {}
+	constructor(protected output: Output, protected style: TextStyle = new TextStyle()) {}
 
 	/**
 	 * Describes an object if supported.

@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { Trace } from './Trace'
 import { Output } from '../Output'
 
 export class FilePreview {
@@ -8,18 +7,17 @@ export class FilePreview {
 
 	constructor(protected output: Output) {}
 
-	view(trace: Trace) {
-		if (!trace.file) {
-			return []
-		}
-
-		const contents = fs.readFileSync(trace.file, 'utf8').split('\r\n')
-		const fromLine = trace.line - this.beforeLines
-		const toLine = trace.line + this.afterLines
+	/**
+	 * Preview a snapshot of a file with a marker of a specefic line.
+	 */
+	view(file: { path: string; line: number }) {
+		const contents = fs.readFileSync(file.path, 'utf8').split('\r\n')
+		const fromLine = file.line - this.beforeLines
+		const toLine = file.line + this.afterLines
 
 		return contents.slice(fromLine, toLine).map((line, index) => {
 			const lineNumber = fromLine + index
-			const pointer = lineNumber === trace.line ? this.output.getStyle().error('  > ') : ' '.repeat(4)
+			const pointer = lineNumber === file.line ? this.output.getStyle().error('  > ') : ' '.repeat(4)
 
 			return `${pointer}${lineNumber}| ${line}`
 		})

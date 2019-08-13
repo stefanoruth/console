@@ -1,8 +1,8 @@
 import { Descriptor } from '../src/Output/Descriptor'
 import { Argument } from '../src/Input/Argument'
 import { Output, Terminal } from '../src/Output'
-import { ColorName, Color, ApplyColor, Formatter } from '../src/Output/Style'
-import { Option, Signature, OptionMode, CommandSignature } from '../src/Input'
+import { Color, TextStyle } from '../src/Output/Style'
+import { Option, Signature, CommandSignature } from '../src/Input'
 import { Mock } from 'ts-mockery'
 import { Command } from '../src/Commands'
 import { Application } from '../src/Application'
@@ -43,7 +43,7 @@ const color = Mock.of<Color>({
 })
 
 const output = new Output(new Terminal())
-const formatter = new Formatter(color)
+const formatter = new TextStyle(color)
 
 function desc(descObject: any): string {
 	return new TestDescriptor(output, formatter).describe(descObject).buffer
