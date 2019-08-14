@@ -6,7 +6,7 @@ import { HelpCommand } from './HelpCommand'
 import { ListCommand } from './ListCommand'
 import { InspireCommand } from './InspireCommand'
 
-export class Registry {
+export class CommandRegistry {
 	protected commands: { [key: string]: Command } = {}
 	protected wantHelps: boolean = false
 	protected defaultCommand: string = 'list'

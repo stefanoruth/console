@@ -1,4 +1,4 @@
-import { Command, Registry } from './Commands'
+import { Command, CommandRegistry } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { Output, ErrorHandler, Terminal, Verbosity } from './Output'
 import { CommandNotFoundException } from './Exceptions'
@@ -17,7 +17,7 @@ export class Application {
 	protected autoExit: boolean = true
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
-	protected commandRegistry: Registry = new Registry(this)
+	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
 	protected initialized: boolean = false
 
 	/**
