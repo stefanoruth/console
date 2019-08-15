@@ -21,6 +21,7 @@ export class Application {
 	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
 	protected commandLoader: CommandLoader = new CommandLoader()
 	protected initialized: boolean = false
+	protected autoloadCommandsFrom: string[] = []
 
 	/**
 	 * Build Console Application.
@@ -37,6 +38,24 @@ export class Application {
 		this.commandRegistry.registerCommands(commands)
 
 		return this
+	}
+
+	/**
+	 * Load a set of commands from a directory.
+	 */
+	loadDirectory(...dirs: string[]) {
+		this.autoloadCommandsFrom.push(...dirs)
+
+		return this
+	}
+
+	/**
+	 * Autoload commands from custom directories.
+	 */
+	async autoLoadCommands() {
+		for (const dir of this.autoloadCommandsFrom) {
+			this.commandRegistry.registerCommands(await this.commandLoader.load(dir))
+		}
 	}
 
 	/**
@@ -98,11 +117,13 @@ export class Application {
 			// Errors must be ignored, full binding/validation happens later when the command is known.
 		}
 
+		// User set custom dir from CLI.
 		if (input.hasParameterOption(['--command-dir'], true)) {
-			const dirPath = input.getParameterOption(['--command-dir'])
-
-			this.commandRegistry.registerCommands(await this.commandLoader.load(dirPath!))
+			this.loadDirectory(input.getParameterOption(['--command-dir'])!)
 		}
+
+		// Autoload commands from directories.
+		await this.autoLoadCommands()
 
 		const name = this.commandRegistry.getCommandName(input)
 
