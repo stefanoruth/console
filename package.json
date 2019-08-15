@@ -12,11 +12,11 @@
 		"clean": "rm -rf dist/ && rm -rf coverage/",
 		"build": "tsc",
 		"watch": "tsc --watch",
-		"test": "jest --verbose=false --updateSnapshot",
+		"test": "jest --updateSnapshot",
 		"test:watch": "yarn test --watchAll",
 		"test:coverage": "yarn test --collectCoverage=true",
 		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
-		"ci": "jest --collectCoverage=true --coverageReporters=text-lcov | coveralls",
+		"ci": "yarn test:coverage --coverageReporters=text-lcov | coveralls",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs"
 	},
