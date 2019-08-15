@@ -5,7 +5,7 @@ import { Mock } from 'ts-mockery'
 import { Terminal, Output } from '../../src/Output'
 
 export function appMock(input: string[], c?: Command) {
-	const a = new Application('TestApp')
+	const a = new Application({ name: 'TestApp', version: 'Test' })
 	const i = new Input(input)
 	const t = Mock.all<Terminal>()
 	const o = new Output(t)
