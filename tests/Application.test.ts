@@ -57,9 +57,10 @@ describe('Application', () => {
 	})
 
 	test('Shows basic information about the App', () => {
-		expect(new Application().getHelp()).toBe('Console Tool')
-		expect(new Application('foo').getHelp()).toBe('foo')
-		expect(new Application('foo', 'bar').getHelp()).toBe('foo bar')
+		expect(new Application().getHelp()).toBeDefined()
+		expect(new Application({ name: 'foo', version: '1' }).getHelp()).toBe('foo 1')
+		expect(new Application({ name: 'foo', version: '1' }).getName()).toBe('foo')
+		expect(new Application({ name: 'foo', version: '1' }).getVersion()).toBe('1')
 
 		expect(new Application().run(new Input(['--version']), new Output(Mock.all<Terminal>())))
 	})

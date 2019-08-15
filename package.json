@@ -1,5 +1,5 @@
 {
-	"name": "kodo-console",
+	"name": "valon",
 	"version": "0.1.0",
 	"license": "MIT",
 	"main": "dist/index.js",
@@ -19,6 +19,9 @@
 		"ci": "jest --collectCoverage=true --coverageReporters=text-lcov | coveralls",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs"
+	},
+	"bin": {
+		"valon": "./dist/cli.js"
 	},
 	"devDependencies": {
 		"@types/jest": "^24.0.17",

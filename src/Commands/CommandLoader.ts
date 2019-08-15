@@ -4,65 +4,71 @@ import { Command } from './Command'
 import { CommandNotFoundException } from '../Exceptions'
 
 export class CommandLoader {
-	protected commands: { [k: string]: Command } = {}
+	/**
+	 * AutoLoaded Commands.
+	 */
+	protected commands: Command[] = []
+
+	/**
+	 * Format input path
+	 */
+	protected formatPath(dir: string): string {
+		// Relative
+		if (dir.startsWith('.')) {
+			return path.join(process.cwd(), dir)
+		}
+
+		return dir
+	}
+
+	/**
+	 * List all files in a dir recursively.
+	 */
+	protected listFilesInDir(dir: string): string[] {
+		const files: string[] = []
+		const dirFiles = fs.readdirSync(dir).map(file => path.join(dir, file))
+
+		for (const file of dirFiles) {
+			if (file.includes('.d.ts') || file.includes('.js.map')) {
+				continue
+			}
+
+			if (fs.statSync(file).isDirectory()) {
+				files.push(...this.listFilesInDir(file))
+			} else {
+				files.push(file)
+			}
+		}
+
+		return files
+	}
 
 	/**
 	 * Loads a directory of commands.
 	 */
 	async load(dir: string) {
-		const files = fs.readdirSync(dir).map(file => path.join(dir, file))
+		dir = this.formatPath(dir)
+		const files = this.listFilesInDir(dir)
 
 		for (const file of files) {
-			const imports = await import(file)
+			const importedModules = await import(file)
 
-			for (const module of Object.values(imports)) {
-				if (module.prototype instanceof Command) {
-					console.log('RENDER ME')
-
-					const command: Command = new f()
-					const commandName = command.getName()
-
-					if (this.has(commandName)) {
-						throw new Error(`Command with name is allready loaded: ${commandName}`)
-					}
-
-					this.commands[commandName] = command
-					loaded[commandName] = command
+			Object.values(importedModules).forEach((m: any) => {
+				if (!(m.prototype instanceof Command)) {
+					return // If module is not a command don't register it.
 				}
-			}
+
+				this.commands.push(new m())
+			})
 		}
 
-		console.log(this.commands)
-
-		return loaded
-	}
-
-	/**
-	 * Fetches a command.
-	 */
-	get(name: string): Command {
-		if (!this.has(name)) {
-			throw new CommandNotFoundException(`Command "${name}" is not defined.`)
-		}
-
-		return this.commands[name]
-	}
-
-	/**
-	 * Checks if a command exists.
-	 */
-	has(name: string): boolean {
-		if (typeof this.commands[name] !== 'undefined') {
-			return true
-		}
-
-		return false
+		return this.commands
 	}
 
 	/**
 	 * All registered command names
 	 */
 	getNames(): string[] {
-		return Object.keys(this.commands)
+		return this.commands.map(c => c.getName())
 	}
 }

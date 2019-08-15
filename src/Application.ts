@@ -1,4 +1,4 @@
-import { Command, CommandRegistry } from './Commands'
+import { Command, CommandRegistry, CommandLoader } from './Commands'
 import { Input, Signature, Option, Argument } from './Input'
 import { Output, ErrorHandler, Terminal, Verbosity } from './Output'
 import { CommandNotFoundException } from './Exceptions'
@@ -10,6 +10,7 @@ import {
 	EventListener,
 	EventName,
 } from './Events'
+const packageJson: { name: string; version: string } = require('../package.json')
 
 export type Bootstrap = (application: Application) => void
 
@@ -18,12 +19,13 @@ export class Application {
 	protected events: EventDispatcher = new EventDispatcher()
 	protected static bootstrappers: Bootstrap[] = []
 	protected commandRegistry: CommandRegistry = new CommandRegistry(this)
+	protected commandLoader: CommandLoader = new CommandLoader()
 	protected initialized: boolean = false
 
 	/**
 	 * Build Console Application.
 	 */
-	constructor(protected name?: string, protected version?: string) {
+	constructor(protected appInfo?: { name: string; version: string }) {
 		this.bootstrap()
 		this.events.dispatch(new ApplicationStarting())
 	}
@@ -32,9 +34,7 @@ export class Application {
 	 * Register a new Command.
 	 */
 	register(commands: Command[]): this {
-		commands.forEach((command: Command) => {
-			this.commandRegistry.addCommand(command)
-		})
+		this.commandRegistry.registerCommands(commands)
 
 		return this
 	}
@@ -62,10 +62,6 @@ export class Application {
 
 		const errorHandler = new ErrorHandler(output)
 
-		const commandName: string = this.commandRegistry.getCommandName(input)
-
-		this.events.dispatch(new CommandStarting(commandName, input, output))
-
 		this.configureIO(input, output)
 
 		try {
@@ -75,8 +71,6 @@ export class Application {
 
 			exitCode = 1
 		}
-
-		this.events.dispatch(new CommandFinished(commandName, input, output, exitCode))
 
 		if (this.autoExit) {
 			output.getTerminal().exit(exitCode)
@@ -104,6 +98,12 @@ export class Application {
 			// Errors must be ignored, full binding/validation happens later when the command is known.
 		}
 
+		if (input.hasParameterOption(['--command-dir'], true)) {
+			const dirPath = input.getParameterOption(['--command-dir'])
+
+			this.commandRegistry.registerCommands(await this.commandLoader.load(dirPath!))
+		}
+
 		const name = this.commandRegistry.getCommandName(input)
 
 		try {
@@ -120,7 +120,11 @@ export class Application {
 			return 1
 		}
 
+		this.events.dispatch(new CommandStarting(command.getName(), input, output))
+
 		const exitCode = await this.doRunCommand(command, input, output, errorHandler)
+
+		this.events.dispatch(new CommandFinished(command.getName(), input, output, exitCode))
 
 		return exitCode
 	}
@@ -139,16 +143,7 @@ export class Application {
 	 * Gets the help message.
 	 */
 	getHelp(): string {
-		const name = this.getName()
-		if (name) {
-			const version = this.getVersion()
-
-			if (version) {
-				return `${name} ${version}`
-			}
-			return name
-		}
-		return 'Console Tool'
+		return `${this.getName()} ${this.getVersion()}`
 	}
 
 	/**
@@ -228,15 +223,23 @@ export class Application {
 	/**
 	 * Gets the name of the application.
 	 */
-	getName() {
-		return this.name
+	getName(): string {
+		if (this.appInfo) {
+			return this.appInfo.name
+		}
+
+		return packageJson.name.charAt(0).toUpperCase() + packageJson.name.slice(1)
 	}
 
 	/**
 	 * Gets the version of the application.
 	 */
-	getVersion() {
-		return this.version
+	getVersion(): string {
+		if (this.appInfo) {
+			return this.appInfo.version
+		}
+
+		return packageJson.version
 	}
 
 	/**
@@ -264,6 +267,7 @@ export class Application {
 			new Option('--help', '-h', undefined, 'Display this help message'),
 			new Option('--quiet', '-q', undefined, 'Do not output any message'),
 			new Option('--version', '-V', undefined, 'Display this application version'),
+			new Option('--command-dir', undefined, undefined, 'Load commands dynamically from folder'),
 			new Option(
 				'--verbose',
 				'-v|vv|vvv',

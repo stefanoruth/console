@@ -23,6 +23,7 @@ class TestCommand extends Command {
 const baseOptions = {
 	help: false,
 	'no-interaction': false,
+	'command-dir': false,
 	quiet: false,
 	verbose: false,
 	version: false,
@@ -30,7 +31,7 @@ const baseOptions = {
 
 describe('Command', () => {
 	test('Public api', async () => {
-		const a = new Application('foobar')
+		const a = new Application()
 		const s = [new Argument('foo')]
 		const i = new Input()
 		const o = new Output(Mock.all<Terminal>())

@@ -32,13 +32,26 @@ export class CommandRegistry {
 	 * If the command is not enabled it will not be added.
 	 */
 	addCommand(command: Command) {
-		this.validateName(command.getName())
+		const name = command.getName()
+
+		if (typeof this.commands[name] !== 'undefined') {
+			throw new Error(`Dublicate command: ${name}`)
+		}
+
+		this.validateName(name)
 
 		command.setApplication(this.application)
 
-		this.commands[command.getName()] = command
+		this.commands[name] = command
 
 		return command
+	}
+
+	/**
+	 * Adds a list of commands
+	 */
+	registerCommands(commands: Command[]) {
+		commands.forEach(c => this.addCommand(c))
 	}
 
 	/**
