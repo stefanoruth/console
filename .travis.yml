@@ -6,4 +6,5 @@ cache:
   yarn: true
 
 script:
-  - yarn ci
+  - yarn ci:test
+  - yarn ci:coverage
