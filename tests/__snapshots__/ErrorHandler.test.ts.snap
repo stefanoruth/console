@@ -28,6 +28,9 @@ exports[`ErrorHandler Catching exceptions Render error 1`] = `
 
   4   
       /project/node_modules/jest-jasmine2/build/queueRunner.js:73:41
+
+  5   processTicksAndRejections
+      internal/process/task_queues.js:89:5
 "
 `;
 
@@ -62,6 +65,9 @@ exports[`ErrorHandler Catching exceptions Render error from remote file 1`] = `
 
   5   
       /project/node_modules/jest-jasmine2/build/queueRunner.js:73:41
+
+  6   processTicksAndRejections
+      internal/process/task_queues.js:89:5
 "
 `;
 
@@ -102,6 +108,12 @@ Array [
     "file": "/project/node_modules/jest-jasmine2/build/queueRunner.js",
     "line": 73,
     "method": undefined,
+  },
+  Object {
+    "column": 5,
+    "file": "internal/process/task_queues.js",
+    "line": 89,
+    "method": "processTicksAndRejections",
   },
 ]
 `;

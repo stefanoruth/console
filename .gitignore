@@ -5,3 +5,4 @@ coverage/
 example/yarn.lock
 .vuepress/dist
 .DS_Store
+.coveralls.yml
