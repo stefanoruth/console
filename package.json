@@ -1,9 +1,19 @@
 {
 	"name": "valon",
 	"version": "0.1.0",
+	"keywords": [
+		"typescript",
+		"cli",
+		"console",
+		"valon"
+	],
 	"license": "MIT",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/stefanoruth/valon-cli.git"
+	},
 	"dependencies": {
 		"@types/node": "^12.7.2",
 		"typescript": "^3.5.3"
