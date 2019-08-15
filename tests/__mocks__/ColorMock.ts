@@ -5,9 +5,3 @@ export class TestColor extends Color {
 		return `[${color.text || ''}|${color.bg || ''}]${text}`
 	}
 }
-
-export class NullColor extends Color {
-	apply(text: string, color: ApplyColor): string {
-		return text
-	}
-}

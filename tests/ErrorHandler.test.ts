@@ -1,11 +1,5 @@
 import { FilePreview, Output, Writer, TextStyle, NullColor, StackTrace, ErrorHandler } from '../src/Output'
 import { TerminalMock } from './__mocks__'
-import { TestThrow } from './__mocks__/ThrowError'
-
-const filePath = (file: string): string => {
-	console.log(file, process.cwd())
-	return file.replace(process.cwd(), '/project')
-}
 
 describe('ErrorHandler', () => {
 	const output = new Output(TerminalMock, new Writer(TerminalMock), new TextStyle(new NullColor()))
@@ -22,24 +16,17 @@ describe('ErrorHandler', () => {
 		).toMatchSnapshot()
 	})
 
-	test('Format error stack trace', () => {
-		const e = new Error('Foobar Error Stack')
-		const s = new StackTrace(filePath)
-		expect(s.render(e)).toMatchSnapshot()
-	})
+	describe('Catching exceptions', () => {
+		const handler = new ErrorHandler(output, false)
 
-	// describe('Catching exceptions', () => {
-	// 	const handler = new ErrorHandler(output, filePath, false)
-	// 	test('Render error', () => {
-	// 		const e = new Error('Foobar')
-	// 		expect(handler.report(e)).toMatchSnapshot()
-	// 	})
-	// 	test('Render error from remote file', () => {
-	// 		try {
-	// 			TestThrow()
-	// 		} catch (error) {
-	// 			expect(handler.report(error)).toMatchSnapshot()
-	// 		}
-	// 	})
-	// })
+		test('Render error', () => {
+			const report = handler.report(new Error('Foobar'))
+			// console.log(report)
+
+			expect(report).toContain('Foobar')
+			expect(report).toContain('Error  :  Foobar')
+			expect(report).toContain(`const report = handler.report(new Error('Foobar'))`)
+			expect(report).toContain('Exception trace:')
+		})
+	})
 })

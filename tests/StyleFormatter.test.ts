@@ -1,5 +1,5 @@
 import { TextStyle, Color } from '../src/Output/Style'
-import { TestColor } from './__mocks__/TestColor'
+import { TestColor } from './__mocks__'
 
 function format() {
 	return new TextStyle(new TestColor())

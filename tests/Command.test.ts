@@ -3,7 +3,7 @@ import { Application } from '../src/Application'
 import { Output, Terminal } from '../src/Output'
 import { ListCommand, InspireCommand, HelpCommand, Command } from '../src/Commands'
 import { Mock } from 'ts-mockery'
-import { appMock } from './__mocks__/ApplicationMock'
+import { appMock } from './__mocks__'
 
 class TestCommand extends Command {
 	protected name = 'test'

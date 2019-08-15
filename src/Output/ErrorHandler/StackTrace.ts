@@ -22,8 +22,6 @@ export function splitStackTraceEntry(text: string) {
 }
 
 export class StackTrace {
-	constructor(protected filePathHook?: (file: string) => string) {}
-
 	/**
 	 * Converts a stacktrace into an array of stack elements.
 	 */
@@ -39,7 +37,7 @@ export class StackTrace {
 
 				tracing.push({
 					method: extra ? `${message} (${extra})` : message,
-					file: this.filePathHook && file ? this.filePathHook(file) : file,
+					file,
 					line: parseInt(line, 10),
 					column: parseInt(column, 10),
 				})
