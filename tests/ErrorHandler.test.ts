@@ -6,23 +6,25 @@ const filePath = (file: string) => file.replace(process.cwd(), '/project')
 
 describe('ErrorHandler', () => {
 	const output = new Output(TerminalMock, new Writer(TerminalMock), new TextStyle(new NullColor()))
+
 	test('Preview file content', () => {
-		expect(true).toBeTruthy()
-		// 	const fp = new FilePreview(output)
-		// 	expect(
-		// 		fp
-		// 			.render({
-		// 				path: __dirname + '/__mocks__/ApplicationMock.ts',
-		// 				line: 14,
-		// 			})
-		// 			.join('\n')
-		// 	).toMatchSnapshot()
+		const fp = new FilePreview(output)
+		expect(
+			fp
+				.render({
+					path: __dirname + '/__mocks__/ApplicationMock.ts',
+					line: 14,
+				})
+				.join('\n')
+		).toMatchSnapshot()
 	})
-	// test('Format error stack trace', () => {
-	// 	const e = new Error('Foobar Error Stack')
-	// 	const s = new StackTrace(filePath)
-	// 	expect(s.render(e)).toMatchSnapshot()
-	// })
+
+	test('Format error stack trace', () => {
+		const e = new Error('Foobar Error Stack')
+		const s = new StackTrace(filePath)
+		expect(s.render(e)).toMatchSnapshot()
+	})
+
 	// describe('Catching exceptions', () => {
 	// 	const handler = new ErrorHandler(output, filePath, false)
 	// 	test('Render error', () => {

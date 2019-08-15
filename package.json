@@ -16,8 +16,9 @@
 		"test:watch": "jest --updateSnapshot --watchAll",
 		"test:coverage": "jest --updateSnapshot --collectCoverage=true",
 		"lint": "tslint -c ./tslint.json ./src/* ./example/src/*",
-		"ci:test": "jest --collectCoverage=true",
+		"ci:test": "jest --collectCoverage=true -u",
 		"ci:coverage": "coveralls < ./coverage/lcov.info",
+		"ci:debug": "cat ./tests/__snapshots__/ErrorHandler.test.ts.snap",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs"
 	},
