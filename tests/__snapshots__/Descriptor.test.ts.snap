@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Descriptor Describe an Command 1`] = `
+"Usage:
+  foobar
+Options:
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"
+`;
+
+exports[`Descriptor Describe an Command 2`] = `
+"Description:
+  foobarDesc
+Usage:
+  foobar
+Options:
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"
+`;
+
+exports[`Descriptor Describe an Command 3`] = `
+"Usage:
+  foobar
+Options:
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+Help:
+  foobarHelp"
+`;
+
+exports[`Descriptor Describe an Command 4`] = `
+"Usage:
+  foobar [\\\\<foo>]
+Arguments:
+  foo
+Options:
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"
+`;
+
+exports[`Descriptor Describe an Command 5`] = `
+"Usage:
+  foobar [options]
+Options:
+      --foo
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"
+`;
+
+exports[`Descriptor Describe an Command 6`] = `
+"Usage:
+  foobar [options] [--] [\\\\<foo>]
+Arguments:
+  foo
+Options:
+      --foo
+  -h, --help            Display this help message
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --command-dir     Load commands dynamically from folder
+  -n, --no-interaction  Do not ask any interactive question
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"
+`;

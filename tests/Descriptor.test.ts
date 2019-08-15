@@ -49,10 +49,13 @@ function desc(descObject: any): string {
 	return new TestDescriptor(output, formatter).describe(descObject).buffer
 }
 
-function desc2(descObject: any): string[] {
-	return new TestDescriptor(output, formatter).describe(descObject).bufferList.filter(line => {
-		return line.length
-	})
+function desc2(descObject: any): string {
+	return new TestDescriptor(output, formatter)
+		.describe(descObject)
+		.bufferList.filter(line => {
+			return line.length
+		})
+		.join('\n')
 }
 
 describe('Descriptor', () => {
@@ -90,54 +93,12 @@ describe('Descriptor', () => {
 	})
 
 	test('Describe an Command', () => {
-		function result(
-			usage: string = '',
-			args: string[] = [],
-			options: string[] = [],
-			descs: string[] = [],
-			help: string[] = []
-		) {
-			const texts: string[] = []
-			if (descs.length > 0) {
-				texts.push('Description:', ...descs)
-			}
-
-			texts.push('Usage:', ('  foobar ' + usage).trimRight())
-
-			if (args.length > 0) {
-				texts.push('Arguments:', ...args)
-			}
-
-			texts.push('Options:')
-
-			if (options.length > 0) {
-				texts.push(...options)
-			}
-
-			texts.push(
-				'  -h, --help            Display this help message',
-				'  -q, --quiet           Do not output any message',
-				'  -V, --version         Display this application version',
-				'      --command-dir     Load commands dynamically from folder',
-				'  -n, --no-interaction  Do not ask any interactive question',
-				'  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
-			)
-
-			if (help.length > 0) {
-				texts.push('Help:', ...help)
-			}
-
-			return texts
-		}
-
-		expect(desc2(new TestCommand())).toEqual(result())
-		expect(desc2(new TestCommand([], 'foobarDesc'))).toEqual(result('', [], [], ['  foobarDesc']))
-		expect(desc2(new TestCommand([], '', 'foobarHelp'))).toEqual(result('', [], [], [], ['  foobarHelp']))
-		expect(desc2(new TestCommand([new Argument('foo')]))).toEqual(result('[\\<foo>]', ['  foo']))
-		expect(desc2(new TestCommand([new Option('foo')]))).toEqual(result('[options]', [], ['      --foo']))
-		expect(desc2(new TestCommand([new Argument('foo'), new Option('foo')]))).toEqual(
-			result('[options] [--] [\\<foo>]', ['  foo'], ['      --foo'])
-		)
+		expect(desc2(new TestCommand())).toMatchSnapshot()
+		expect(desc2(new TestCommand([], 'foobarDesc'))).toMatchSnapshot()
+		expect(desc2(new TestCommand([], '', 'foobarHelp'))).toMatchSnapshot()
+		expect(desc2(new TestCommand([new Argument('foo')]))).toMatchSnapshot()
+		expect(desc2(new TestCommand([new Option('foo')]))).toMatchSnapshot()
+		expect(desc2(new TestCommand([new Argument('foo'), new Option('foo')]))).toMatchSnapshot()
 	})
 
 	test('Describe an Application', () => {
