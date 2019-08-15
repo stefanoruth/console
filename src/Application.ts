@@ -72,10 +72,12 @@ export class Application {
 		let exitCode: number = 0
 
 		if (!input) {
+			/* istanbul ignore next */
 			input = new Input()
 		}
 
 		if (!output) {
+			/* istanbul ignore next */
 			output = new Output(new Terminal())
 		}
 

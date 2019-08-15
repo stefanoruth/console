@@ -1,5 +1,5 @@
 export class CommandNotFoundException extends Error {
-	constructor(message: string, protected alternatives: string[] = []) {
+	constructor(message?: string, protected alternatives: string[] = []) {
 		super(message)
 		this.name = this.constructor.name
 	}
