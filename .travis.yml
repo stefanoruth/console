@@ -7,5 +7,4 @@ cache:
 
 script:
   - yarn ci:test
-  #   - yarn ci:coverage
-  - yarn ci:debug
+  - yarn ci:coverage

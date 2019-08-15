@@ -21,7 +21,6 @@ describe('ErrorHandler', () => {
 
 		test('Render error', () => {
 			const report = handler.report(new Error('Foobar'))
-			// console.log(report)
 
 			expect(report).toContain('Foobar')
 			expect(report).toContain('Error  :  Foobar')
