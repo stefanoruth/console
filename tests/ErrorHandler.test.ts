@@ -2,7 +2,10 @@ import { FilePreview, Output, Writer, TextStyle, NullColor, StackTrace, ErrorHan
 import { TerminalMock } from './__mocks__'
 import { TestThrow } from './__mocks__/ThrowError'
 
-const filePath = (file: string) => file.replace(process.cwd(), '/project')
+const filePath = (file: string): string => {
+	console.log(file, process.cwd())
+	return file.replace(process.cwd(), '/project')
+}
 
 describe('ErrorHandler', () => {
 	const output = new Output(TerminalMock, new Writer(TerminalMock), new TextStyle(new NullColor()))
