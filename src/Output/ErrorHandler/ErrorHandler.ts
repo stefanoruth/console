@@ -4,7 +4,14 @@ import { FilePreview } from './FilePreview'
 import { StackTrace } from './StackTrace'
 
 export class ErrorHandler {
-	constructor(protected output: Output, protected captureTestMode: boolean = true) {}
+	protected stackTrace: StackTrace = new StackTrace()
+	protected filePreview: FilePreview = new FilePreview(this.output)
+
+	constructor(
+		protected output: Output,
+		protected fileNameFormatter?: (file: string) => string,
+		protected captureTestMode: boolean = true
+	) {}
 
 	/**
 	 * Render errors to the user cli when ever reported.
@@ -16,16 +23,16 @@ export class ErrorHandler {
 			throw e
 		}
 
-		const preview = new FilePreview(this.output)
-		const stackTrace = new StackTrace().render(e)
+		const stackTrace = this.stackTrace.render(e)
 		const style = this.output.getStyle()
 		const entry = stackTrace.shift()!
 		const render: string[] = []
+		const filePath = (file: string) => (this.fileNameFormatter ? this.fileNameFormatter(file) : file)
 
 		// TODO Rework string build part.
 		render.push(`\n  ${style.error(` ${e.name} `)} :  ${style.note(e.message)}\n`)
-		render.push(`  at ${style.success(`${entry.file}:${entry.line}:${entry.column}`)}`)
-		render.push(...preview.render({ path: entry.file, line: entry.line }))
+		render.push(`  at ${style.success(`${filePath(entry.file)}:${entry.line}:${entry.column}`)}`)
+		render.push(...this.filePreview.render({ path: entry.file, line: entry.line }))
 
 		render.push(`\n  ${style.info('Exception trace:')}\n`)
 
@@ -36,7 +43,7 @@ export class ErrorHandler {
 				})}   ${style.info(trace.method || '')}`
 			)
 			if (trace.file) {
-				render.push(`${' '.repeat(6)}${style.success(`${trace.file}:${trace.line}:${trace.column}`)}`)
+				render.push(`${' '.repeat(6)}${style.success(`${filePath(trace.file)}:${trace.line}:${trace.column}`)}`)
 			}
 			render.push('')
 		})
