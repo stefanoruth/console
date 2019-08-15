@@ -1,5 +1,6 @@
 import { FilePreview, Output, Writer, TextStyle, NullColor, StackTrace, ErrorHandler } from '../src/Output'
 import { TerminalMock } from './__mocks__'
+import { TestThrow } from './__mocks__/ThrowError'
 
 describe('ErrorHandler', () => {
 	const output = new Output(TerminalMock, new Writer(TerminalMock), new TextStyle(new NullColor()))
@@ -29,8 +30,18 @@ describe('ErrorHandler', () => {
 
 	test('Render error', () => {
 		const e = new Error('Foobar')
-		const h = new ErrorHandler(output)
+		const h = new ErrorHandler(output, false)
 
 		expect(h.report(e)).toMatchSnapshot()
+	})
+
+	test('Render error from remote file', () => {
+		const h = new ErrorHandler(output, false)
+
+		try {
+			TestThrow()
+		} catch (error) {
+			expect(h.report(error)).toMatchSnapshot()
+		}
 	})
 })

@@ -2,7 +2,7 @@
 
 exports[`ErrorHandler Format error stack trace 1`] = `
 "Error: Foobar Error Stack
-    at Object.<anonymous> (/Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:21:13)
+    at Object.<anonymous> (/Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:22:13)
     at Object.asyncJestTest (/Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
     at /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:43:12
     at new Promise (<anonymous>)
@@ -16,7 +16,7 @@ Array [
   Object {
     "column": 13,
     "file": "/project//ErrorHandler.test.ts",
-    "line": 21,
+    "line": 22,
     "method": "Object.<anonymous>",
   },
   Object {
@@ -72,14 +72,14 @@ exports[`ErrorHandler Render error 1`] = `
 "
    Error  :  Foobar
 
-  at /Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:31:13
-    27| 	})
-    28| 
-    29| 	test('Render error', () => {
-    30| 		const e = new Error('Foobar')
-  > 31| 		const h = new ErrorHandler(output)
-    32| 
-    33| 		expect(h.report(e)).toMatchSnapshot()
+  at /Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:32:13
+    28| 	})
+    29| 
+    30| 	test('Render error', () => {
+    31| 		const e = new Error('Foobar')
+  > 32| 		const h = new ErrorHandler(output, false)
+    33| 
+    34| 		expect(h.report(e)).toMatchSnapshot()
 
   Exception trace:
 
@@ -98,6 +98,43 @@ exports[`ErrorHandler Render error 1`] = `
       /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:73:41
 
   5   processTicksAndRejections
+      internal/process/task_queues.js:89:5
+"
+`;
+
+exports[`ErrorHandler Render error from remote file 1`] = `
+"
+   Error  :  Foobar
+
+  at /Users/stefano/Documents/Code/console/tests/__mocks__/ThrowError.ts:5:8
+    1|  * Throws a simple error.
+    2|  */
+    3| export function TestThrow() {
+    4| 	throw new Error('Foobar')
+  > 5| }
+    6| 
+    7| /**
+
+  Exception trace:
+
+  0   Object.<anonymous>
+      /Users/stefano/Documents/Code/console/tests/ErrorHandler.test.ts:42:4
+
+  1   Object.asyncJestTest
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37
+
+  2   
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:43:12
+
+  3   new Promise (<anonymous>)
+
+  4   mapper
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:26:19
+
+  5   
+      /Users/stefano/Documents/Code/console/node_modules/jest-jasmine2/build/queueRunner.js:73:41
+
+  6   processTicksAndRejections
       internal/process/task_queues.js:89:5
 "
 `;
