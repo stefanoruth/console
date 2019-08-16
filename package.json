@@ -5,7 +5,14 @@
 		"typescript",
 		"cli",
 		"console",
-		"valon"
+		"valon",
+		"argument",
+		"args",
+		"option",
+		"parser",
+		"parsing",
+		"cli",
+		"command"
 	],
 	"license": "MIT",
 	"main": "dist/index.js",
