@@ -1,24 +1,22 @@
 module.exports = {
-	title: 'Console',
+	title: 'Valon CLI',
 	description: 'Just playing around',
+
 	themeConfig: {
-		search: false,
-		repo: 'stefanoruth/console',
+		displayAllHeaders: true,
+		sidebarDepth: 1,
+		search: true,
+		repo: 'stefanoruth/valon-cli',
 		editLinks: true,
 		lastUpdated: 'Last Updated',
+
 		nav: [
-			{ text: 'Home', link: '/' },
-			{ text: 'Guide', link: '/guide/' },
-			{ text: 'Changelog', link: 'https://github.com/stefanoruth/console/releases' },
+			{ text: 'Home', link: '/master/' },
+			{ text: 'Changelog', link: 'https://github.com/stefanoruth/valon-cli/releases' },
 		],
+
 		sidebar: {
-			'/guide/': [
-				{
-					title: 'Guide',
-					collapsable: false,
-					children: ['', 'getting-started', 'table'],
-				},
-			],
+			'/master/': require('./master'),
 		},
 	},
 }
