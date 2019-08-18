@@ -12,7 +12,7 @@ module.exports = {
 		lastUpdated: 'Last Updated',
 
 		nav: [
-			{ text: 'Home', link: '/master/' },
+			{ text: 'Home', link: '/' },
 			{ text: 'Changelog', link: 'https://github.com/stefanoruth/valon-cli/releases' },
 		],
 
