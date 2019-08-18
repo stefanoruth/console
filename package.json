@@ -36,7 +36,8 @@
 		"ci:test": "jest --collectCoverage=true -u",
 		"ci:coverage": "coveralls < ./coverage/lcov.info",
 		"docs:dev": "vuepress dev docs",
-		"docs:build": "vuepress build docs"
+		"docs:build": "vuepress build docs",
+		"docs:deploy": "./docs/deploy.sh"
 	},
 	"bin": {
 		"valon": "./dist/cli.js"

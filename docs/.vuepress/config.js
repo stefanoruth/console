@@ -6,6 +6,7 @@ module.exports = {
 		displayAllHeaders: true,
 		sidebarDepth: 1,
 		search: true,
+		serviceWorker: true,
 		repo: 'stefanoruth/valon-cli',
 		editLinks: true,
 		lastUpdated: 'Last Updated',
