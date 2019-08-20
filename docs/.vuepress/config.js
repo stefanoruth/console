@@ -1,6 +1,7 @@
 module.exports = {
 	title: 'Valon CLI',
-	description: 'Just playing around',
+    description: 'Just playing around',
+    base: '/valon-cli/',
 
 	themeConfig: {
 		displayAllHeaders: true,
