@@ -9,6 +9,11 @@ module.exports = [
 		children: ['introduction'],
 	},
 	{
+		title: 'Commands',
+		collapsable: false,
+		children: prefix('commands', ['signature']),
+	},
+	{
 		title: 'Output',
 		collapsable: false,
 		children: prefix('output', ['progressbar']),

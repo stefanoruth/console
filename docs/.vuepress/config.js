@@ -9,8 +9,6 @@ module.exports = {
 		search: true,
 		serviceWorker: true,
 		repo: 'stefanoruth/valon-cli',
-		editLinks: true,
-		lastUpdated: 'Last Updated',
 
 		nav: [
 			{ text: 'Home', link: '/' },
