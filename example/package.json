@@ -1,0 +1,23 @@
+{
+	"name": "valon-example",
+	"version": "0.1.0",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": true,
+	"dependencies": {
+		"typescript": "^3.5.2",
+		"source-map-support": "^0.5.12",
+		"valon": "file:../"
+	},
+	"scripts": {
+		"start": "node -r source-map-support/register dist/cli",
+		"startdir": "valon --command-dir=./dist",
+		"clean": "rm -rf dist/",
+		"build": "tsc",
+		"watch": "tsc --watch"
+	},
+	"bin": {
+		"valon-example": "./dist/cli.js"
+	}
+}
