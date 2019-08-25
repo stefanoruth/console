@@ -1,6 +1,6 @@
 <h1 align="center">Valon CLI</h1>
 
-<p align="center">Valon - Typescript Console Framework
+<p align="center">Valon - Typescript Console Framework</p>
 
 <p align="center">
 
