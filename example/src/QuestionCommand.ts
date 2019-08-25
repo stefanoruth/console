@@ -1,4 +1,4 @@
-import { Command, Option, Signature } from 'valon'
+import { Command, Option } from 'valon'
 
 export class QuestionCommand extends Command {
 	protected name = 'example:question'

@@ -1,4 +1,4 @@
-import { Command, Terminal } from 'valon'
+import { Command } from 'valon'
 
 export class TextCommand extends Command {
 	name = 'example:text'
