@@ -16,6 +16,6 @@ module.exports = [
 	{
 		title: 'Output',
 		collapsable: false,
-		children: prefix('output', ['progressbar']),
+		children: prefix('output', ['text', 'table', 'progressbar', 'question']),
 	},
 ]
