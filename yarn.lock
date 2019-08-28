@@ -8160,10 +8160,10 @@ ts-jest@^24.0.2:
     semver "^5.5"
     yargs-parser "10.x"
 
-ts-mockery@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ts-mockery/-/ts-mockery-1.1.0.tgz#ee4a3f9e5f07bd5470fb2ff5d981a639ad29e29d"
-  integrity sha512-YPzHIV/OqU7SeLh5IKwrtogDVyHsaswDT6nkBY1L+r6WaoBaLlieNNxS7acKTPrEVMGhcNvUXIi6uE1Wo1tmTQ==
+ts-mockery@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/ts-mockery/-/ts-mockery-1.2.0.tgz#aa76521653d729e99b3808836817f64e61a213dd"
+  integrity sha512-ArGPMUzO4H25KBYVTWmmE36y5bCOFAwC7XdW4CLTqYg+gQcvxJzKoj5URSc+luzwI8QdtwAkHtazBmrKepX81g==
 
 tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"
