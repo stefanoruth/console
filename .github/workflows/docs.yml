@@ -22,4 +22,9 @@ jobs:
         run: yarn install
 
       - name: Deploy Docs
-        run: yarn docs:deploy
+        run: |
+          git config user.email "you@example.com"
+          git config user.name "Your Name"
+          yarn docs:deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
