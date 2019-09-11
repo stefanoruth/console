@@ -12,7 +12,7 @@ Valon is...
 
 ## Installing Valon CLI
 
-You can install
+You can install.
 
 ```sh
 npm install valon
