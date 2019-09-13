@@ -20,22 +20,13 @@ jobs:
 
       - name: Install
         run: yarn install
-        
+
       - name: Build
         run: yarn docs:build
 
       - name: Deploy Docs
-<<<<<<< HEAD
-        run: |
-          git config user.email "you@example.com"
-          git config user.name "Your Name"
-          yarn docs:deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-=======
         uses: JamesIves/github-pages-deploy-action@master
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BRANCH: gh-pages
           FOLDER: docs/.vuepress/dist
->>>>>>> 0dafe0a52e5c2154b07a11868b65e16a509ca104
