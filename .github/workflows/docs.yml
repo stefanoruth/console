@@ -20,6 +20,11 @@ jobs:
 
       - name: Install
         run: yarn install
+        
+      - name: Build
+        run: |
+          yarn docs:build
+          cd docs/.vuepress/dist
 
       - name: Deploy Docs
-        run: yarn docs:deploy
+        run: echo "Done"
