@@ -1,17 +1,10 @@
-name: CI
+name: Release
 
-on:
-  push:
-    branches:
-      - master
+on: [release]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
 
     steps:
       - name: Checkout Code
@@ -20,13 +13,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
-
+          node-version: 12.x
+          
       - name: Install
         run: yarn install
 
       - name: Build
         run: yarn build
-
-      - name: Test
-        run: yarn ci:test
+        
+      - name: Publish
+        uses: actions/npm@1.0.0
+          
