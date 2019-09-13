@@ -22,9 +22,11 @@ jobs:
         run: yarn install
         
       - name: Build
-        run: |
-          yarn docs:build
-          cd docs/.vuepress/dist
+        run: yarn docs:build
 
       - name: Deploy Docs
-        run: echo "Done"
+        uses: JamesIves/github-pages-deploy-action@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: docs/.vuepress/dist
