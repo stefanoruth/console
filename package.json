@@ -21,6 +21,9 @@
 		"type": "git",
 		"url": "https://github.com/stefanoruth/valon-cli.git"
 	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/@stefanoruth"
+	},
 	"dependencies": {},
 	"scripts": {
 		"clean": "rm -rf dist/ && rm -rf coverage/",
