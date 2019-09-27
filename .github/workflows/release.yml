@@ -16,11 +16,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-
-      - name: Configure Git
-        run: |
-          git config user.email "{{ secrets.GIT_EMAIL }}"
-          git config user.name "{{ secrets.GIT_NAME }}"
+          registry-url: https://registry.npmjs.org/
 
       - name: Install
         run: yarn install
@@ -29,7 +25,8 @@ jobs:
         run: yarn build
 
       - name: Publish
-        uses: actions/npm@1.0.0
         run: |
           RELEASE_VERSION=$(echo ${GITHUB_REF} | awk -F'/' '{print $3}')
           npm version $RELEASE_VERSION --no-git-tag-version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
