@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  pull_request
   push:
     branches:
       - master
@@ -9,10 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v1
@@ -20,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
 
       - name: Install
         run: yarn install
