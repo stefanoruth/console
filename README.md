@@ -1,6 +1,6 @@
-<h1 align="center">Valon CLI</h1>
+# Valon CLI
 
-<p align="center">Valon - Typescript Console Framework</p>
+Valon - Typescript Console Framework
 
 [![Build Status](https://github.com/stefanoruth/valon-cli/workflows/Build/badge.svg)](https://github.com/stefanoruth/valon-cli/actions)
 [![Build Status](https://github.com/stefanoruth/valon-cli/workflows/Docs/badge.svg)](https://stefanoruth.github.io/valon-cli)
