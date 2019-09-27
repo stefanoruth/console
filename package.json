@@ -21,6 +21,9 @@
 		"type": "git",
 		"url": "https://github.com/stefanoruth/valon-cli.git"
 	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/@stefanoruth"
+	},
 	"dependencies": {},
 	"scripts": {
 		"clean": "rm -rf dist/ && rm -rf coverage/",
@@ -44,7 +47,7 @@
 	},
 	"devDependencies": {
 		"@types/jest": "^24.0.18",
-		"@types/node": "^12.7.5",
+		"@types/node": "^12.7.8",
 		"coveralls": "^3.0.6",
 		"jest": "^24.9.0",
 		"ts-jest": "^24.1.0",
@@ -52,7 +55,7 @@
 		"tslint": "^5.20.0",
 		"tslint-config-prettier": "^1.17.0",
 		"typescript": "^3.6.3",
-		"vuepress": "^1.0.4"
+		"vuepress": "^1.1.0"
 	},
 	"jest": {
 		"preset": "ts-jest",
