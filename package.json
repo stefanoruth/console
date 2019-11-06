@@ -52,7 +52,7 @@
 		"jest": "^24.9.0",
 		"ts-jest": "^24.1.0",
 		"ts-mockery": "^1.2.0",
-		"tslint": "^5.20.0",
+		"tslint": "^5.20.1",
 		"tslint-config-prettier": "^1.17.0",
 		"typescript": "^3.6.4",
 		"vuepress": "^1.2.0"
