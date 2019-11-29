@@ -4,17 +4,28 @@ Valon - Typescript Console Framework
 
 [![Build Status](https://github.com/stefanoruth/valon-cli/workflows/Build/badge.svg)](https://github.com/stefanoruth/valon-cli/actions)
 [![Build Status](https://github.com/stefanoruth/valon-cli/workflows/Docs/badge.svg)](https://stefanoruth.github.io/valon-cli)
-[![Coverage Status](https://coveralls.io/repos/github/stefanoruth/valon-cli/badge.svg?branch=master)](https://coveralls.io/github/stefanoruth/valon-cli?branch=master)
 [![NPM version](https://img.shields.io/npm/v/valon.svg)](https://www.npmjs.com/package/valon)
 
 ## Intro
 
 Docs: https://stefanoruth.github.io/valon-cli
 
+## Development
+
+### Setup
+
+When setting up development make sure to link the package correct and set permissions.
+
+```sh
+yarn link
+yarn link valon
+chmod 755 dist/cli.js
+```
+
 ## Thanks to
 
-Symfony & Laravel
+Symfony & Laravel for the inspiration and implementation in PHP.
 
 ## License
 
-The Valon framework is open-sourced software licensed under the MIT license.
+The Valon CLI framework is open-sourced software licensed under the MIT license.

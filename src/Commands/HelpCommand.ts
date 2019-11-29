@@ -15,7 +15,7 @@ export class HelpCommand extends Command {
 		const descriptor = new Descriptor(this.output)
 
 		if (this.command === null) {
-			this.command = this.getApplication().find(this.input.getArgument('command_name'))
+			this.command = this.getApplication().find(this.input.raw().getArgument('command_name'))
 		}
 
 		descriptor.describe(this.command)

@@ -1,5 +1,5 @@
 import { Application } from '../Application'
-import { Input, Signature, CommandSignature } from '../Input'
+import { Input, Signature, CommandSignature, ParsedInput } from '../Input'
 import { Output } from '../Output'
 
 export abstract class Command {
@@ -19,7 +19,7 @@ export abstract class Command {
 		this._input = input
 		this._output = output
 
-		return this.handle(this.input.getArgs())
+		return this.handle(this.input.args())
 	}
 
 	/**
@@ -92,7 +92,7 @@ export abstract class Command {
 			throw new Error('Input has not yet been set')
 		}
 
-		return this._input
+		return new ParsedInput(this._input)
 	}
 
 	/**
