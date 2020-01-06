@@ -46,7 +46,7 @@
 		"valon": "./dist/cli.js"
 	},
 	"devDependencies": {
-		"@types/jest": "^24.0.24",
+		"@types/jest": "^24.0.25",
 		"@types/node": "^13.1.4",
 		"coveralls": "^3.0.8",
 		"jest": "^24.9.0",
